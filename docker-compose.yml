@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  backend:
+    image: seunghso/santa-cs
+    container_name: santacs
+    ports:
+      - 8080:8080
+    restart: always
+  frontend:
+    image: seunghso/front
+    container_name: front
+    ports:
+      - 3000:3000

@@ -1,0 +1,8 @@
+# docker image 생성을 위한 dockerfile (설명 -> 아래 링크)
+# https://gonii.notion.site/Docker-a01e62e62c1c44abbb7b79e208a6f3cc
+FROM openjdk:17-alpine
+
+ARG JAR_FILE=build/libs/*.jar
+
+COPY ${JAR_FILE} app.jar
+ENTRYPOINT ["java","-jar","/app.jar"]
