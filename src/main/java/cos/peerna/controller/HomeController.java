@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 // http://localhost:8080/login 연동 로그인 모음
 // http://localhost:8080/oauth2/authorization/google 구글 연동 로그인
+// GET https://github.com/login/oauth/authorize Github 연동 로그인
 @Slf4j
 @RestController
 @RequiredArgsConstructor
