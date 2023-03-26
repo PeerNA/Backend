@@ -24,7 +24,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void extendHandlerExceptionResolvers(List<HandlerExceptionResolver> resolvers) {
-        resolvers.add(new CustomHandlerExceptionResolver());
+//        resolvers.add(new CustomHandlerExceptionResolver());
     }
 
     @Override

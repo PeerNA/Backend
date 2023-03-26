@@ -16,8 +16,8 @@ public class WebSocketBrokerConfig implements WebSocketMessageBrokerConfigurer {
     //이유는 왜 그런지 아직 찾지 못함
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws")
-                .setAllowedOrigins("*")
+        registry.addEndpoint("/stomp/chat")
+                .setAllowedOriginPatterns("*")
                 .withSockJS();
     }
 
