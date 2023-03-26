@@ -1,8 +1,10 @@
 package cos.peerna.controller;
 
 import cos.peerna.repository.ChatRoomRepository;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.hibernate.Session;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +23,7 @@ public class RoomController {
 
     //채팅방 목록 조회
     @GetMapping(value = "/rooms")
-    public ModelAndView rooms(){
+    public ModelAndView rooms() {
 
         log.info("# All Chat Rooms");
         ModelAndView mv = new ModelAndView("chat/rooms");
@@ -33,7 +35,7 @@ public class RoomController {
 
     //채팅방 개설
     @PostMapping(value = "/room")
-    public String create(@RequestParam String name, RedirectAttributes rttr){
+    public String create(@RequestParam String name, RedirectAttributes rttr) {
 
         log.info("# Create Chat Room , name: " + name);
         rttr.addFlashAttribute("roomName", repository.createChatRoomDTO(name));
@@ -42,7 +44,7 @@ public class RoomController {
 
     //채팅방 조회
     @GetMapping("/room")
-    public void getRoom(String roomId, Model model){
+    public void getRoom(String roomId, Model model) {
 
         log.info("# get Chat Room, roomID : " + roomId);
 
