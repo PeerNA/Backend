@@ -1,7 +1,7 @@
 package cos.peerna.service;
 
-import cos.peerna.domain.Member;
-import cos.peerna.repository.MemberRepository;
+import cos.peerna.domain.User;
+import cos.peerna.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,25 +11,25 @@ import java.util.List;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class MemberService {
+public class UserService {
 
-    private final MemberRepository memberRepository;
+    private final UserRepository userRepository;
 
     // 회원 가입
-    public void join(Member member) {
-        validateMember(member);
-        memberRepository.save(member).getId();
+    public void join(User user) {
+        validateUser(user);
+        userRepository.save(user);
     }
 
-    private void validateMember(Member member) {
-        if (memberRepository.findByEmail(member.getEmail()).isPresent()) {
+    private void validateUser(User user) {
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new IllegalArgumentException("This email already exists.");
         }
     }
 
     // 회원 전체 조회
-    public List<Member> findMembers() {
-        return memberRepository.findAll();
+    public List<User> findUsers() {
+        return userRepository.findAll();
     }
 
 //    public Member findOne(Long memberId) {

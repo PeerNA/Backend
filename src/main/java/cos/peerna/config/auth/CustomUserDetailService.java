@@ -1,9 +1,8 @@
 package cos.peerna.config.auth;
 
 import cos.peerna.config.auth.dto.SessionUser;
-import cos.peerna.domain.Member;
-import cos.peerna.repository.MemberRepository;
-import jakarta.servlet.http.HttpSession;
+import cos.peerna.domain.User;
+import cos.peerna.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -14,13 +13,13 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CustomUserDetailService implements UserDetailsService {
 
-    private final MemberRepository memberRepository;
+    private final UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Member member = memberRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("User Not Found"));
+        User user = userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("User Not Found"));
 //        session.setAttribute("exception", "User Not Found");
-        return new SessionUser(member);
+        return new SessionUser(user);
     }
 
 }

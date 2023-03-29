@@ -1,6 +1,6 @@
 package cos.peerna.config.auth.dto;
 
-import cos.peerna.domain.Member;
+import cos.peerna.domain.User;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,13 +13,13 @@ public class SessionUser implements Serializable, UserDetails {
     private final String name;
     private final String email;
     private final String password;
-    private final String profile;
+    private final String imageUrl;
 
-    public SessionUser(Member member) {
-        this.name = member.getName();
-        this.email = member.getEmail();
-        this.password = member.getPassword();
-        this.profile = member.getProfile();
+    public SessionUser(User user) {
+        this.name = user.getName();
+        this.email = user.getEmail();
+        this.password = user.getPassword();
+        this.imageUrl = user.getImageUrl();
     }
 
     @Override

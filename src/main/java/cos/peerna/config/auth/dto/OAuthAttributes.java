@@ -1,6 +1,6 @@
 package cos.peerna.config.auth.dto;
 
-import cos.peerna.domain.Member;
+import cos.peerna.domain.User;
 import cos.peerna.domain.Role;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,17 +13,17 @@ public class OAuthAttributes {
     private String nameAttributeKey;
     private String name;
     private String email;
-    private String profile;
+    private String imageUrl;
 
     @Builder
     public OAuthAttributes(Map<String, Object> attributes,
                            String nameAttributeKey, String name,
-                           String email, String profile) {
+                           String email, String imageUrl) {
         this.attributes = attributes;
         this.nameAttributeKey = nameAttributeKey;
         this.name = name;
         this.email = email;
-        this.profile = profile;
+        this.imageUrl = imageUrl;
     }
 
     public static OAuthAttributes of(String registrationId,
@@ -37,17 +37,17 @@ public class OAuthAttributes {
         return OAuthAttributes.builder()
                 .name((String) attributes.get("name"))
                 .email((String) attributes.get("email"))
-                .profile((String) attributes.get("picture"))
+                .imageUrl((String) attributes.get("picture"))
                 .attributes(attributes)
                 .nameAttributeKey(userNameAttributeName)
                 .build();
     }
 
-    public Member toEntity() {
-        return Member.builder()
+    public User toEntity() {
+        return User.builder()
                 .name(name)
                 .email(email)
-                .profile(profile)
+                .imageUrl(imageUrl)
                 .role(Role.MENTEE)
                 .build();
     }
