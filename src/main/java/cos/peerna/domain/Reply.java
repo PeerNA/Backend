@@ -2,6 +2,7 @@ package cos.peerna.domain;
 
 import cos.peerna.controller.dto.ProblemRegisterRequestDto;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,20 +13,30 @@ import lombok.NoArgsConstructor;
 public class Reply {
 
     @Id @GeneratedValue
-    @Column(name = "id")
-    private Long id;
+    @Column(name = "reply_id")
+    private Long replyId;
 
-    private String question;
+    @NotNull
+    private Long problemId;
+
+    @NotNull
+    private Long userId;
+
+    @NotNull
     private String answer;
-    @Enumerated(EnumType.STRING)
-    private Category category;
 
-    public static Reply createProblem(ProblemRegisterRequestDto dto) {
-        Reply problem = new Reply();
-        problem.question = dto.getQuestion();
-        problem.answer = dto.getAnswer();
-        problem.category = dto.getCategory();
+    @OneToOne
+    @JoinColumn(name = "reply_id")
+    private Like like;
 
-        return problem;
-    }
+//    id를 dto로 받는게 맞는가?
+
+//    public static Reply createProblem(ProblemRegisterRequestDto dto) {
+//        Reply reply = new Reply();
+//        reply.question = dto.getQuestion();
+//        reply.answer = dto.getAnswer();
+//        reply.category = dto.getCategory();
+//
+//        return problem;
+//    }
 }

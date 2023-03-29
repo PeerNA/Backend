@@ -31,6 +31,10 @@ public class User {
     @Embedded
     private Interest interests;
 
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private Like like;
+
     public static User createUser(UserRegisterRequestDto dto) {
         User user = new User();
         user.name = dto.getName();

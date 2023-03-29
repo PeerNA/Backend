@@ -15,7 +15,7 @@ public class Keyword {
     @Column(name = "problem_id")
     private Long problemId;
 
-    private String name;
+    private String keyword;
     private Long cnt;
 
 //    public static Keyword createKeyword(KeywordRegisterRequestDto dto) {
