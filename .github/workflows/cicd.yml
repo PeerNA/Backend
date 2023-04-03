@@ -2,10 +2,8 @@
 name: PeerNA CI/CD
 
 on:
-  push:
-    branches: [ "deploy" ]
   pull_request:
-    branches: [ "deploy" ]
+    branches: [ "main" ]
 
 permissions:
   contents: read
