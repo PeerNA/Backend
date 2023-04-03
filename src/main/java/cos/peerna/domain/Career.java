@@ -2,12 +2,12 @@ package cos.peerna.domain;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 
-public enum Category {
-    JAVA, JAVASCRIPT, PYTHON, SPRING, REACT, NODE_JS, DJANGO, RDB, NOSQL, OS, SECURITY, NETWORK, DATA_STRUCTURE;
+public enum Career {
+    OVER_3, OVER_1, UNDER_1;
 
     @JsonCreator
-    public static Category from(String s) {
-        return Category.valueOf(s.toUpperCase());
+    public static Career from(String s) {
+        return Career.valueOf(s.toUpperCase());
     }
 
 }
