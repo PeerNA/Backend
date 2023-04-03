@@ -59,6 +59,13 @@ public class User {
         return this;
     }
 
+    public User updateCondition(Interest interests, Career career) {
+        this.interests = interests;
+        this.career = career;
+
+        return this;
+    }
+
     public String getRoleKey() {
         return this.role.getKey();
     }
