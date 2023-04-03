@@ -1,30 +1,36 @@
 package cos.peerna.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalTime;
+import java.util.List;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Chat {
 
-	@Id
-	@GeneratedValue
+	@Id @GeneratedValue
 	@Column(name = "chat_id")
-	private Long chatId;
+	private Long id;
 
-//	매핑 필요
-//	private User user;
+	@NotNull
+	private Long aUserId;
+
+	@NotNull
+	private Long bUserId;
 
 	private String content;
 
-//	찾아보니까 Date 단점 많아서 LocalTime으로 사용
+	//	찾아보니까 Date 단점 많아서 LocalTime으로 사용
 	private LocalTime time;
+
+	@NotNull @ManyToOne
+	@JoinColumn(name = "history_id")
+	private History history;
+
 }
