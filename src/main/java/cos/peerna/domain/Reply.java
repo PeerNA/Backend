@@ -7,6 +7,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -14,20 +16,18 @@ public class Reply {
 
     @Id @GeneratedValue
     @Column(name = "reply_id")
-    private Long replyId;
-
-    @NotNull
-    private Long problemId;
-
-    @NotNull
-    private Long userId;
+    private Long id;
 
     @NotNull
     private String answer;
 
-    @OneToOne
-    @JoinColumn(name = "reply_id")
-    private Like like;
+    @NotNull @ManyToOne
+    @JoinColumn(name = "problem_id")
+    private Problem problem;
+
+    @NotNull @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
 //    id를 dto로 받는게 맞는가?
 
