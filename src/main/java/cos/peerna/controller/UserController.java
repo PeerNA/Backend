@@ -1,9 +1,9 @@
 package cos.peerna.controller;
 
-import cos.peerna.controller.dto.MemberRegisterRequestDto;
+import cos.peerna.controller.dto.UserRegisterRequestDto;
 import cos.peerna.controller.dto.ResponseDto;
-import cos.peerna.domain.Member;
-import cos.peerna.service.MemberService;
+import cos.peerna.domain.User;
+import cos.peerna.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,16 +18,16 @@ import java.io.IOException;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-public class MemberController {
+public class UserController {
 
-    private final MemberService memberService;
+    private final UserService userService;
     private final PasswordEncoder passwordEncoder;
 
-    @PostMapping("/api/members/new")
-    public ResponseDto registerMember(@RequestBody MemberRegisterRequestDto dto) {
+    @PostMapping("/api/users/new")
+    public ResponseDto registerUser(@RequestBody UserRegisterRequestDto dto) {
         dto.setPassword(passwordEncoder.encode(dto.getPassword()));
-        Member member = Member.createMember(dto);
-        memberService.join(member);
+        User user = User.createUser(dto);
+        userService.join(user);
 
         return new ResponseDto(200, "success");
     }

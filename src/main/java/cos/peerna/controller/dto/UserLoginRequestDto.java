@@ -3,11 +3,7 @@ package cos.peerna.controller.dto;
 import lombok.Data;
 
 @Data
-public class MemberRegisterRequestDto {
-    private String name;
+public class UserLoginRequestDto {
     private String email;
     private String password;
 }
-
-
-
