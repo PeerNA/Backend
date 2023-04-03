@@ -2,6 +2,10 @@
 # https://gonii.notion.site/Docker-a01e62e62c1c44abbb7b79e208a6f3cc
 FROM openjdk:17-alpine
 
+ENV HOST=$HOST
+ENV USERNAME=$USERNAME
+ENV PASSWORD=$PASSWORD
+
 ARG JAR_FILE=build/libs/*.jar
 
 COPY ${JAR_FILE} app.jar
