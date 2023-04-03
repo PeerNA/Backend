@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 public class User {
 
     @Id @GeneratedValue
-    @Column(name = "id")
+    @Column(name = "user_id")
     private Long id;
 
     private String name;
@@ -31,9 +31,9 @@ public class User {
     @Embedded
     private Interest interests;
 
-    @OneToOne
-    @JoinColumn(name = "user_id")
-    private Like like;
+//    @OneToOne
+//    @JoinColumn(name = "user_id")
+//    private Like like;
 
     public static User createUser(UserRegisterRequestDto dto) {
         User user = new User();
