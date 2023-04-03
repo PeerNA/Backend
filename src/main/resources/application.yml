@@ -1,18 +1,18 @@
-spring: #띄어쓰기 없음
+spring:
   config:
     import: application-oauth.yml
-  datasource: #띄어쓰기 2칸
-    url: jdbc:mariadb://localhost:3306/peerna
+  datasource:
+    url: jdbc:mariadb://${HOST}:3306/peerna
     username: ${USERNAME}
     password: ${PASSWORD}
     driver-class-name: org.mariadb.jdbc.Driver
-  jpa: #띄어쓰기 2칸
-    hibernate: #띄어쓰기 4칸
-      ddl-auto: none #띄어쓰기 6칸
-    properties: #띄어쓰기 4칸
-      hibernate: #띄어쓰기 6칸
-        # show_sql: true #띄어쓰기 8칸
-        format_sql: true #띄어쓰기 8칸
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        # show_sql: true
+        format_sql: true
         default_batch_fetch_size: 1000
   thymeleaf:
     prefix: classpath:templates/
@@ -22,7 +22,7 @@ spring: #띄어쓰기 없음
 logging.level:
   cos.peerna: debug
   org.hibernate.SQL: debug
-  org.hibernate.orm.jdbc.bind: trace #스프링 부트 3.x, hibernate6
+  org.hibernate.orm.jdbc.bind: trace
 server:
   error:
     include-stacktrace: on_param
