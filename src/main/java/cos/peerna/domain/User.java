@@ -23,10 +23,10 @@ public class User {
     private String imageUrl;
     private String introduce;
 
+    private Career career;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
-
     @Embedded
     private Interest interests;
 
@@ -37,6 +37,7 @@ public class User {
         user.password = dto.getPassword();
         user.imageUrl = "";
         user.introduce = "";
+        user.career = Career.UNDER_1;
         user.interests = new Interest(Category.OS, Category.NETWORK, Category.DATA_STRUCTURE);
         user.role = Role.MENTEE;
 
