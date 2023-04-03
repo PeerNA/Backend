@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 public class User {
 
     @Id @GeneratedValue
-    @Column(name = "id")
+    @Column(name = "user_id")
     private Long id;
 
     private String name;
@@ -22,7 +22,6 @@ public class User {
     @Column(name = "image_url")
     private String imageUrl;
     private String introduce;
-    private int level;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -31,10 +30,6 @@ public class User {
     @Embedded
     private Interest interests;
 
-    @OneToOne
-    @JoinColumn(name = "user_id")
-    private Like like;
-
     public static User createUser(UserRegisterRequestDto dto) {
         User user = new User();
         user.name = dto.getName();
@@ -42,7 +37,6 @@ public class User {
         user.password = dto.getPassword();
         user.imageUrl = "";
         user.introduce = "";
-        user.level = 0;
         user.interests = new Interest(Category.OS, Category.NETWORK, Category.DATA_STRUCTURE);
         user.role = Role.MENTEE;
 

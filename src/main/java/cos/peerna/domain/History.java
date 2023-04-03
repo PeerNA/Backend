@@ -1,25 +1,21 @@
 package cos.peerna.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class History {
-	@Id
-	@GeneratedValue
+	@Id @GeneratedValue
 	@Column(name = "history_id")
-	private Long historyId;
+	private Long id;
 
-	private Long problemId;
-	private Long aUserId;
-	private Long bUserId;
-	private Long aReplyId;
-	private Long bReplyId;
+	@NotNull @OneToOne
+	private Problem problem;
 }

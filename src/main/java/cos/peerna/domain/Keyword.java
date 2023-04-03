@@ -2,9 +2,11 @@ package cos.peerna.domain;
 
 import cos.peerna.controller.dto.ProblemRegisterRequestDto;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.checkerframework.checker.units.qual.N;
 
 @Entity
 @Getter
@@ -12,11 +14,15 @@ import lombok.NoArgsConstructor;
 public class Keyword {
 
     @Id @GeneratedValue
-    @Column(name = "problem_id")
-    private Long problemId;
+    @Column(name = "keyword_id")
+    private Long id;
 
-    private String keyword;
-    private Long cnt;
+    @NotNull
+    private String name;
+
+    @ManyToOne @NotNull
+    @JoinColumn(name = "problem_id")
+    private Problem problem;
 
 //    public static Keyword createKeyword(KeywordRegisterRequestDto dto) {
 //        Keyword problem = new Keyword();
