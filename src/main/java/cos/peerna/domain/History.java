@@ -16,6 +16,6 @@ public class History {
 	@Column(name = "history_id")
 	private Long id;
 
-	@NotNull @OneToOne
+	@NotNull @OneToOne(fetch = FetchType.LAZY)
 	private Problem problem;
 }

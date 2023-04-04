@@ -20,7 +20,7 @@ public class Keyword {
     @NotNull
     private String name;
 
-    @ManyToOne @NotNull
+    @NotNull @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "problem_id")
     private Problem problem;
 

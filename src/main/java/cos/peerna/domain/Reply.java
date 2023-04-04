@@ -21,11 +21,11 @@ public class Reply {
     @NotNull
     private String answer;
 
-    @NotNull @ManyToOne
+    @NotNull @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "problem_id")
     private Problem problem;
 
-    @NotNull @ManyToOne
+    @NotNull @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
