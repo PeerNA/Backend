@@ -8,15 +8,12 @@ import cos.peerna.domain.Career;
 import cos.peerna.domain.Interest;
 import cos.peerna.domain.User;
 import cos.peerna.service.UserService;
-import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
@@ -28,6 +25,13 @@ public class UserController {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
 
+    @GetMapping("/api/users/logout")
+    public Object logout(@LoginUser SessionUser sessionUser, HttpServletResponse response) {
+        if (sessionUser == null) {
+            response.setStatus(401);
+        }
+        return sessionUser;
+    }
     @PostMapping("/api/users/new")
     public ResponseDto registerUser(@RequestBody UserRegisterRequestDto dto) {
         dto.setPassword(passwordEncoder.encode(dto.getPassword()));
@@ -36,14 +40,28 @@ public class UserController {
 
         return new ResponseDto(200, "success");
     }
-
-    @PostMapping("/api/users/update")
-    public ResponseDto updateUser(@LoginUser SessionUser user, Interest interest, Career career) {
-        if (user == null) {
-            return new ResponseDto(400, "No User Data");
+    @GetMapping("/api/users/signout")
+    public void signout(@LoginUser SessionUser sessionUser, HttpServletResponse response) {
+        if (sessionUser == null) {
+            response.setStatus(401);
         }
+        userService.delete(sessionUser);
+    }
 
-        userService.updateCondition(user, interest, career);
+    @GetMapping("/api/users/info")
+    public Object userStatus(@LoginUser SessionUser sessionUser, HttpServletResponse response) {
+        if (sessionUser == null) {
+            response.setStatus(401);
+        }
+        return sessionUser;
+    }
+
+    @PostMapping("/api/users/info")
+    public ResponseDto updateInfo(@LoginUser SessionUser sessionUser, Interest interest, Career career) {
+        if (sessionUser == null) {
+            return new ResponseDto(401, "no login data");
+        }
+        userService.updateCondition(sessionUser, interest, career);
 
         return new ResponseDto(200, "success");
     }

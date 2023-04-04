@@ -37,7 +37,7 @@ public class ProblemController {
         log.debug("getProblemByCategory()");
 
         return problemService.getRandomByCategory(category)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NO_CONTENT, "Problem Not Found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem Not Found"));
     }
 
     @GetMapping("/script")
