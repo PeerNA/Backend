@@ -15,11 +15,11 @@ public class Likey {
 	@Column(name = "like_id")
 	private Long id;
 
-	@NotNull @ManyToOne
+	@NotNull @ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	private User user;
 
-	@NotNull @ManyToOne
+	@NotNull @ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "reply_id")
 	private Reply reply;
 

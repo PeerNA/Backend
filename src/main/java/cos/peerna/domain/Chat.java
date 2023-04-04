@@ -29,7 +29,7 @@ public class Chat {
 	//	찾아보니까 Date 단점 많아서 LocalTime으로 사용
 	private LocalTime time;
 
-	@NotNull @ManyToOne
+	@NotNull @ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "history_id")
 	private History history;
 
