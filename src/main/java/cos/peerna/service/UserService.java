@@ -1,8 +1,12 @@
 package cos.peerna.service;
 
+import cos.peerna.config.auth.dto.SessionUser;
+import cos.peerna.domain.Career;
+import cos.peerna.domain.Interest;
 import cos.peerna.domain.User;
 import cos.peerna.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,10 +40,9 @@ public class UserService {
 //        return memberRepository.findById(memberId);
 //    }
 
-//    @Transactional
-//    public void  update(Long id, String name) {
-//    Optional -> Member 변환?
-//        Member member = (Member) memberRepository.findById(id);
-//        member.setName(name);
-//    }
+    @Transactional
+    public void  updateCondition(SessionUser sessionUser, Interest interest, Career career) {
+        User user = userRepository.findByEmail(sessionUser.getEmail()).orElseThrow(() -> new UsernameNotFoundException("User Not Found"));
+        user.updateCondition(interest, career);
+    }
 }
