@@ -24,8 +24,8 @@ public class ReplyService {
 	private final UserRepository userRepository;
 	private final ProblemRepository problemRepository;
 
-	public void make(ReplyRegisterRequestDto dto) {
-		User user = userRepository.findByEmail(dto.getUserEmail()).orElseThrow(() -> new UsernameNotFoundException("No User Data"));
+	public void make(ReplyRegisterRequestDto dto, SessionUser sessionUser) {
+		User user = userRepository.findByEmail(sessionUser.getEmail()).orElseThrow(() -> new UsernameNotFoundException("No User Data"));
 		Problem problem = problemRepository.findById(dto.getProblemId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem Not Found"));
 		Reply reply = Reply.createReply(user, problem, dto.getAnswer());
 		replyRepository.save(reply);
