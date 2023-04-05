@@ -1,8 +1,10 @@
 package cos.peerna.controller;
 
 import cos.peerna.controller.dto.ProblemRegisterRequestDto;
+import cos.peerna.controller.dto.ProblemResponseDto;
 import cos.peerna.controller.dto.ResponseDto;
 import cos.peerna.domain.Category;
+import cos.peerna.domain.Keyword;
 import cos.peerna.domain.Problem;
 import cos.peerna.service.ProblemService;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +18,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -33,7 +36,7 @@ public class ProblemController {
     }
 
     @GetMapping("/api/problems/category")
-    public Problem getProblemByCategory(@RequestParam Category category) {
+    public ProblemResponseDto getProblemByCategory(@RequestParam Category category) {
         log.debug("getProblemByCategory()");
 
         return problemService.getRandomByCategory(category)

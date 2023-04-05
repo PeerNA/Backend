@@ -22,8 +22,8 @@ public class Reply {
     private String answer;
 
     @NotNull @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "problem_id")
-    private Problem problem;
+    @JoinColumn(name = "history_id")
+    private History history;
 
     @NotNull @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

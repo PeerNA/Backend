@@ -1,7 +1,10 @@
 package cos.peerna.service;
 
+import cos.peerna.controller.dto.ProblemResponseDto;
 import cos.peerna.domain.Category;
+import cos.peerna.domain.Keyword;
 import cos.peerna.domain.Problem;
+import cos.peerna.repository.KeywordRepository;
 import cos.peerna.repository.ProblemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,6 +20,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class ProblemService {
 
     private final ProblemRepository problemRepository;
+    private final KeywordRepository keywordRepository;
 
     public void make(Problem problem) {
         validateProblem(problem);
@@ -29,21 +33,29 @@ public class ProblemService {
         }
     }
 
-    public List<Problem> getAll() {
-        return problemRepository.findAll();
-    }
+    /**
+     * List<ProblemResponseDto>  를 반환 하도록 바꾸기
+        public List<Problem> getAll() {
+            return problemRepository.findAll();
+        }
+    */
 
-    public Optional<Problem> getRandomByCategory(Category category) {
-        Optional<Problem> problem;
+    public Optional<ProblemResponseDto> getRandomByCategory(Category category) {
         List<Problem> problems = problemRepository.findProblemsByCategory(category);
 
         if (problems.isEmpty()) {
-             problem = Optional.empty();
+             return Optional.empty();
         } else {
             int randomElementIndex = ThreadLocalRandom.current().nextInt(problems.size()) % problems.size();
-            problem = Optional.of(problems.get(randomElementIndex));
+            Problem problem = problems.get(randomElementIndex);
+            List<Keyword> keywordList = keywordRepository.findKeywordsByProblem(problem);
+            return Optional.of(ProblemResponseDto.builder()
+                    .problemId(problem.getId())
+                    .answer(problem.getAnswer())
+                    .category(problem.getCategory())
+                    .keywordList(keywordList)
+                    .build());
         }
-        return problem;
     }
 
 }

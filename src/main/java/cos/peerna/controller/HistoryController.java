@@ -1,22 +1,29 @@
 package cos.peerna.controller;
 
-import cos.peerna.controller.dto.ProblemRegisterRequestDto;
-import cos.peerna.controller.dto.ResponseDto;
-import cos.peerna.domain.Category;
-import cos.peerna.domain.Problem;
-import cos.peerna.service.ProblemService;
+import cos.peerna.config.auth.LoginUser;
+import cos.peerna.config.auth.dto.SessionUser;
+import cos.peerna.controller.dto.HistoryResponseDto;
+import cos.peerna.domain.History;
+import cos.peerna.service.HistoryService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
 public class HistoryController {
-
-
+    private final HistoryService historyService;
+    @GetMapping("/api/history")
+    public List<HistoryResponseDto> findUserHistory(@LoginUser SessionUser sessionUser, HttpServletResponse response) {
+        if (sessionUser == null) {
+            response.setStatus(401);
+            return new ArrayList<HistoryResponseDto>();
+        }
+        return historyService.findUserHistory(sessionUser);
+    }
 }

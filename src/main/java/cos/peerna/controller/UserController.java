@@ -25,13 +25,6 @@ public class UserController {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
 
-    @GetMapping("/api/users/logout")
-    public Object logout(@LoginUser SessionUser sessionUser, HttpServletResponse response) {
-        if (sessionUser == null) {
-            response.setStatus(401);
-        }
-        return sessionUser;
-    }
     @PostMapping("/api/users/new")
     public ResponseDto registerUser(@RequestBody UserRegisterRequestDto dto) {
         dto.setPassword(passwordEncoder.encode(dto.getPassword()));
@@ -68,7 +61,7 @@ public class UserController {
 
     @GetMapping("/oauth2-login-fail")
     public void oauth2LoginFail(HttpServletResponse response) {
-        String redirectUri = "http://localhost:3000/";
+        String redirectUri = "http://ec2-3-35-151-197.ap-northeast-2.compute.amazonaws.com:3000/";
 
         try {
             response.sendRedirect(redirectUri);
