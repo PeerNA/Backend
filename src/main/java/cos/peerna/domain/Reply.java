@@ -1,6 +1,7 @@
 package cos.peerna.domain;
 
 import cos.peerna.controller.dto.ProblemRegisterRequestDto;
+import cos.peerna.controller.dto.ReplyRegisterRequestDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -29,6 +30,13 @@ public class Reply {
     @JoinColumn(name = "user_id")
     private User user;
 
+    public static Reply createReply(User user, Problem problem, String answer) {
+        Reply reply = new Reply();
+        reply.answer = answer;
+        reply.user = user;
+        reply.problem = problem;
+        return reply;
+    }
 //    id를 dto로 받는게 맞는가?
 
 //    public static Reply createProblem(ProblemRegisterRequestDto dto) {

@@ -3,22 +3,19 @@ package cos.peerna.controller;
 import cos.peerna.controller.dto.ProblemRegisterRequestDto;
 import cos.peerna.controller.dto.ProblemResponseDto;
 import cos.peerna.controller.dto.ResponseDto;
+import cos.peerna.controller.dto.ProblemAnswerResponseDto;
 import cos.peerna.domain.Category;
 import cos.peerna.domain.Keyword;
 import cos.peerna.domain.Problem;
 import cos.peerna.service.ProblemService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.List;
+
+
 
 @Slf4j
 @RestController
@@ -29,10 +26,16 @@ public class ProblemController {
 
     @PostMapping("/api/problems/new")
     public ResponseDto registerProblem(@RequestBody ProblemRegisterRequestDto dto) {
-        Problem problem = Problem.createProblem(dto);
-        problemService.make(problem);
+        problemService.make(dto);
 
         return new ResponseDto(200, "success");
+    }
+
+    @GetMapping("/api/problems")
+    public ProblemAnswerResponseDto getProblemById(@RequestParam Long id) {
+        String answer = problemService.getOneAnswer(id);
+
+        return new ProblemAnswerResponseDto(answer);
     }
 
     @GetMapping("/api/problems/category")
