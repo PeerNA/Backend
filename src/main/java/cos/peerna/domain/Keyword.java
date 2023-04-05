@@ -24,6 +24,14 @@ public class Keyword {
     @JoinColumn(name = "problem_id")
     private Problem problem;
 
+    public static Keyword createKeyword(String name, Problem problem) {
+        Keyword keyword = new Keyword();
+        keyword.name = name;
+        keyword.problem = problem;
+
+        return keyword;
+    }
+
 //    public static Keyword createKeyword(KeywordRegisterRequestDto dto) {
 //        Keyword problem = new Keyword();
 //        problem.question = dto.getQuestion();
