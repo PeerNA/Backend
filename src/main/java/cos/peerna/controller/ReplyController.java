@@ -23,7 +23,7 @@ public class ReplyController {
 	@PostMapping("/api/reply/new")
 	public ResponseDto registerReply(@RequestBody ReplyRegisterRequestDto dto, @Nullable @LoginUser SessionUser user) {
 		if (user == null) {
-			return new ResponseDto(400, "No User Data");
+			return new ResponseDto(401, "No User Data");
 		}
 
 		replyService.make(dto, user);
