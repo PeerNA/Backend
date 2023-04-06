@@ -1,7 +1,10 @@
 package cos.peerna.config.auth.dto;
 
+import cos.peerna.domain.Career;
+import cos.peerna.domain.Interest;
 import cos.peerna.domain.User;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -14,12 +17,16 @@ public class SessionUser implements Serializable, UserDetails {
     private final String email;
     private final String password;
     private final String imageUrl;
+    private final Interest interest;
+    private final Career career;
 
     public SessionUser(User user) {
         this.name = user.getName();
         this.email = user.getEmail();
         this.password = user.getPassword();
         this.imageUrl = user.getImageUrl();
+        this.interest = user.getInterests();
+        this.career = user.getCareer();
     }
 
     @Override

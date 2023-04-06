@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalTime;
 import java.util.List;
 
 @Entity
@@ -16,6 +17,16 @@ public class History {
 	@Column(name = "history_id")
 	private Long id;
 
-	@NotNull @OneToOne(fetch = FetchType.LAZY)
+	private LocalTime time;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "problem_id")
 	private Problem problem;
+
+	public static History createHistory(Problem problem) {
+		History history = new History();
+		history.time = LocalTime.now();
+		history.problem = problem;
+		return history;
+	}
 }

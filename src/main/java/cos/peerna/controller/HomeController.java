@@ -2,9 +2,12 @@ package cos.peerna.controller;
 
 import cos.peerna.config.auth.LoginUser;
 import cos.peerna.config.auth.dto.SessionUser;
+import cos.peerna.domain.User;
 import jakarta.annotation.Nullable;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,12 +20,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class HomeController {
 
     @GetMapping("/")
-    public String home(@Nullable @LoginUser SessionUser user) {
-        if (user != null) {
-            log.info("{}_로그인", user.getName());
-            return user.getName() + "님 안녕하세요?";
+    public Object home(@Nullable @LoginUser SessionUser user) {
+        if (user == null) {
+            return "로그인을 해주세요";
         }
-        return "로그인을 해주세요";
+        return user;
     }
 
+    @GetMapping("/ping")
+    public String pong() {
+        return "pong!";
+    }
 }
