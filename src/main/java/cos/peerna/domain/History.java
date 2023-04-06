@@ -19,7 +19,8 @@ public class History {
 
 	private LocalTime time;
 
-	@OneToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "problem_id")
 	private Problem problem;
 
 	public static History createHistory(Problem problem) {
