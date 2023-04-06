@@ -36,12 +36,18 @@ public class Reply {
     private History history;
 
     @NotNull @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "problem_id")
+    private Problem problem;
+
+    @NotNull @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
-    public static Reply createReply(User user, String answer) {
+    public static Reply createReply(User user, History history, Problem problem, String answer) {
         Reply reply = new Reply();
         reply.answer = answer;
+        reply.history = history;
+        reply.problem = problem;
         reply.user = user;
         return reply;
     }

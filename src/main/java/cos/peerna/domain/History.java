@@ -19,6 +19,13 @@ public class History {
 
 	private LocalTime time;
 
-	@NotNull @OneToOne(fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.LAZY)
 	private Problem problem;
+
+	public static History createHistory(Problem problem) {
+		History history = new History();
+		history.time = LocalTime.now();
+		history.problem = problem;
+		return history;
+	}
 }
