@@ -2,7 +2,6 @@ package cos.peerna.controller;
 
 import cos.peerna.config.auth.LoginUser;
 import cos.peerna.config.auth.dto.SessionUser;
-import cos.peerna.controller.dto.HistoryResponseDto;
 import cos.peerna.domain.History;
 import cos.peerna.service.HistoryService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,10 +18,10 @@ import java.util.List;
 public class HistoryController {
     private final HistoryService historyService;
     @GetMapping("/api/history")
-    public List<HistoryResponseDto> findUserHistory(@LoginUser SessionUser sessionUser, HttpServletResponse response) {
+    public List<History> findUserHistory(@LoginUser SessionUser sessionUser, HttpServletResponse response) {
         if (sessionUser == null) {
             response.setStatus(401);
-            return new ArrayList<HistoryResponseDto>();
+            return new ArrayList<History>();
         }
         return historyService.findUserHistory(sessionUser);
     }

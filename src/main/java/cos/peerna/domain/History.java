@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalTime;
 import java.util.List;
 
 @Entity
@@ -15,6 +16,8 @@ public class History {
 	@Id @GeneratedValue
 	@Column(name = "history_id")
 	private Long id;
+
+	private LocalTime time;
 
 	@NotNull @OneToOne(fetch = FetchType.LAZY)
 	private Problem problem;

@@ -1,5 +1,6 @@
 package cos.peerna.domain;
 
+import cos.peerna.controller.dto.UserRegisterRequestDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -23,11 +24,11 @@ public class Likey {
 	@JoinColumn(name = "reply_id")
 	private Reply reply;
 
-//	매핑 정리 필요
+	public static Likey createLikey(User user, Reply reply) {
+		Likey likey = new Likey();
+		likey.reply = reply;
+		likey.user = user;
 
-//	@OneToOne(mappedBy = "like")
-//	private User user;
-//
-//	@OneToOne(mappedBy = "like")
-//	private Reply reply;
+		return likey;
+	}
 }

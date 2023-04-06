@@ -1,12 +1,12 @@
 package cos.peerna.service;
 
 import cos.peerna.config.auth.dto.SessionUser;
-import cos.peerna.controller.dto.HistoryResponseDto;
 import cos.peerna.controller.dto.ReplyResponseDto;
 import cos.peerna.domain.History;
 import cos.peerna.domain.Reply;
 import cos.peerna.domain.User;
 import cos.peerna.repository.HistoryRepository;
+import cos.peerna.repository.ReplyRepository;
 import cos.peerna.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,6 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -36,35 +37,13 @@ public class HistoryService {
 //        }
 //    }
 
-    public List<HistoryResponseDto> findUserHistory(SessionUser sessionUser) {
-        User user = userRepository.findByEmail(sessionUser.getEmail()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User Not Found"));
-        List<History> historyList =  historyRepository.findHistoriesByUser(user);
+    public List<History> findUserHistory(SessionUser sessionUser) {
+        User user = userRepository.findByEmail(sessionUser.getEmail())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User Not Found"));
 
-        List<HistoryResponseDto> historyResponseDtoList = new ArrayList<HistoryResponseDto>();
+        List<Reply> replyList = replyRepository.findRepliesByUser(user);
+        List<History> historyList = new ArrayList<History>();
 
-        for (History history : historyList) {
-            List<Reply> replyList =  replyRepository.findRepliesByHistory(history);
-            List<ReplyResponseDto> replyResponseDtoList = new ArrayList<ReplyResponseDto>();
-
-            for (Reply reply : replyList) {
-                ReplyResponseDto replyResponseDto = ReplyResponseDto.builder()
-                        .replyId(reply.getId())
-                        .userId(reply.getUser().getId())
-                        .name(reply.getUser().getName())
-                        .imageUrl(reply.getUser().getImageUrl())
-                        .answer(reply.getAnswer())
-                        .build();
-                replyResponseDtoList.add(replyResponseDto);
-            }
-            HistoryResponseDto historyResponseDto = HistoryResponseDto.builder()
-                    .historyId(history.getId())
-                    .problem(history.getProblem())
-                    .replyResponseDtoList(replyResponseDtoList)
-                    .build();
-
-            historyResponseDtoList.add(historyResponseDto);
-        }
-
-        return historyResponseDtoList;
+        return replyList.stream().map(Reply::getHistory).collect(Collectors.toList());
     }
 }

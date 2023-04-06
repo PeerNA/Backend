@@ -1,10 +1,8 @@
 package cos.peerna.service;
 
-<<<<<<< HEAD
 import cos.peerna.controller.dto.ProblemResponseDto;
-=======
 import cos.peerna.controller.dto.ProblemRegisterRequestDto;
->>>>>>> 22eab42d075d9fa141db4c0f836ad8d9e5e6a6bb
+import cos.peerna.controller.dto.ReplyResponseDto;
 import cos.peerna.domain.Category;
 import cos.peerna.domain.Keyword;
 import cos.peerna.domain.Problem;
@@ -72,8 +70,5 @@ public class ProblemService {
                     .build());
         }
     }
-
 }
 
-// 내가 Problem 방식대로 개발을 하게 되면
-// Repository Bean을 Domain 상에서 주입을 받아야 돼
