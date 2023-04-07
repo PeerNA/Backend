@@ -1,8 +1,12 @@
 package cos.peerna.service;
 
+import cos.peerna.controller.dto.ProblemResponseDto;
 import cos.peerna.controller.dto.ProblemRegisterRequestDto;
+import cos.peerna.controller.dto.ReplyResponseDto;
 import cos.peerna.domain.Category;
+import cos.peerna.domain.Keyword;
 import cos.peerna.domain.Problem;
+import cos.peerna.repository.KeywordRepository;
 import cos.peerna.repository.ProblemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,6 +24,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class ProblemService {
 
     private final ProblemRepository problemRepository;
+    private final KeywordRepository keywordRepository;
 
     public void make(ProblemRegisterRequestDto dto) {
         Problem problem = Problem.createProblem(dto);
@@ -33,6 +38,12 @@ public class ProblemService {
         }
     }
 
+    /**
+     * List<ProblemResponseDto>  를 반환 하도록 바꾸기
+        public List<Problem> getAll() {
+            return problemRepository.findAll();
+        }
+    */
     public String getOneAnswer(Long id) {
         Problem problem = problemRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem Not Found"));
         return problem.getAnswer();
@@ -42,20 +53,22 @@ public class ProblemService {
         return problemRepository.findAll();
     }
 
-    public Optional<Problem> getRandomByCategory(Category category) {
-        Optional<Problem> problem;
+    public Optional<ProblemResponseDto> getRandomByCategory(Category category) {
         List<Problem> problems = problemRepository.findProblemsByCategory(category);
 
         if (problems.isEmpty()) {
-             problem = Optional.empty();
+             return Optional.empty();
         } else {
             int randomElementIndex = ThreadLocalRandom.current().nextInt(problems.size()) % problems.size();
-            problem = Optional.of(problems.get(randomElementIndex));
+            Problem problem = problems.get(randomElementIndex);
+            List<Keyword> keywordList = keywordRepository.findKeywordsByProblem(problem);
+            return Optional.of(ProblemResponseDto.builder()
+                    .problemId(problem.getId())
+                    .answer(problem.getAnswer())
+                    .category(problem.getCategory())
+                    .keywordList(keywordList)
+                    .build());
         }
-        return problem;
     }
-
 }
 
-// 내가 Problem 방식대로 개발을 하게 되면
-// Repository Bean을 Domain 상에서 주입을 받아야 돼

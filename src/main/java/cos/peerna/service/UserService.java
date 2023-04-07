@@ -6,9 +6,11 @@ import cos.peerna.domain.Interest;
 import cos.peerna.domain.User;
 import cos.peerna.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -29,6 +31,11 @@ public class UserService {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new IllegalArgumentException("This email already exists.");
         }
+    }
+
+    public void delete(SessionUser sessionUser) {
+        User user = userRepository.findByEmail(sessionUser.getEmail()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User Not Found"));
+        userRepository.delete(user);
     }
 
     // 회원 전체 조회

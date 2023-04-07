@@ -22,6 +22,19 @@ public class Reply {
     @NotNull
     private String answer;
 
+    /**
+     * History 의 생성 시점
+     * 동료 매칭이 시작되면서 History 하나 생성
+     * 그리고 History 번호를 클라이언트에 보냈다가
+     * 클라이언트가 답안 제출 시에 History 번호를 같이 보내야 함
+     * 이렇게 하지 않을 시, History 에 aUserId, bUserId, problem 등 어떤 필드가 있어도
+     * 유니크한 History 를 찾아낼 수 없음
+     * 하나의 문제를 A, B 유저가 2번 이상 풀 수 있기 때문
+     */
+    @NotNull @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "history_id")
+    private History history;
+
     @NotNull @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "problem_id")
     private Problem problem;
@@ -30,11 +43,12 @@ public class Reply {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public static Reply createReply(User user, Problem problem, String answer) {
+    public static Reply createReply(User user, History history, Problem problem, String answer) {
         Reply reply = new Reply();
         reply.answer = answer;
-        reply.user = user;
+        reply.history = history;
         reply.problem = problem;
+        reply.user = user;
         return reply;
     }
 //    id를 dto로 받는게 맞는가?
