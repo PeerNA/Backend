@@ -8,8 +8,10 @@ import cos.peerna.domain.Reply;
 import cos.peerna.service.ReplyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @Slf4j
 @RestController
@@ -21,9 +23,8 @@ public class ReplyController {
 	@PostMapping("/api/reply/new")
 	public ResponseDto registerReply(@Nullable @LoginUser SessionUser user, @RequestBody ReplyRegisterRequestDto dto) {
 		if (user == null) {
-			return new ResponseDto(401, "No User Data");
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No User Data");
 		}
-
 		replyService.make(dto, user);
 
 		return new ResponseDto(200, "success");
@@ -32,9 +33,10 @@ public class ReplyController {
 	@GetMapping("/api/reply/likey")
 	public ResponseDto recommendReply(@Nullable @LoginUser SessionUser user, @RequestParam Long replyId) {
 		if (user == null) {
-			return new ResponseDto(401, "No User Data");
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No User Data");
 		}
 		replyService.recommendReply(user, replyId);
+		
 		return new ResponseDto(200, "success");
 	}
 }

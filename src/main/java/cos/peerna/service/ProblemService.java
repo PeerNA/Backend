@@ -33,9 +33,9 @@ public class ProblemService {
     }
 
     private void validateProblem(Problem problem) {
-        if (problemRepository.findProblemByQuestion(problem.getQuestion()).isPresent()) {
-            throw new IllegalArgumentException("This Question already exists.");
-        }
+        problemRepository.findProblemByQuestion(problem.getQuestion()).ifPresent(p -> {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Already Exist Problem");
+        });
     }
 
     /**

@@ -11,9 +11,11 @@ import cos.peerna.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 
@@ -34,27 +36,27 @@ public class UserController {
         return new ResponseDto(200, "success");
     }
     @GetMapping("/api/users/signout")
-    public void signout(@LoginUser SessionUser sessionUser, HttpServletResponse response) {
-        if (sessionUser == null) {
-            response.setStatus(401);
+    public void signOut(@LoginUser SessionUser user) {
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No User Data");
         }
-        userService.delete(sessionUser);
+        userService.delete(user);
     }
 
     @GetMapping("/api/users/info")
-    public Object userStatus(@LoginUser SessionUser sessionUser, HttpServletResponse response) {
-        if (sessionUser == null) {
-            response.setStatus(401);
+    public Object userStatus(@LoginUser SessionUser user) {
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No User Data");
         }
-        return sessionUser;
+        return user;
     }
 
     @PostMapping("/api/users/info")
-    public ResponseDto updateInfo(@LoginUser SessionUser sessionUser, Interest interest, Career career) {
-        if (sessionUser == null) {
-            return new ResponseDto(401, "no login data");
+    public ResponseDto updateInfo(@LoginUser SessionUser user, Interest interest, Career career) {
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No User Data");
         }
-        userService.updateCondition(sessionUser, interest, career);
+        userService.updateCondition(user, interest, career);
 
         return new ResponseDto(200, "success");
     }

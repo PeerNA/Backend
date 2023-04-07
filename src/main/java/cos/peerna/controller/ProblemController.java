@@ -40,15 +40,12 @@ public class ProblemController {
 
     @GetMapping("/api/problems/category")
     public ProblemResponseDto getProblemByCategory(@RequestParam Category category) {
-        log.debug("getProblemByCategory()");
-
         return problemService.getRandomByCategory(category)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem Not Found"));
     }
 
     @GetMapping("/api/problems/replies")
     public List<ReplyResponseDto> getRepliesByProblem(@RequestParam Long problemId) {
-
         return replyService.getRepliesByProblem(problemId);
     }
 
