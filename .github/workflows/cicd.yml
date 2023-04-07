@@ -63,7 +63,7 @@ jobs:
       working-directory: ./
       run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker build --build-arg HOST=${{ secrets.DB_HOST }} --build-arg HOST=${{ secrets.DB_USERNAME }} --build-arg HOST=${{ secrets.DB_PASSWORD }} -f Dockerfile -t seunghso/peerna .
+          docker build -f Dockerfile -t seunghso/peerna .
           docker push seunghso/peerna
           
     ## deploy to production (appleboy 는 ssh 연결을 도와주는 오픈소스 SW 인듯)
