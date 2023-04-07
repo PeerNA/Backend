@@ -11,17 +11,18 @@ import org.checkerframework.checker.units.qual.N;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@IdClass(KeywordPK.class)
 public class Keyword {
 
-    @Id @GeneratedValue
-    @Column(name = "keyword_id")
-    private Long id;
-
     @NotNull
+    @Id @Column(name = "name")
     private String name;
 
+    @NotNull
+    private Long count;
+
     @NotNull @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "problem_id")
+    @Id @JoinColumn(name = "problem_id")
     private Problem problem;
 
 //    public static Keyword createKeyword(KeywordRegisterRequestDto dto) {
