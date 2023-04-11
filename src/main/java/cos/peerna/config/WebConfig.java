@@ -3,12 +3,18 @@ package cos.peerna.config;
 import cos.peerna.config.auth.LoginUserArgumentResolver;
 import cos.peerna.exception.resolver.CustomHandlerExceptionResolver;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.util.Arrays;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -30,9 +36,11 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOriginPatterns("*") // 허용할 출처
-                .allowedMethods("GET", "POST", "HEAD", "PUT") // 허용할 HTTP method
+                .allowedOriginPatterns("*")
+                .allowedMethods("*") // 허용할 HTTP method
                 .allowCredentials(true) // 쿠키 인증 요청 허용
+                .allowedHeaders("*") // 허용할 HTTP header
                 .maxAge(3000); // 원하는 시간만큼 pre-flight 리퀘스트를 캐싱
     }
+
 }

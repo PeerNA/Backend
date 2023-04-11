@@ -8,6 +8,7 @@ import cos.peerna.domain.Career;
 import cos.peerna.domain.Interest;
 import cos.peerna.domain.User;
 import cos.peerna.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +17,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.io.IOException;
 
@@ -63,13 +65,23 @@ public class UserController {
 
     @GetMapping("/oauth2-login-fail")
     public void oauth2LoginFail(HttpServletResponse response) {
-        String redirectUri = "http://ec2-3-35-151-197.ap-northeast-2.compute.amazonaws.com:3000/";
+        String redirectUri = "http://ec2-43-200-47-43.ap-northeast-2.compute.amazonaws.com:3000/";
 
         try {
             response.sendRedirect(redirectUri);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @GetMapping("/api/login")
+    public void login(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            response.sendRedirect("https://github.com/login/oauth/authorize?response_type=code&client_id=31c25d6834381c989cbb&scope=read:user&state=LQbSpreBl0taGFvDvLJlMc7pdxBrBmNUHpGTa3dP5Fs%3D&redirect_uri=http://ec2-43-200-47-43.ap-northeast-2.compute.amazonaws.com:3000/callback");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
 }

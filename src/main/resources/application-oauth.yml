@@ -4,12 +4,16 @@ spring:
       client:
         registration:
           google:
-            client-id: 695236803853-jqpoou5tt5dukj0ntgv9v5eec1165pkj.apps.googleusercontent.com
-            client-secret: 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
+            client-id: ${OAUTH_GOOGLE_ID}
+            client-secret: ${OAUTH_GOOGLE_SECRET}
             scope: profile,email
+            redirect-uri: "http://ec2-43-200-47-43.ap-northeast-2.compute.amazonaws.com:3000/callback"
+#            redirect-uri: "http://localhost:3000/callback"
           github:
-            client-id: 31c25d6834381c989cbb
-            client-secret: 26bda287912953af47d8dcf9e480e0723911ef90
+            client-id: ${OAUTH_GITHUB_ID}
+            client-secret: ${OAUTH_GITHUB_SECRET}
+            redirect-uri: "http://ec2-43-200-47-43.ap-northeast-2.compute.amazonaws.com:3000/callback"
+#            redirect-uri: "http://localhost:3000/callback"
 
 # 구글, 깃허브, 페이브북 등의 url은 설정하지 않아도
 # CommonOAuth2Provider 라는 enum에 이미 존재한다.
