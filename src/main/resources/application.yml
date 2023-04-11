@@ -6,9 +6,14 @@ spring:
     username: ${USERNAME}
     password: ${PASSWORD}
     driver-class-name: org.mariadb.jdbc.Driver
+  batch:
+    job:
+      enabled: false
+    jdbc:
+      initialize-schema: always
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: create
     properties:
       hibernate:
         # show_sql: true

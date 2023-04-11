@@ -24,6 +24,8 @@ public class QReply extends EntityPathBase<Reply> {
 
     public final StringPath answer = createString("answer");
 
+    public final QHistory history;
+
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
     public final QProblem problem;
@@ -48,8 +50,9 @@ public class QReply extends EntityPathBase<Reply> {
 
     public QReply(Class<? extends Reply> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
+        this.history = inits.isInitialized("history") ? new QHistory(forProperty("history"), inits.get("history")) : null;
         this.problem = inits.isInitialized("problem") ? new QProblem(forProperty("problem")) : null;
-        this.user = inits.isInitialized("user") ? new QUser(forProperty("user")) : null;
+        this.user = inits.isInitialized("user") ? new QUser(forProperty("user"), inits.get("user")) : null;
     }
 
 }
