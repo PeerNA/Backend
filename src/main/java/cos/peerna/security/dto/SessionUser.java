@@ -1,10 +1,9 @@
-package cos.peerna.config.auth.dto;
+package cos.peerna.security.dto;
 
 import cos.peerna.domain.Career;
 import cos.peerna.domain.Interest;
 import cos.peerna.domain.User;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 

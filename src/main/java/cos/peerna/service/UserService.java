@@ -1,6 +1,6 @@
 package cos.peerna.service;
 
-import cos.peerna.config.auth.dto.SessionUser;
+import cos.peerna.security.dto.SessionUser;
 import cos.peerna.domain.Career;
 import cos.peerna.domain.Interest;
 import cos.peerna.domain.User;

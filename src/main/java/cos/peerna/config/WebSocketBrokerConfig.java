@@ -1,4 +1,4 @@
-package cos.peerna.config.webSocket;
+package cos.peerna.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;

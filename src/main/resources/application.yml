@@ -19,6 +19,11 @@ spring:
     suffix: .html
     cache: false
     check-template-location: true
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
 logging.level:
   cos.peerna: debug
   org.hibernate.SQL: debug

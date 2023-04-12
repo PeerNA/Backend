@@ -1,7 +1,6 @@
 package cos.peerna.config;
 
-import cos.peerna.config.auth.LoginUserArgumentResolver;
-import cos.peerna.exception.resolver.CustomHandlerExceptionResolver;
+import cos.peerna.security.LoginUserArgumentResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;

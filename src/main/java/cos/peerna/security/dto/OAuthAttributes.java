@@ -1,4 +1,4 @@
-package cos.peerna.config.auth.dto;
+package cos.peerna.security.dto;
 
 import cos.peerna.domain.User;
 import cos.peerna.domain.Role;

@@ -1,6 +1,6 @@
 package cos.peerna.controller;
 
-import cos.peerna.config.webSocket.dto.ChatMessageDTO;
+import cos.peerna.controller.dto.ChatMessageDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -27,6 +27,12 @@ public class StompChatController {
 
     @MessageMapping(value = "/chat/message")
     public void message(ChatMessageDTO message) {
+        template.convertAndSend("/sub/chat/room/" + message.getRoomId(), message);
+    }
+
+    @MessageMapping(value = "/chat/leave")
+    public void leave(ChatMessageDTO message) {
+        message.setMessage(message.getWriter() + "님이 채팅방을 나갔습니다.");
         template.convertAndSend("/sub/chat/room/" + message.getRoomId(), message);
     }
 }

@@ -1,7 +1,6 @@
 package cos.peerna.service;
 
-import cos.peerna.config.auth.dto.SessionUser;
-import cos.peerna.controller.dto.ResponseDto;
+import cos.peerna.security.dto.SessionUser;
 import cos.peerna.domain.History;
 import cos.peerna.domain.Problem;
 import cos.peerna.domain.Reply;

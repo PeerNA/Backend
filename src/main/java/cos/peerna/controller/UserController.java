@@ -1,7 +1,7 @@
 package cos.peerna.controller;
 
-import cos.peerna.config.auth.LoginUser;
-import cos.peerna.config.auth.dto.SessionUser;
+import cos.peerna.security.LoginUser;
+import cos.peerna.security.dto.SessionUser;
 import cos.peerna.controller.dto.UserRegisterRequestDto;
 import cos.peerna.controller.dto.ResponseDto;
 import cos.peerna.domain.Career;
@@ -11,7 +11,6 @@ import cos.peerna.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
