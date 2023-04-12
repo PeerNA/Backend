@@ -26,7 +26,10 @@ public class ProblemController {
 
     @PostMapping("/api/problems/new")
     public ResponseDto registerProblem(@RequestBody ProblemRegisterRequestDto dto) {
-        problemService.make(dto);
+        String question = dto.getQuestion();
+        String answer = dto.getAnswer();
+        Category category = dto.getCategory();
+        problemService.make(question, answer, category);
 
         return new ResponseDto(200, "success");
     }

@@ -33,6 +33,10 @@ dependencies {
 	implementation group: 'org.webjars', name: 'stomp-websocket', version: '2.3.3-1'
 	implementation 'org.springframework:spring-messaging:6.0.7'
 	implementation 'com.twitter.penguin:korean-text:4.4.4'
+	implementation 'org.jsoup:jsoup:1.15.4'
+	implementation 'org.springframework.boot:spring-boot-starter-batch'
+	implementation 'org.springframework.boot:spring-boot-starter-quartz'
+	implementation 'org.springframework.batch:spring-batch-test'
 
 
 	runtimeOnly 'com.h2database:h2'

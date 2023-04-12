@@ -15,16 +15,19 @@ public class Problem {
     @Column(name = "problem_id")
     private Long id;
 
+    @Column(length = 1000)
     private String question;
+
+    @Column(length = 1000)
     private String answer;
     @Enumerated(EnumType.STRING)
     private Category category;
 
-    public static Problem createProblem(ProblemRegisterRequestDto dto) {
+    public static Problem createProblem(String question, String answer, Category category) {
         Problem problem = new Problem();
-        problem.question = dto.getQuestion();
-        problem.answer = dto.getAnswer();
-        problem.category = dto.getCategory();
+        problem.question = question;
+        problem.answer = answer;
+        problem.category = category;
 
         return problem;
     }
