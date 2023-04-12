@@ -1,7 +1,7 @@
 package cos.peerna.controller;
 
-import cos.peerna.config.auth.LoginUser;
-import cos.peerna.config.auth.dto.SessionUser;
+import cos.peerna.security.LoginUser;
+import cos.peerna.security.dto.SessionUser;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

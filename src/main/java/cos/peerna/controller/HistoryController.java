@@ -1,11 +1,10 @@
 package cos.peerna.controller;
 
-import cos.peerna.config.auth.LoginUser;
-import cos.peerna.config.auth.dto.SessionUser;
+import cos.peerna.security.LoginUser;
+import cos.peerna.security.dto.SessionUser;
 import cos.peerna.controller.dto.ResponseDto;
 import cos.peerna.domain.History;
 import cos.peerna.service.HistoryService;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j

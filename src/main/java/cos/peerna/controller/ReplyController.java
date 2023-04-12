@@ -1,10 +1,9 @@
 package cos.peerna.controller;
 
-import cos.peerna.config.auth.LoginUser;
-import cos.peerna.config.auth.dto.SessionUser;
+import cos.peerna.security.LoginUser;
+import cos.peerna.security.dto.SessionUser;
 import cos.peerna.controller.dto.ReplyRegisterRequestDto;
 import cos.peerna.controller.dto.ResponseDto;
-import cos.peerna.domain.Reply;
 import cos.peerna.service.ReplyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

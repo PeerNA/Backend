@@ -1,6 +1,6 @@
 package cos.peerna.repository;
 
-import cos.peerna.config.webSocket.dto.ChatRoomDTO;
+import cos.peerna.controller.dto.ChatRoomDTO;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Repository;
 

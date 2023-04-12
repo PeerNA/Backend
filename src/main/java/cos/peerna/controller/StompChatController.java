@@ -1,6 +1,6 @@
 package cos.peerna.controller;
 
-import cos.peerna.config.webSocket.dto.ChatMessageDTO;
+import cos.peerna.controller.dto.ChatMessageDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;

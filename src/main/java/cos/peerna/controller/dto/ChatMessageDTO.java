@@ -1,4 +1,4 @@
-package cos.peerna.config.webSocket.dto;
+package cos.peerna.controller.dto;
 
 import lombok.Getter;
 import lombok.Setter;

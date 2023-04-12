@@ -1,7 +1,7 @@
-package cos.peerna.config.auth;
+package cos.peerna.security;
 
-import cos.peerna.config.auth.dto.OAuthAttributes;
-import cos.peerna.config.auth.dto.SessionUser;
+import cos.peerna.security.dto.OAuthAttributes;
+import cos.peerna.security.dto.SessionUser;
 import cos.peerna.domain.User;
 import cos.peerna.repository.UserRepository;
 import jakarta.servlet.http.HttpSession;

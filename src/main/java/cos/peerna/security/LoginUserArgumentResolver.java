@@ -1,6 +1,6 @@
-package cos.peerna.config.auth;
+package cos.peerna.security;
 
-import cos.peerna.config.auth.dto.SessionUser;
+import cos.peerna.security.dto.SessionUser;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
