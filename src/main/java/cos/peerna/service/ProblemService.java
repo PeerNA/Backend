@@ -1,8 +1,6 @@
 package cos.peerna.service;
 
 import cos.peerna.controller.dto.ProblemResponseDto;
-import cos.peerna.controller.dto.ProblemRegisterRequestDto;
-import cos.peerna.controller.dto.ReplyResponseDto;
 import cos.peerna.domain.Category;
 import cos.peerna.domain.Keyword;
 import cos.peerna.domain.Problem;
@@ -26,16 +24,17 @@ public class ProblemService {
     private final ProblemRepository problemRepository;
     private final KeywordRepository keywordRepository;
 
-    public void make(ProblemRegisterRequestDto dto) {
-        Problem problem = Problem.createProblem(dto);
-        validateProblem(problem);
-        problemRepository.save(problem);
+    public void make(String question, String answer, Category category) {
+        Problem problem = Problem.createProblem(question, answer, category);
+        if (validateProblem(problem))
+            problemRepository.save(problem);
     }
 
-    private void validateProblem(Problem problem) {
-        if (problemRepository.findProblemByQuestion(problem.getQuestion()).isPresent()) {
-            throw new IllegalArgumentException("This Question already exists.");
-        }
+    private boolean validateProblem(Problem problem) {
+        if (problemRepository.findProblemByQuestion(problem.getQuestion()).isPresent())
+            return false;
+        else
+            return true;
     }
 
     /**
