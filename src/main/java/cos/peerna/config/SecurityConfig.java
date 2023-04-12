@@ -1,7 +1,6 @@
 package cos.peerna.config;
 
 import cos.peerna.security.*;
-import cos.peerna.config.auth.*;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
