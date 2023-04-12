@@ -52,9 +52,13 @@ public class User {
         this.role = role;
     }
 
-    public User update(String name, String profile) {
+    public User update(String name, String email, String profile) {
         this.name = name;
+        this.email = email;
         this.imageUrl = profile;
+        this.career = Career.UNDER_1;
+        this.interests = new Interest(Category.OS, Category.NETWORK, Category.DATA_STRUCTURE);
+        this.role = Role.MENTEE;
 
         return this;
     }

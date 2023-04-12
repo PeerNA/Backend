@@ -26,15 +26,14 @@ public class ProblemService {
 
     public void make(String question, String answer, Category category) {
         Problem problem = Problem.createProblem(question, answer, category);
-        if (validateProblem(problem))
-            problemRepository.save(problem);
+        validateProblem(problem);
+        problemRepository.save(problem);
     }
 
-    private boolean validateProblem(Problem problem) {
-        if (problemRepository.findProblemByQuestion(problem.getQuestion()).isPresent())
-            return false;
-        else
-            return true;
+    private void validateProblem(Problem problem) {
+        problemRepository.findProblemByQuestion(problem.getQuestion()).ifPresent(p -> {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Already Exist Problem");
+        });
     }
 
     /**

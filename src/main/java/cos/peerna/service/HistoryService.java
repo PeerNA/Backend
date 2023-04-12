@@ -1,7 +1,6 @@
 package cos.peerna.service;
 
 import cos.peerna.config.auth.dto.SessionUser;
-import cos.peerna.controller.dto.ResponseDto;
 import cos.peerna.domain.History;
 import cos.peerna.domain.Problem;
 import cos.peerna.domain.Reply;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,9 +43,14 @@ public class HistoryService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User Not Found"));
 
         List<Reply> replyList = replyRepository.findRepliesByUser(user);
-        List<History> historyList = new ArrayList<History>();
 
-        return replyList.stream().map(Reply::getHistory).collect(Collectors.toList());
+        List<History> historyList = replyList.stream().map(Reply::getHistory).collect(Collectors.toList());
+
+        historyList.forEach(h -> {
+            System.out.println(h.getProblem().getAnswer());
+        });
+
+        return historyList;
     }
 
     public void createHistory(Long problemId) {

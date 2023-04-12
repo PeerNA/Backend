@@ -29,7 +29,7 @@ public class OAuthAttributes {
     public static OAuthAttributes of(String registrationId,
                                      String userNameAttributeName,
                                      Map<String, Object> attributes) {
-        return ofGoogle(userNameAttributeName, attributes);
+        return ofGitHub(userNameAttributeName, attributes);
     }
 
     private static OAuthAttributes ofGoogle(String userNameAttributeName,
@@ -38,6 +38,23 @@ public class OAuthAttributes {
                 .name((String) attributes.get("name"))
                 .email((String) attributes.get("email"))
                 .imageUrl((String) attributes.get("picture"))
+                .attributes(attributes)
+                .nameAttributeKey(userNameAttributeName)
+                .build();
+    }
+
+    private static OAuthAttributes ofGitHub(String userNameAttributeName,
+                                            Map<String, Object> attributes) {
+        String id = String.valueOf(attributes.get("id"));
+        String login = (String) attributes.get("login");
+        String name = (String) attributes.get("name");
+        String email = (String) attributes.get("email");
+        String avatarUrl = (String) attributes.get("avatar_url");
+
+        return OAuthAttributes.builder()
+                .name(name)
+                .email(email)
+                .imageUrl(avatarUrl)
                 .attributes(attributes)
                 .nameAttributeKey(userNameAttributeName)
                 .build();
