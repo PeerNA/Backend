@@ -26,11 +26,7 @@ public class ProblemService {
 
     public void make(String question, String answer, Category category) {
         Problem problem = Problem.createProblem(question, answer, category);
-        try {
-            validateProblem(problem);
-        } catch (ResponseStatusException e) {
-            return;
-        }
+        validateProblem(problem);
         problemRepository.save(problem);
     }
 

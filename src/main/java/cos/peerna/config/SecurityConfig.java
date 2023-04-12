@@ -35,11 +35,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.addFilterBefore(new CorsOptionsFilter(), UsernamePasswordAuthenticationFilter.class);
         http
-//                .cors().configurationSource(corsConfigurationSource())
-//                    .and()
                 .csrf()
-                    .disable()
-                .formLogin()
                     .disable()
                 .httpBasic()
                     .disable()
@@ -58,6 +54,17 @@ public class SecurityConfig {
                 .authenticationProvider(customAuthenticationProvider)
                     .exceptionHandling()
                         .authenticationEntryPoint(customAuthenticationEntryPoint);
+//             .formLogin()
+//                 .disable()
+        // formLogin 설정 (테스트, 디버그용)
+        http
+                .formLogin()
+                    .loginPage("/spring-security-login")
+                    .loginProcessingUrl("/api/login")
+                    .usernameParameter("email")
+                    .passwordParameter("password")
+                    .successHandler(customAuthenticationSuccessHandler)
+                    .failureHandler(customAuthenticationFailureHandler);
 
         return http.build();
     }
@@ -83,14 +90,6 @@ public class SecurityConfig {
 //                .sessionManagement()
 //                .maximumSessions(1)
 //                .maxSessionsPreventsLogin(true);
-//        http
-//                .formLogin()
-//                .loginPage("/spring-security-login")
-//                .loginProcessingUrl("/api/login")
-//                .usernameParameter("email")
-//                .passwordParameter("password")
-//                .successHandler(customAuthenticationSuccessHandler)
-//                .failureHandler(customAuthenticationFailureHandler);
 //        http
 //                .headers().frameOptions().disable();
 

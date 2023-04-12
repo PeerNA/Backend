@@ -73,7 +73,7 @@ public class QuartzJob extends QuartzJobBean implements InterruptableJob {
 		try {
 			Document document = conn.get();
 			Element check = document.select("relative-time").first();
-			if (!check.text().contains("hours ago")) {
+			if (check.text().contains("hours ago")) {
 				Elements category = document.select("h3");
 				for (Element cat : category) {
 					log.info("Category : {}", cat.text());

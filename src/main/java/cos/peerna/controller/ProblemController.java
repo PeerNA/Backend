@@ -10,6 +10,7 @@ import cos.peerna.service.ReplyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import java.io.IOException;
@@ -25,13 +26,14 @@ public class ProblemController {
     private final ReplyService replyService;
 
     @PostMapping("/api/problems/new")
-    public ResponseDto registerProblem(@RequestBody ProblemRegisterRequestDto dto) {
+    public ResponseEntity<String> registerProblem(@RequestBody ProblemRegisterRequestDto dto) {
         String question = dto.getQuestion();
         String answer = dto.getAnswer();
         Category category = dto.getCategory();
         problemService.make(question, answer, category);
 
-        return new ResponseDto(200, "success");
+        return ResponseEntity.ok()
+                .body("success");
     }
 
     @GetMapping("/api/problems")
