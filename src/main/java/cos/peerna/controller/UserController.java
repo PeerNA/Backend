@@ -74,14 +74,4 @@ public class UserController {
         }
     }
 
-    @GetMapping("/api/login")
-    public void login(HttpServletRequest request, HttpServletResponse response) {
-        try {
-            response.sendRedirect("https://github.com/login/oauth/authorize?response_type=code&client_id=31c25d6834381c989cbb&scope=read:user&state=LQbSpreBl0taGFvDvLJlMc7pdxBrBmNUHpGTa3dP5Fs%3D&redirect_uri=http://ec2-43-200-47-43.ap-northeast-2.compute.amazonaws.com:3000/callback");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-
 }
