@@ -1,27 +1,24 @@
-package cos.peerna.controller;
+package cos.peerna.service;
 
-import cos.peerna.config.job.ReqJob;
+import cos.peerna.job.QuartzJob;
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.springframework.stereotype.Service;
 
 import static org.quartz.JobBuilder.newJob;
 
 @Slf4j
-@Controller
-public class BatchController {
+@Service
+@RequiredArgsConstructor
+public class QuartzService {
 
-	@Autowired
-	private Scheduler scheduler;
+	private final Scheduler scheduler;
 
 	@PostConstruct
-	public void start() {
-		JobDetail ReqJobDetail = buildJobDetail(ReqJob.class, "신민철", "24시간주기 문제집 업데이트");
+	public void addJob() {
+		JobDetail ReqJobDetail = buildJobDetail(QuartzJob.class, "신민철", "24시간주기 문제집 업데이트");
 		try {
 			scheduler.scheduleJob(ReqJobDetail, buildJobTrigger("1 * * * * ?"));
 		} catch (SchedulerException e) {

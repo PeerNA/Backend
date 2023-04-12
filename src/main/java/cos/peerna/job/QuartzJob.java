@@ -1,4 +1,4 @@
-package cos.peerna.config.job;
+package cos.peerna.job;
 
 import cos.peerna.domain.Category;
 import cos.peerna.service.ProblemService;
@@ -16,10 +16,10 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.HashMap;
 
-@Component
 @Slf4j
+@Component
 @RequiredArgsConstructor
-public class ReqJob extends QuartzJobBean implements InterruptableJob {
+public class QuartzJob extends QuartzJobBean implements InterruptableJob {
 
 	private final ProblemService problemService;
 
@@ -35,7 +35,7 @@ public class ReqJob extends QuartzJobBean implements InterruptableJob {
 		put("파이썬", Category.PYTHON);
 		put("스프링", Category.SPRING);
 		put("리액트", Category.REACT);
-		put("노드", Category.NODE_JS);
+		put("노드", Category.NODEJS);
 		put("장고", Category.DJANGO);
 		put("암호학/보안(간단한 정도)", Category.SECURITY);
 		put("컴파일러", Category.COMPILER);
@@ -73,24 +73,24 @@ public class ReqJob extends QuartzJobBean implements InterruptableJob {
 		try {
 			Document document = conn.get();
 			Element check = document.select("relative-time").first();
-			if (check.text().contains("hours ago")) {
+			if (!check.text().contains("hours ago")) {
 				Elements category = document.select("h3");
 				for (Element cat : category) {
-					//				System.out.println("Category : " + cat.text());
+					log.info("Category : {}", cat.text());
 					Elements items = cat.nextElementSiblings().select("summary");
 					for (Element summary : items) {
-						//					System.out.println("Problem : " + summary.text());
 						Elements contents = summary.nextElementSiblings().select("p");
 						StringBuilder sb = new StringBuilder();
 						for (Element content : contents) {
 							sb.append(content.text() + " ");
-							//						problemService.make(summary.text(), content.text(), Category.JAVA);
 						}
 						String result = sb.toString();
-						//					System.out.println("Answer : " + result);
-						if (!cat.text().equals("과제 전형") && !cat.text().equals("자료구조/알고리즘"))
-							//						problemService.make(summary.text(), result, map.getOrDefault(cat.text(), Category.valueOf(cat.text().toUpperCase())));
-							problemService.make(summary.text(), result, Category.CODING_TEST);
+						if (!cat.text().equals("과제 전형") && !cat.text().equals("코딩테스트") && !cat.text().equals("자료구조/알고리즘")) {
+							if (map.containsKey(cat.text()))
+								problemService.make(summary.text(), result, map.get(cat.text()));
+							else
+								problemService.make(summary.text(), result, Category.valueOf(cat.text().toUpperCase()));
+						}
 					}
 				}
 			}
