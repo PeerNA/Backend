@@ -39,8 +39,6 @@ public class SecurityConfig {
 //                    .and()
                 .csrf()
                     .disable()
-                .formLogin()
-                    .disable()
                 .httpBasic()
                     .disable()
                 .exceptionHandling()
@@ -83,14 +81,14 @@ public class SecurityConfig {
 //                .sessionManagement()
 //                .maximumSessions(1)
 //                .maxSessionsPreventsLogin(true);
-//        http
-//                .formLogin()
-//                .loginPage("/spring-security-login")
-//                .loginProcessingUrl("/api/login")
-//                .usernameParameter("email")
-//                .passwordParameter("password")
-//                .successHandler(customAuthenticationSuccessHandler)
-//                .failureHandler(customAuthenticationFailureHandler);
+       http
+               .formLogin()
+               .loginPage("/spring-security-login")
+               .loginProcessingUrl("/api/login")
+               .usernameParameter("email")
+               .passwordParameter("password")
+               .successHandler(customAuthenticationSuccessHandler)
+               .failureHandler(customAuthenticationFailureHandler);
 //        http
 //                .headers().frameOptions().disable();
 
