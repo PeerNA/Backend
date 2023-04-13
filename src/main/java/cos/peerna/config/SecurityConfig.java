@@ -56,6 +56,15 @@ public class SecurityConfig {
                 .authenticationProvider(customAuthenticationProvider)
                     .exceptionHandling()
                         .authenticationEntryPoint(customAuthenticationEntryPoint);
+        
+       http
+               .formLogin()
+               .loginPage("/spring-security-login")
+               .loginProcessingUrl("/api/login")
+               .usernameParameter("email")
+               .passwordParameter("password")
+               .successHandler(customAuthenticationSuccessHandler)
+               .failureHandler(customAuthenticationFailureHandler);
 
         return http.build();
     }
@@ -81,14 +90,6 @@ public class SecurityConfig {
 //                .sessionManagement()
 //                .maximumSessions(1)
 //                .maxSessionsPreventsLogin(true);
-       http
-               .formLogin()
-               .loginPage("/spring-security-login")
-               .loginProcessingUrl("/api/login")
-               .usernameParameter("email")
-               .passwordParameter("password")
-               .successHandler(customAuthenticationSuccessHandler)
-               .failureHandler(customAuthenticationFailureHandler);
 //        http
 //                .headers().frameOptions().disable();
 
