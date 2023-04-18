@@ -25,8 +25,8 @@ spring:
     cache: false
     check-template-location: true
 logging.level:
-  cos.peerna: debug
-  org.hibernate.SQL: debug
+  cos.peerna: info
+  org.hibernate.SQL: info
   org.hibernate.orm.jdbc.bind: trace
 server:
   error:

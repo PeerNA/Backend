@@ -1,5 +1,6 @@
 package cos.peerna.service;
 
+import com.twitter.penguin.korean.KoreanTokenJava;
 import cos.peerna.security.dto.SessionUser;
 import cos.peerna.controller.dto.ReplyRegisterRequestDto;
 import cos.peerna.controller.dto.ReplyResponseDto;
@@ -11,6 +12,12 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+
+import com.twitter.penguin.korean.TwitterKoreanProcessor;
+import com.twitter.penguin.korean.TwitterKoreanProcessorJava;
+import com.twitter.penguin.korean.phrase_extractor.KoreanPhraseExtractor;
+import com.twitter.penguin.korean.tokenizer.KoreanTokenizer;
+import scala.collection.Seq;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,6 +33,8 @@ public class ReplyService {
     private final LikeyRepository likeyRepository;
     private final HistoryRepository historyRepository;
 
+    private final KeywordService keywordService;
+
     public void make(ReplyRegisterRequestDto dto, SessionUser sessionUser) {
         User user = userRepository.findByEmail(sessionUser.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("No User Data"));
@@ -36,6 +45,9 @@ public class ReplyService {
 
         Reply reply = Reply.createReply(user, history, problem, dto.getAnswer());
         replyRepository.save(reply);
+
+        /* 키워드 분석 및 KeywordRepository에 저장 */
+        keywordService.analyze(dto.getAnswer(), dto.getProblemId());
     }
 
     public List<ReplyResponseDto> getRepliesByProblem(Long problemId) {
