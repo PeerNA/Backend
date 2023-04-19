@@ -76,7 +76,13 @@ public class UserController {
     public ResponseEntity<String> registerUser(@RequestBody UserRegisterRequestDto dto) {
         dto.setPassword(passwordEncoder.encode(dto.getPassword()));
         User user = User.createUser(dto);
-        userService.join(user);
+
+        try {
+            userService.join(user);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("User Already Exists");
+        }
 
         return ResponseEntity.ok()
                 .body("success");

@@ -20,7 +20,7 @@ public class QuartzService {
 	public void addJob() {
 		JobDetail ReqJobDetail = buildJobDetail(QuartzJob.class, "신민철", "24시간주기 문제집 업데이트");
 		try {
-			scheduler.scheduleJob(ReqJobDetail, buildJobTrigger("1 * * * * ?"));
+			scheduler.scheduleJob(ReqJobDetail, buildJobTrigger("* 1 * * * ?"));
 		} catch (SchedulerException e) {
 			e.printStackTrace();
 		}

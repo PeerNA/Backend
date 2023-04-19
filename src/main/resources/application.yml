@@ -24,10 +24,10 @@ spring:
     suffix: .html
     cache: false
     check-template-location: true
-  data:
-    redis:
-      host: localhost
-      port: 6379
+#  data:
+#    redis:
+#      host: localhost
+#      port: 6379
 logging.level:
   cos.peerna: debug
   org.hibernate.SQL: debug
@@ -35,3 +35,7 @@ logging.level:
 server:
   error:
     include-stacktrace: on_param
+  servlet:
+    session:
+      cookie:
+        secure: true

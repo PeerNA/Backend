@@ -1,5 +1,6 @@
 package cos.peerna.controller;
 
+import cos.peerna.controller.dto.HistoryResponseDto;
 import cos.peerna.security.LoginUser;
 import cos.peerna.security.dto.SessionUser;
 import cos.peerna.domain.History;
@@ -20,11 +21,11 @@ import java.util.List;
 public class HistoryController {
     private final HistoryService historyService;
     @GetMapping("/api/history")
-    public List<History> findUserHistory(@LoginUser SessionUser user) {
+    public List<HistoryResponseDto> findUserHistory(@LoginUser SessionUser user, @RequestParam int page) {
         if (user == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No User Data");
         }
-        return historyService.findUserHistory(user);
+        return historyService.findUserHistory(user, page);
     }
 
     /**
