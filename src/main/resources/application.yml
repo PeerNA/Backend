@@ -29,8 +29,8 @@ spring:
 #      host: localhost
 #      port: 6379
 logging.level:
-  cos.peerna: debug
-  org.hibernate.SQL: debug
+  cos.peerna: info
+  org.hibernate.SQL: info
   org.hibernate.orm.jdbc.bind: trace
 server:
   error:

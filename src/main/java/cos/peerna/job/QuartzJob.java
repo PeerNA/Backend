@@ -62,6 +62,7 @@ public class QuartzJob extends QuartzJobBean implements InterruptableJob {
 		String dev = jobDataMap.getString("Dev");
 		String work = jobDataMap.getString("Work");
 		JobKey jobKey = context.getJobDetail().getKey();
+		int[] countArr = new int[20];
 
 		log.info("============================================================================");
 		log.info("Developed by {} and Work is {}", dev, work);
@@ -73,16 +74,52 @@ public class QuartzJob extends QuartzJobBean implements InterruptableJob {
 		try {
 			Document document = conn.get();
 			Element check = document.select("relative-time").first();
-			if (check.text().contains("hours ago")) {
-				Elements category = document.select("h3");
+
+			if (!check.text().contains("hours ago")) {
+				Elements category = document.select("h3, h4");
+
+				int i = 0;
+
 				for (Element cat : category) {
+					if (cat.text().equals("Sign In Required") || cat.text().equals("Launching GitHub Desktop")
+							|| cat.text().equals("Launching Xcode") || cat.text().equals("Launching Visual Studio Code")
+							|| cat.text().equals("Launching Android Studio") || cat.text().equals("yes, even hidden code blocks!")
+							|| cat.text().equals("과제 전형") || cat.text().equals("코딩테스트")) {
+						continue;
+					}
+					if (i >= 20)
+						break;
+
+					countArr[i++] = cat.nextElementSiblings().select("summary").size();
+				}
+
+				for (i = 0; i < 19; i++) countArr[i] = countArr[i] - countArr[i + 1];
+
+				i = -1;
+
+				for (Element cat : category) {
+
+					if (cat.text().equals("Sign In Required") || cat.text().equals("Launching GitHub Desktop")
+						|| cat.text().equals("Launching Xcode") || cat.text().equals("Launching Visual Studio Code")
+						|| cat.text().equals("Launching Android Studio") || cat.text().equals("yes, even hidden code blocks!")
+						|| cat.text().equals("과제 전형") || cat.text().equals("코딩테스트")) {
+						continue;
+					}
+
+					if (i >= 20)
+						break;
+					i += 1;
+					int j = 0;
 					log.info("Category : {}", cat.text());
 					Elements items = cat.nextElementSiblings().select("summary");
 					for (Element summary : items) {
+						if (j >= countArr[i])
+							break;
+						j += 1;
 						Elements contents = summary.nextElementSiblings().select("p");
 						StringBuilder sb = new StringBuilder();
 						for (Element content : contents) {
-							sb.append(content.text() + " ");
+							sb.append(content.text() + "\n");
 						}
 						String result = sb.toString();
 						if (!cat.text().equals("과제 전형") && !cat.text().equals("코딩테스트") && !cat.text().equals("자료구조/알고리즘")) {
