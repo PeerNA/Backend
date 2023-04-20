@@ -2,6 +2,7 @@ package cos.peerna.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -20,6 +21,15 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
         // Code to perform after a successful authentication
         HttpSession session = request.getSession();
+//        Cookie[] cookies = request.getCookies();
+//        for (Cookie cookie : cookies) {
+//            if (cookie.getName().equals("JSESSIONID")) {
+//                cookie.setSecure(true);
+//                cookie.setAttribute("SameSite", "None");
+//            }
+//        }
+
+
         session.setMaxInactiveInterval(60);
 
         // Create a map with the key-value pair "message":"success"
@@ -36,5 +46,8 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
         // Write the JSON string in the response
         response.getWriter().write(responseJson);
+
+//        response.sendRedirect("http://localhost:3000/callback?login=success");
+        response.sendRedirect("https://www.peerna.kr?login=success");
     }
 }

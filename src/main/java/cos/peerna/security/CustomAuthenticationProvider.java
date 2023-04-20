@@ -3,6 +3,7 @@ package cos.peerna.security;
 import cos.peerna.security.dto.SessionUser;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -11,6 +12,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class CustomAuthenticationProvider implements AuthenticationProvider {
@@ -27,12 +29,13 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
      */
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+        log.info("CustomAuthenticationProvider authenticate(): {}", authentication.getCredentials().toString());
 
         SessionUser sessionUser = (SessionUser) userDetailService.loadUserByUsername(authentication.getName().toString());
 
         String reqPassword = authentication.getCredentials().toString();
         if (!passwordEncoder.matches(reqPassword, sessionUser.getPassword()))
-            throw new BadCredentialsException("Dosen't match password");
+            throw new BadCredentialsException("Doesn't match password");
 
         httpSession.setAttribute("user", sessionUser);
 

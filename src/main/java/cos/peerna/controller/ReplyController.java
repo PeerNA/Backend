@@ -3,11 +3,11 @@ package cos.peerna.controller;
 import cos.peerna.security.LoginUser;
 import cos.peerna.security.dto.SessionUser;
 import cos.peerna.controller.dto.ReplyRegisterRequestDto;
-import cos.peerna.controller.dto.ResponseDto;
 import cos.peerna.service.ReplyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -20,22 +20,26 @@ public class ReplyController {
 	private final ReplyService replyService;
 
 	@PostMapping("/api/reply/new")
-	public ResponseDto registerReply(@Nullable @LoginUser SessionUser user, @RequestBody ReplyRegisterRequestDto dto) {
+	public ResponseEntity<String> registerReply(@Nullable @LoginUser SessionUser user, @RequestBody ReplyRegisterRequestDto dto) {
 		if (user == null) {
-			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No User Data");
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+					.body("No User Data");
 		}
 		replyService.make(dto, user);
 
-		return new ResponseDto(200, "success");
+		return ResponseEntity.ok()
+				.body("success");
 	}
 
 	@GetMapping("/api/reply/likey")
-	public ResponseDto recommendReply(@Nullable @LoginUser SessionUser user, @RequestParam Long replyId) {
+	public ResponseEntity<String> recommendReply(@Nullable @LoginUser SessionUser user, @RequestParam Long replyId) {
 		if (user == null) {
-			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No User Data");
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+					.body("No User Data");
 		}
 		replyService.recommendReply(user, replyId);
 		
-		return new ResponseDto(200, "success");
+		return ResponseEntity.ok()
+				.body("success");
 	}
 }

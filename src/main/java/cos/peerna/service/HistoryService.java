@@ -1,5 +1,6 @@
 package cos.peerna.service;
 
+import cos.peerna.controller.dto.HistoryResponseDto;
 import cos.peerna.security.dto.SessionUser;
 import cos.peerna.domain.History;
 import cos.peerna.domain.Problem;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,19 +40,24 @@ public class HistoryService {
 //        }
 //    }
 
-    public List<History> findUserHistory(SessionUser sessionUser) {
+    public List<HistoryResponseDto> findUserHistory(SessionUser sessionUser, int page) {
+        final int PAGE_SIZE = 8;
+
         User user = userRepository.findByEmail(sessionUser.getEmail())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User Not Found"));
-
         List<Reply> replyList = replyRepository.findRepliesByUser(user);
+        List<HistoryResponseDto> historyResponseDtoList = new ArrayList<>(replyList.stream().map(r -> {
+            return HistoryResponseDto.builder()
+                    .historyId(r.getHistory().getId())
+                    .problemId(r.getProblem().getId())
+                    .question(r.getProblem().getQuestion())
+                    .category(r.getProblem().getCategory())
+                    .time(r.getHistory().getTime())
+                    .build();
+        }).toList());
 
-        List<History> historyList = replyList.stream().map(Reply::getHistory).collect(Collectors.toList());
-
-        historyList.forEach(h -> {
-            System.out.println(h.getProblem().getAnswer());
-        });
-
-        return historyList;
+        historyResponseDtoList.sort(HistoryResponseDto.builder().build().reversed());
+        return historyResponseDtoList.stream().skip((long) PAGE_SIZE * page).limit(PAGE_SIZE).collect(Collectors.toList());
     }
 
     public void createHistory(Long problemId) {

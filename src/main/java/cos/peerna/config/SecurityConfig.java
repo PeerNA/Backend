@@ -1,24 +1,16 @@
 package cos.peerna.config;
 
 import cos.peerna.security.*;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.security.web.header.writers.StaticHeadersWriter;
 
-import java.io.IOException;
-import java.util.Arrays;
+import java.net.MalformedURLException;
 
 @RequiredArgsConstructor
 @EnableWebSecurity // spring security 설정들을 활성화시켜준다.
@@ -33,79 +25,70 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.addFilterBefore(new CorsOptionsFilter(), UsernamePasswordAuthenticationFilter.class);
+        /**
+         * 주의: 생각보다 순서가 굉장히 중요하다.
+         */
+        http.authorizeHttpRequests().anyRequest().permitAll();
         http
-//                .cors().configurationSource(corsConfigurationSource())
-//                    .and()
                 .csrf()
                     .disable()
                 .httpBasic()
                     .disable()
-                .exceptionHandling()
-                    .and()
                 .oauth2Login()
-                    .authorizationEndpoint()
-                        .baseUri("/oauth2/authorize")
-                    .and()
+                .successHandler(customAuthenticationSuccessHandler)
+                .failureHandler(customAuthenticationFailureHandler)
                 .userInfoEndpoint()
                     .userService(customOAuth2UserService)
-                    .and()
-                .successHandler(customAuthenticationSuccessHandler)
-                    .failureHandler(customAuthenticationFailureHandler)
-                    .and()
-                .authenticationProvider(customAuthenticationProvider)
-                    .exceptionHandling()
-                        .authenticationEntryPoint(customAuthenticationEntryPoint);
-        
-       http
-               .formLogin()
-               .loginPage("/spring-security-login")
-               .loginProcessingUrl("/api/login")
-               .usernameParameter("email")
-               .passwordParameter("password")
-               .successHandler(customAuthenticationSuccessHandler)
-               .failureHandler(customAuthenticationFailureHandler);
+        ;
+//        http
+//                .formLogin()
+//                .loginPage("/spring-security-login")
+//                .loginProcessingUrl("/api/login")
+//                .usernameParameter("email")
+//                .passwordParameter("password");
+//        http
+//                .logout()
+//                .logoutUrl("/logout")
+//                .logoutSuccessHandler((request, response, authentication) -> {
+//                    response.sendRedirect("http://localhost:3000/callback?logout=success");
+//                });
+//        http
+//                .authenticationProvider(customAuthenticationProvider)
+//                    .exceptionHandling()
+//                        .authenticationEntryPoint(customAuthenticationEntryPoint);
+
+        http
+                .sessionManagement()
+                .maximumSessions(1)
+                .maxSessionsPreventsLogin(true);
 
         return http.build();
     }
 
-    private static class CorsOptionsFilter extends OncePerRequestFilter {
 
-        @Override
-        protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-            if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
-                response.setStatus(HttpServletResponse.SC_OK);
-            } else {
-                filterChain.doFilter(request, response);
-            }
-        }
-    }
 //                .and()
 //                .logout()
 //                .logoutUrl("/logout")
 //                .logoutSuccessHandler((request, response, authentication) -> {
 //                    response.sendRedirect("/");
 //                })
-//                .and()
-//                .sessionManagement()
-//                .maximumSessions(1)
-//                .maxSessionsPreventsLogin(true);
+
 //        http
 //                .headers().frameOptions().disable();
 
 
 
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
-        configuration.setAllowedMethods(Arrays.asList("*"));
-        configuration.addAllowedHeader("*");
-        configuration.setAllowCredentials(true);
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
+//    @Bean
+//    public CorsConfigurationSource corsConfigurationSource() {
+//        CorsConfiguration configuration = new CorsConfiguration();
+//        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
+//        configuration.setAllowedMethods(Arrays.asList("*"));
+//        configuration.addAllowedHeader("*");
+//        configuration.setAllowCredentials(true);
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", configuration);
+//        return source;
+//    }
 
 }
 /**

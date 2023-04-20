@@ -74,10 +74,12 @@ public class QuartzJob extends QuartzJobBean implements InterruptableJob {
 		try {
 			Document document = conn.get();
 			Element check = document.select("relative-time").first();
+
 			if (!check.text().contains("hours ago")) {
 				Elements category = document.select("h3, h4");
 
 				int i = 0;
+
 				for (Element cat : category) {
 					if (cat.text().equals("Sign In Required") || cat.text().equals("Launching GitHub Desktop")
 							|| cat.text().equals("Launching Xcode") || cat.text().equals("Launching Visual Studio Code")
