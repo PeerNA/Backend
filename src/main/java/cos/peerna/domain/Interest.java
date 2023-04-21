@@ -4,8 +4,10 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.Getter;
 
+import java.io.Serializable;
+
 @Getter
-public class Interest {
+public class Interest implements Serializable {
     @Enumerated(EnumType.STRING)
     private Category priority1;
     @Enumerated(EnumType.STRING)

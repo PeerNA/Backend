@@ -1,7 +1,6 @@
 package cos.peerna.security.dto;
 
-import cos.peerna.domain.User;
-import cos.peerna.domain.Role;
+import cos.peerna.domain.*;
 import lombok.Builder;
 import lombok.Getter;
 

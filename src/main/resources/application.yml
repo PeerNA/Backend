@@ -13,7 +13,7 @@ spring:
       initialize-schema: always
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: none
     properties:
       hibernate:
         # show_sql: true
@@ -24,11 +24,19 @@ spring:
     suffix: .html
     cache: false
     check-template-location: true
+#  data:
+#    redis:
+#      host: localhost
+#      port: 6379
 logging.level:
-  cos.peerna: debug
-  org.hibernate.SQL: debug
+  cos.peerna: info
+  org.hibernate.SQL: info
   org.hibernate.orm.jdbc.bind: trace
   org.springframework.security: TRACE
 server:
   error:
     include-stacktrace: on_param
+  servlet:
+    session:
+      cookie:
+        secure: true

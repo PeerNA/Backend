@@ -1,14 +1,15 @@
 package cos.peerna.controller;
 
+import cos.peerna.controller.dto.HistoryResponseDto;
 import cos.peerna.security.LoginUser;
 import cos.peerna.security.dto.SessionUser;
-import cos.peerna.controller.dto.ResponseDto;
 import cos.peerna.domain.History;
 import cos.peerna.service.HistoryService;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -20,11 +21,11 @@ import java.util.List;
 public class HistoryController {
     private final HistoryService historyService;
     @GetMapping("/api/history")
-    public List<History> findUserHistory(@LoginUser SessionUser user) {
+    public List<HistoryResponseDto> findUserHistory(@LoginUser SessionUser user, @RequestParam int page) {
         if (user == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No User Data");
         }
-        return historyService.findUserHistory(user);
+        return historyService.findUserHistory(user, page);
     }
 
     /**
@@ -33,11 +34,13 @@ public class HistoryController {
      * 원활한 테스트 환경을 위해 만듬
      */
     @PostMapping("/api/history/new")
-    public ResponseDto createHistory(@NotNull @LoginUser SessionUser user, @RequestParam Long problemId) {
+    public ResponseEntity<String> createHistory(@NotNull @LoginUser SessionUser user, @RequestParam Long problemId) {
         if (user == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No User Data");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("No User Data");
         }
         historyService.createHistory(problemId);
-        return new ResponseDto(200, "success");
+        return ResponseEntity.ok()
+                .body("success");
     }
 }

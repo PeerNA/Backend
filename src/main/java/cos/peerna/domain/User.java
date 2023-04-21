@@ -50,6 +50,9 @@ public class User {
         this.email = email;
         this.imageUrl = imageUrl;
         this.role = role;
+        this.introduce = "";
+        this.career = Career.UNDER_1;
+        this.interests = new Interest(Category.OS, Category.NETWORK, Category.DATA_STRUCTURE);
     }
 
     public User update(String name, String email, String profile) {
