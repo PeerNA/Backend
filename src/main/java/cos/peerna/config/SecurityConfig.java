@@ -17,7 +17,7 @@ import java.net.MalformedURLException;
 @Configuration
 public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
-    private final CustomAuthenticationProvider customAuthenticationProvider;
+//    private final CustomAuthenticationProvider customAuthenticationProvider;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
     private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
@@ -46,12 +46,12 @@ public class SecurityConfig {
 //                .loginProcessingUrl("/api/login")
 //                .usernameParameter("email")
 //                .passwordParameter("password");
-//        http
-//                .logout()
-//                .logoutUrl("/logout")
-//                .logoutSuccessHandler((request, response, authentication) -> {
-//                    response.sendRedirect("http://localhost:3000/callback?logout=success");
-//                });
+        http
+                .logout()
+                .logoutUrl("/logout")
+                .logoutSuccessHandler((request, response, authentication) -> {
+                    response.sendRedirect("http://localhost:3000/callback?logout=success");
+                });
 //        http
 //                .authenticationProvider(customAuthenticationProvider)
 //                    .exceptionHandling()

@@ -8,11 +8,11 @@ spring:
             client-secret: ${OAUTH_GOOGLE_SECRET}
             scope: profile,email
 #            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
-            redirect-uri: "https://www.peerna.kr/login/oauth2/code/google"
+            redirect-uri: "http://www.peerna.kr/login/oauth2/code/google"
           github:
             client-id: ${OAUTH_GITHUB_ID}
             client-secret: ${OAUTH_GITHUB_SECRET}
-            redirect-uri: "https://www.peerna.kr/login/oauth2/code/github"
+            redirect-uri: "http://www.peerna.kr/login/oauth2/code/github"
 #            redirect-uri: "{baseUrl}/login/oauth2/code/github"
 #            redirect-uri: "https://www.peerna.kr/login/oauth2/code/github"
 
