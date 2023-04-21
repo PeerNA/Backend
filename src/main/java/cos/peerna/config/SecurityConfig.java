@@ -32,12 +32,12 @@ public class SecurityConfig{
          */
         http.authorizeHttpRequests().anyRequest().permitAll();
 
-        http
-                .headers()
-                .httpStrictTransportSecurity()
-                .maxAgeInSeconds(31536000)
-                .includeSubDomains(true)
-                .preload(true);
+//        http
+//                .headers()
+//                .httpStrictTransportSecurity()
+//                .maxAgeInSeconds(31536000)
+//                .includeSubDomains(true)
+//                .preload(true);
 
         http
                 .csrf()
@@ -56,12 +56,12 @@ public class SecurityConfig{
 //                .loginProcessingUrl("/api/login")
 //                .usernameParameter("email")
 //                .passwordParameter("password");
-        http
-                .logout()
-                .logoutUrl("/logout")
-                .logoutSuccessHandler((request, response, authentication) -> {
-                    response.sendRedirect("http://localhost:3000/callback?logout=success");
-                });
+//        http
+//                .logout()
+//                .logoutUrl("/logout")
+//                .logoutSuccessHandler((request, response, authentication) -> {
+//                    response.sendRedirect("http://localhost:3000/callback?logout=success");
+//                });
 //        http
 //                .authenticationProvider(customAuthenticationProvider)
 //                    .exceptionHandling()
