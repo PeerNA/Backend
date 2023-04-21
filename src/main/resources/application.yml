@@ -28,6 +28,7 @@ logging.level:
   cos.peerna: debug
   org.hibernate.SQL: debug
   org.hibernate.orm.jdbc.bind: trace
+  org.springframework.security: TRACE
 server:
   error:
     include-stacktrace: on_param
