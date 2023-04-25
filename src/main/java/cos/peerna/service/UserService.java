@@ -23,18 +23,11 @@ public class UserService {
 
     // 회원 가입
     public void join(User user) {
-        validateUser(user);
         userRepository.save(user);
     }
 
-    private void validateUser(User user) {
-        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-            throw new IllegalArgumentException("This email already exists.");
-        }
-    }
-
     public void delete(SessionUser sessionUser) {
-        User user = userRepository.findByEmail(sessionUser.getEmail()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User Not Found"));
+        User user = userRepository.findById(sessionUser.getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User Not Found"));
         userRepository.delete(user);
     }
 
@@ -49,7 +42,7 @@ public class UserService {
 
     @Transactional
     public void  updateCondition(SessionUser sessionUser, Interest interest, Career career) {
-        User user = userRepository.findByEmail(sessionUser.getEmail()).orElseThrow(() -> new UsernameNotFoundException("User Not Found"));
+        User user = userRepository.findById(sessionUser.getId()).orElseThrow(() -> new UsernameNotFoundException("User Not Found"));
         user.updateCondition(interest, career);
     }
 }

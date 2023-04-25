@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.header.writers.StaticHeadersWriter;
+import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
 import java.net.MalformedURLException;
 
@@ -17,7 +18,7 @@ import java.net.MalformedURLException;
 @Configuration
 public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
-//    private final CustomAuthenticationProvider customAuthenticationProvider;
+    private final CustomAuthenticationProvider customAuthenticationProvider;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
     private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
@@ -40,27 +41,27 @@ public class SecurityConfig {
                 .userInfoEndpoint()
                     .userService(customOAuth2UserService)
         ;
-//        http
-//                .formLogin()
-//                .loginPage("/spring-security-login")
-//                .loginProcessingUrl("/api/login")
-//                .usernameParameter("email")
-//                .passwordParameter("password");
+        http
+                .formLogin()
+                .loginPage("/spring-security-login")
+                .loginProcessingUrl("/api/login")
+                .usernameParameter("email")
+                .passwordParameter("password");
         http
                 .logout()
                 .logoutUrl("/logout")
                 .logoutSuccessHandler((request, response, authentication) -> {
                     response.sendRedirect("http://localhost:3000/callback?logout=success");
                 });
-//        http
-//                .authenticationProvider(customAuthenticationProvider)
-//                    .exceptionHandling()
-//                        .authenticationEntryPoint(customAuthenticationEntryPoint);
-
         http
-                .sessionManagement()
-                .maximumSessions(1)
-                .maxSessionsPreventsLogin(true);
+                .authenticationProvider(customAuthenticationProvider)
+                    .exceptionHandling()
+                        .authenticationEntryPoint(customAuthenticationEntryPoint);
+
+//        http
+//                .sessionManagement()
+//                .maximumSessions(1)
+//                .maxSessionsPreventsLogin(true);
 
         return http.build();
     }
