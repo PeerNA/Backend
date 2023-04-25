@@ -38,7 +38,7 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
         // Write the JSON string in the response
         response.getWriter().write(responseJson);
 
-//        response.sendRedirect("http://localhost:3000:3000/callback?login=fail");
-        response.sendRedirect("https://peerna.kr?login=fail");
+        response.sendRedirect("http://localhost:3000/callback?login=fail");
+//        response.sendRedirect("https://peerna.kr?login=fail");
     }
 }
