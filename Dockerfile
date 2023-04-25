@@ -9,4 +9,4 @@ ENV PASSWORD=$PASSWORD
 ARG JAR_FILE=build/libs/*.jar
 
 COPY ${JAR_FILE} app.jar
-ENTRYPOINT ["java","-jar","/app.jar"]
+ENTRYPOINT ["java","-jar", "-Dhttps.protocols=TLSv1.2","/app.jar"]

@@ -36,7 +36,7 @@ public class ReplyService {
     private final KeywordService keywordService;
 
     public void make(ReplyRegisterRequestDto dto, SessionUser sessionUser) {
-        User user = userRepository.findByEmail(sessionUser.getEmail())
+        User user = userRepository.findById(sessionUser.getId())
                 .orElseThrow(() -> new UsernameNotFoundException("No User Data"));
         Problem problem = problemRepository.findById(dto.getProblemId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem Not Found"));
@@ -64,7 +64,7 @@ public class ReplyService {
     }
 
     public void recommendReply(SessionUser sessionUser, Long replyId) {
-        User user = userRepository.findByEmail(sessionUser.getEmail())
+        User user = userRepository.findById(sessionUser.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User Not Found"));
         Reply reply = replyRepository.findById(replyId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Reply Not Found"));
