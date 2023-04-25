@@ -25,12 +25,22 @@ public class SecurityConfig {
     private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
 
 
+
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         /**
          * 주의: 생각보다 순서가 굉장히 중요하다.
          */
         http.authorizeHttpRequests().anyRequest().permitAll();
+
+//        http
+//                .headers()
+//                .httpStrictTransportSecurity()
+//                .maxAgeInSeconds(31536000)
+//                .includeSubDomains(true)
+//                .preload(true);
+
         http
                 .csrf()
                     .disable()
@@ -42,6 +52,7 @@ public class SecurityConfig {
                 .userInfoEndpoint()
                     .userService(customOAuth2UserService)
         ;
+
         http
                 .formLogin()
                 .loginPage("/spring-security-login")
@@ -54,6 +65,7 @@ public class SecurityConfig {
                 .logoutSuccessHandler((request, response, authentication) -> {
                     response.sendRedirect("http://localhost:3000/callback?logout=success");
                 });
+
         http
                 .authenticationProvider(customAuthenticationProvider)
                     .exceptionHandling()
