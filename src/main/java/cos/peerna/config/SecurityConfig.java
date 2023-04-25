@@ -16,12 +16,14 @@ import java.net.MalformedURLException;
 @RequiredArgsConstructor
 @EnableWebSecurity // spring security 설정들을 활성화시켜준다.
 @Configuration
-public class SecurityConfig {
+public class SecurityConfig{
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomAuthenticationProvider customAuthenticationProvider;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
     private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
+
+
 
 
     @Bean
@@ -30,6 +32,14 @@ public class SecurityConfig {
          * 주의: 생각보다 순서가 굉장히 중요하다.
          */
         http.authorizeHttpRequests().anyRequest().permitAll();
+
+//        http
+//                .headers()
+//                .httpStrictTransportSecurity()
+//                .maxAgeInSeconds(31536000)
+//                .includeSubDomains(true)
+//                .preload(true);
+
         http
                 .csrf()
                     .disable()
@@ -41,6 +51,7 @@ public class SecurityConfig {
                 .userInfoEndpoint()
                     .userService(customOAuth2UserService)
         ;
+
         http
                 .formLogin()
                 .loginPage("/spring-security-login")
@@ -53,6 +64,7 @@ public class SecurityConfig {
                 .logoutSuccessHandler((request, response, authentication) -> {
                     response.sendRedirect("http://localhost:3000/callback?logout=success");
                 });
+
         http
                 .authenticationProvider(customAuthenticationProvider)
                     .exceptionHandling()
