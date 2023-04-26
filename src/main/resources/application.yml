@@ -38,5 +38,5 @@ server:
   servlet:
     session:
       cookie:
-#        secure: true
+        secure: true
         same-site: none
