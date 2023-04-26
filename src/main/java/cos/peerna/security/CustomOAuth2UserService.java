@@ -47,7 +47,10 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                 .getProviderDetails()
                 .getUserInfoEndpoint()
                 .getUserNameAttributeName();
-        String userEmail = getUserEmail(userRequest);
+
+        String userEmail = null;
+        if (registrationId.equals("github"))
+            userEmail = getUserEmail(userRequest);
 
 
         OAuthAttributes attributes = OAuthAttributes.of(registrationId, userNameAttributeName, oAuth2User.getAttributes(), userEmail);

@@ -66,7 +66,7 @@ public class InitDB {
                     .imageUrl("https://avatars.githubusercontent.com/u/45088611?v=4")
                     .role(Role.MENTEE)
                     .bio("Sejong Univ.")
-                    .id((long) 48898994)
+                    .id((long) 45088611)
                     .build();
             em.persist(seunghso);
         }

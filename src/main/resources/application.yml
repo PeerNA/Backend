@@ -41,7 +41,4 @@ server:
         secure: true
         same-site: none
         max-age: 7200
-<<<<<<< HEAD
-=======
 
->>>>>>> b1022d6d05cc14d7da939703a1517c0e96d10629
