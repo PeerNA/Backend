@@ -74,6 +74,4 @@ public class HistoryService {
         History history = History.createHistory(problem);
         historyRepository.save(history);
     }
-
-//    public HistoryResponseDto findDetailHistory()
 }
