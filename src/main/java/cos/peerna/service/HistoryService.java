@@ -74,8 +74,6 @@ public class HistoryService {
     }
 
     public DetailHistoryResponseDto findDetailHistory(SessionUser user, DetailHistoryRequestDto dto) {
-        User userA;
-        User userB;
         History history = historyRepository.findById(dto.getHistoryId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "History Not Found"));
         Problem problem = history.getProblem();
