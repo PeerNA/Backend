@@ -50,29 +50,24 @@ public class UserService {
     }
 
     public void patchUpdate(SessionUser sessionUser, UserPatchRequestDto dto) {
-        User user = userRepository.findByEmail(sessionUser.getEmail()).orElseThrow(() -> new UsernameNotFoundException("User Not Found"));
+        User user = userRepository.findById(sessionUser.getId()).orElseThrow(() -> new UsernameNotFoundException("User Not Found"));
         Interest interest = user.getInterests();
         Category priority1 = interest.getPriority1();
         Category priority2 = interest.getPriority2();
         Category priority3 = interest.getPriority3();
         Career career = user.getCareer();
 
-        List<UserPatchRequestDto> list = new ArrayList<>();
-        list.add(dto);
-
-        for (int i = 0; i < list.size(); i++) {
-            if (list.get(i).getPriority1() != null) {
-                priority1 = list.get(i).getPriority1();
-            }
-            if (list.get(i).getPriority2() != null) {
-                priority2 = list.get(i).getPriority2();
-            }
-            if (list.get(i).getPriority3() != null) {
-                priority3 = list.get(i).getPriority3();
-            }
-            if (list.get(i).getCareer() != null) {
-                career = list.get(i).getCareer();
-            }
+        if (dto.getPriority1() != null) {
+            priority1 = dto.getPriority1();
+        }
+        if (dto.getPriority2() != null) {
+            priority2 = dto.getPriority2();
+        }
+        if (dto.getPriority3() != null) {
+            priority3 = dto.getPriority3();
+        }
+        if (dto.getCareer() != null) {
+            career = dto.getCareer();
         }
 
         Interest newInterest = new Interest(priority1, priority2, priority3);
