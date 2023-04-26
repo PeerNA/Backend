@@ -49,7 +49,7 @@ public class UserController {
                 .body(user);
     }
 
-    @PostMapping("/api/users/info")
+    @PatchMapping("/api/users/info")
     public ResponseEntity<String> updateInfo(@LoginUser SessionUser user, UserPatchRequestDto dto) {
         if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
