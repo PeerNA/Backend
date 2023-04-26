@@ -13,6 +13,7 @@ import java.util.List;
 @Repository
 public interface ReplyRepository extends JpaRepository<Reply, Long> {
 
+    List<Reply> findRepliesByHistory(History history);
     List<Reply> findRepliesByUserOrderByIdDesc(User user, Pageable pageable);
     List<Reply> findRepliesByProblem(Problem problem);
 }

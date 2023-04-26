@@ -1,5 +1,7 @@
 package cos.peerna.service;
 
+import cos.peerna.controller.dto.DetailHistoryRequestDto;
+import cos.peerna.controller.dto.DetailHistoryResponseDto;
 import cos.peerna.controller.dto.HistoryResponseDto;
 import cos.peerna.domain.History;
 import cos.peerna.domain.Problem;
@@ -11,15 +13,18 @@ import cos.peerna.repository.ReplyRepository;
 import cos.peerna.repository.UserRepository;
 import cos.peerna.security.dto.SessionUser;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -66,6 +71,32 @@ public class HistoryService {
 //                .category(r.getProblem().getCategory())
 //                .time(r.getHistory().getTime())
 //                .build()).toList());
+    }
+
+    public DetailHistoryResponseDto findDetailHistory(SessionUser user, DetailHistoryRequestDto dto) {
+        User userA;
+        User userB;
+        History history = historyRepository.findById(dto.getHistoryId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "History Not Found"));
+        Problem problem = history.getProblem();
+        List<Reply> replyList = replyRepository.findRepliesByHistory(history);
+
+        log.info("user: {}, first: {}", replyList.get(1).getUser().getId(), user.getId());
+
+        if (replyList.get(1).getUser().getId().equals(user.getId()))
+            Collections.reverse(replyList);
+
+        return DetailHistoryResponseDto.builder()
+                .question(problem.getQuestion())
+                .category(problem.getCategory())
+                .time(history.getTime())
+                .aUserAnswer(replyList.get(0).getAnswer())
+                .bUserAnswer(replyList.get(1).getAnswer())
+                .aUserNickname(replyList.get(0).getUser().getName())
+                .bUserNickname(replyList.get(1).getUser().getName())
+                .aUserImage(replyList.get(0).getUser().getImageUrl())
+                .bUserImage(replyList.get(1).getUser().getImageUrl())
+                .build();
     }
 
     public void createHistory(Long problemId) {
