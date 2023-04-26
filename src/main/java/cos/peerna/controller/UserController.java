@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 @Slf4j
 @RestController
@@ -89,4 +90,8 @@ public class UserController {
                 .body("success");
     }
 
+    @GetMapping
+    public LocalDateTime test() {
+        return LocalDateTime.now();
+    }
 }
