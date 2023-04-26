@@ -51,13 +51,12 @@ public class UserController {
     }
 
     @PatchMapping("/api/users/info")
-    public ResponseEntity<String> updateInfo(@LoginUser SessionUser user, UserPatchRequestDto dto) {
+    public ResponseEntity<String> updateInfo(@LoginUser SessionUser user, @RequestBody UserPatchRequestDto dto) {
         if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body("No User Data");
         }
         userService.patchUpdate(user, dto);
-
         return ResponseEntity.ok()
                 .body("success");
     }
