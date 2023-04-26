@@ -9,15 +9,17 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.header.writers.StaticHeadersWriter;
+import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
 import java.net.MalformedURLException;
 
 @RequiredArgsConstructor
 @EnableWebSecurity // spring security 설정들을 활성화시켜준다.
 @Configuration
-public class SecurityConfig{
+@EnableRedisHttpSession(maxInactiveIntervalInSeconds = 3600) // 1시간 (해당 어노테이션 사용시 timeout application.yml 로 설정 불가능)
+public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
-//    private final CustomAuthenticationProvider customAuthenticationProvider;
+    private final CustomAuthenticationProvider customAuthenticationProvider;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
     private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
@@ -50,27 +52,29 @@ public class SecurityConfig{
                 .userInfoEndpoint()
                     .userService(customOAuth2UserService)
         ;
-//        http
-//                .formLogin()
-//                .loginPage("/spring-security-login")
-//                .loginProcessingUrl("/api/login")
-//                .usernameParameter("email")
-//                .passwordParameter("password");
-//        http
-//                .logout()
-//                .logoutUrl("/logout")
-//                .logoutSuccessHandler((request, response, authentication) -> {
-//                    response.sendRedirect("http://localhost:3000/callback?logout=success");
-//                });
-//        http
-//                .authenticationProvider(customAuthenticationProvider)
-//                    .exceptionHandling()
-//                        .authenticationEntryPoint(customAuthenticationEntryPoint);
 
         http
-                .sessionManagement()
-                .maximumSessions(1)
-                .maxSessionsPreventsLogin(true);
+                .formLogin()
+                .loginPage("/spring-security-login")
+                .loginProcessingUrl("/api/login")
+                .usernameParameter("email")
+                .passwordParameter("password");
+        http
+                .logout()
+                .logoutUrl("/logout")
+                .logoutSuccessHandler((request, response, authentication) -> {
+                    response.sendRedirect("http://localhost:3000/callback?logout=success");
+                });
+
+        http
+                .authenticationProvider(customAuthenticationProvider)
+                    .exceptionHandling()
+                        .authenticationEntryPoint(customAuthenticationEntryPoint);
+
+//        http
+//                .sessionManagement()
+//                .maximumSessions(1)
+//                .maxSessionsPreventsLogin(true);
 
         return http.build();
     }

@@ -12,10 +12,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User {
 
-    @Id @GeneratedValue
+    @Id
     @Column(name = "user_id")
     private Long id;
-
     private String name;
     private String email;
     private String password;
@@ -32,6 +31,7 @@ public class User {
 
     public static User createUser(UserRegisterRequestDto dto) {
         User user = new User();
+        user.id = dto.getId();
         user.name = dto.getName();
         user.email = dto.getEmail();
         user.password = dto.getPassword();
@@ -45,20 +45,22 @@ public class User {
     }
 
     @Builder
-    public User(String name, String email, String imageUrl, Role role) {
+    public User(Long id, String name, String email, String imageUrl, String bio, Role role) {
+        this.id = id;
         this.name = name;
         this.email = email;
         this.imageUrl = imageUrl;
         this.role = role;
-        this.introduce = "";
+        this.introduce = bio;
         this.career = Career.UNDER_1;
         this.interests = new Interest(Category.OS, Category.NETWORK, Category.DATA_STRUCTURE);
     }
 
-    public User update(String name, String email, String profile) {
+    public User update(String name, String email, String profile, String introduce) {
         this.name = name;
         this.email = email;
         this.imageUrl = profile;
+        this.introduce = introduce;
         this.career = Career.UNDER_1;
         this.interests = new Interest(Category.OS, Category.NETWORK, Category.DATA_STRUCTURE);
         this.role = Role.MENTEE;

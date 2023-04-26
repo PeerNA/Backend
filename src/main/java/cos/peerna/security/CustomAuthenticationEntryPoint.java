@@ -27,7 +27,6 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
      */
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-        // GSon
         log.debug("CustomAuthenticationEntryPoint");
         log.debug("EntryPoint Exception: {}", request.getAttribute(ERROR_EXCEPTION));
         log.debug("EntryPoint authException: {}", authException.getMessage());

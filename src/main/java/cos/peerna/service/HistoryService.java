@@ -1,7 +1,6 @@
 package cos.peerna.service;
 
 import cos.peerna.controller.dto.HistoryResponseDto;
-import cos.peerna.security.dto.SessionUser;
 import cos.peerna.domain.History;
 import cos.peerna.domain.Problem;
 import cos.peerna.domain.Reply;
@@ -10,13 +9,14 @@ import cos.peerna.repository.HistoryRepository;
 import cos.peerna.repository.ProblemRepository;
 import cos.peerna.repository.ReplyRepository;
 import cos.peerna.repository.UserRepository;
+import cos.peerna.security.dto.SessionUser;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,21 +43,29 @@ public class HistoryService {
     public List<HistoryResponseDto> findUserHistory(SessionUser sessionUser, int page) {
         final int PAGE_SIZE = 8;
 
-        User user = userRepository.findByEmail(sessionUser.getEmail())
+        User user = userRepository.findById(sessionUser.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User Not Found"));
-        List<Reply> replyList = replyRepository.findRepliesByUser(user);
-        List<HistoryResponseDto> historyResponseDtoList = new ArrayList<>(replyList.stream().map(r -> {
-            return HistoryResponseDto.builder()
-                    .historyId(r.getHistory().getId())
-                    .problemId(r.getProblem().getId())
-                    .question(r.getProblem().getQuestion())
-                    .category(r.getProblem().getCategory())
-                    .time(r.getHistory().getTime())
-                    .build();
-        }).toList());
+        List<Reply> replyList = replyRepository.findRepliesByUserOrderByIdDesc(user, PageRequest.of(page, PAGE_SIZE));
 
-        historyResponseDtoList.sort(HistoryResponseDto.builder().build().reversed());
-        return historyResponseDtoList.stream().skip((long) PAGE_SIZE * page).limit(PAGE_SIZE).collect(Collectors.toList());
+        return replyList.stream().map(reply -> {
+            History history = reply.getHistory();
+            Problem problem = reply.getProblem();
+            return HistoryResponseDto.builder()
+                    .historyId(history.getId())
+                    .problemId(problem.getId())
+                    .question(problem.getQuestion())
+                    .category(problem.getCategory())
+                    .time(history.getTime())
+                    .build();
+        }).collect(Collectors.toList());
+
+//        return new ArrayList<>(replyList.stream().map(r -> HistoryResponseDto.builder()
+//                .historyId(r.getHistory().getId())
+//                .problemId(r.getProblem().getId())
+//                .question(r.getProblem().getQuestion())
+//                .category(r.getProblem().getCategory())
+//                .time(r.getHistory().getTime())
+//                .build()).toList());
     }
 
     public void createHistory(Long problemId) {

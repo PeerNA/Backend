@@ -48,6 +48,6 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         response.getWriter().write(responseJson);
 
 //        response.sendRedirect("http://localhost:3000/callback?login=success");
-        response.sendRedirect("https://www.peerna.kr?login=success");
+        response.sendRedirect("https://peerna.kr?login=success");
     }
 }

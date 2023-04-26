@@ -7,11 +7,11 @@ import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.io.Serializable;
 import java.util.Collection;
 
 @Getter
-public class SessionUser implements Serializable, UserDetails {
+public class SessionUser implements UserDetails {
+    private final Long id;
     private final String name;
     private final String email;
     private final String password;
@@ -20,6 +20,7 @@ public class SessionUser implements Serializable, UserDetails {
     private final Career career;
 
     public SessionUser(User user) {
+        this.id = user.getId();
         this.name = user.getName();
         this.email = user.getEmail();
         this.password = user.getPassword();
