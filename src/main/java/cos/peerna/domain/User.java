@@ -22,6 +22,7 @@ public class User {
     private String imageUrl;
     private String introduce;
 
+    @Enumerated(EnumType.STRING)
     private Career career;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -61,9 +62,6 @@ public class User {
         this.email = email;
         this.imageUrl = profile;
         this.introduce = introduce;
-        this.career = Career.UNDER_1;
-        this.interests = new Interest(Category.OS, Category.NETWORK, Category.DATA_STRUCTURE);
-        this.role = Role.MENTEE;
 
         return this;
     }

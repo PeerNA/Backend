@@ -44,8 +44,8 @@ public class SecurityConfig {
         http
                 .csrf()
                     .disable()
-                .httpBasic()
-                    .disable()
+//                .httpBasic()
+//                    .disable()
                 .oauth2Login()
                 .successHandler(customAuthenticationSuccessHandler)
                 .failureHandler(customAuthenticationFailureHandler)

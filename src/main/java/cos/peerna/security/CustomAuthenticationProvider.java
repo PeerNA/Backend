@@ -40,6 +40,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
         httpSession.setAttribute("user", sessionUser);
 
+        log.info("CustomAuthenticationProvider authenticate(): {}", sessionUser.getName());
         return new UsernamePasswordAuthenticationToken(sessionUser, null, sessionUser.getAuthorities());
     }
 
