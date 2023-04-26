@@ -5,6 +5,7 @@ import cos.peerna.security.LoginUser;
 import cos.peerna.security.dto.SessionUser;
 import cos.peerna.domain.History;
 import cos.peerna.service.HistoryService;
+import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +22,7 @@ import java.util.List;
 public class HistoryController {
     private final HistoryService historyService;
     @GetMapping("/api/history")
-    public List<HistoryResponseDto> findUserHistory(@LoginUser SessionUser user, @RequestParam int page) {
+    public List<HistoryResponseDto> findUserHistory(@LoginUser SessionUser user, @RequestParam @Nullable int page) {
         if (user == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No User Data");
         }
