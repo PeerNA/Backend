@@ -110,7 +110,7 @@ public class QuartzJob extends QuartzJobBean implements InterruptableJob {
 						break;
 					i += 1;
 					int j = 0;
-					log.info("Category : {}", cat.text());
+//					log.info("Category : {}", cat.text());
 					Elements items = cat.nextElementSiblings().select("summary");
 					for (Element summary : items) {
 						if (j >= countArr[i])
@@ -123,16 +123,19 @@ public class QuartzJob extends QuartzJobBean implements InterruptableJob {
 						}
 						String result = sb.toString();
 						if (!cat.text().equals("과제 전형") && !cat.text().equals("코딩테스트") && !cat.text().equals("자료구조/알고리즘")) {
-							if (map.containsKey(cat.text()))
-								problemService.make(summary.text(), result, map.get(cat.text()));
-							else
-								problemService.make(summary.text(), result, Category.valueOf(cat.text().toUpperCase()));
+							try {
+								if (map.containsKey(cat.text()))
+									problemService.make(summary.text(), result, map.get(cat.text()));
+								else
+									problemService.make(summary.text(), result, Category.valueOf(cat.text().toUpperCase()));
+							} catch (Exception e) {
+							}
 						}
 					}
 				}
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
 
 		log.info("============================================================================");
