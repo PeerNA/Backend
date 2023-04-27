@@ -16,7 +16,6 @@ import java.net.MalformedURLException;
 @RequiredArgsConstructor
 @EnableWebSecurity // spring security 설정들을 활성화시켜준다.
 @Configuration
-@EnableRedisHttpSession(maxInactiveIntervalInSeconds = 10800) // 3시간 (해당 어노테이션 사용시 timeout application.yml 로 설정 불가능)
 public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomAuthenticationProvider customAuthenticationProvider;
@@ -62,9 +61,17 @@ public class SecurityConfig {
         http
                 .logout()
                 .logoutUrl("/logout")
+                .invalidateHttpSession(true)
+//                .deleteCookies("SESSION")
                 .logoutSuccessHandler((request, response, authentication) -> {
                     response.sendRedirect("http://localhost:3000/callback?logout=success");
                 });
+//        http.logout()
+//                .logoutUrl("/logout")
+//                .logoutSuccessUrl("/login?logout")
+//                .invalidateHttpSession(true)
+//                .deleteCookies("JSESSIONID")
+//                .permitAll();
 
         http
                 .authenticationProvider(customAuthenticationProvider)

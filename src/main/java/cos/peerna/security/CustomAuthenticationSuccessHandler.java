@@ -21,14 +21,6 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
         // Code to perform after a successful authentication
         HttpSession session = request.getSession();
-//        Cookie[] cookies = request.getCookies();
-//        for (Cookie cookie : cookies) {
-//            if (cookie.getName().equals("JSESSIONID")) {
-//                cookie.setSecure(true);
-//                cookie.setAttribute("SameSite", "None");
-//            }
-//        }
-
 
         session.setMaxInactiveInterval(60);
 
