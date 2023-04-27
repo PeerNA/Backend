@@ -5,18 +5,15 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 
 @Data
 @Builder
 public class DetailHistoryResponseDto {
-	private Long bUserId;
+	private Long peerId;
 	private String question;
-	private Category category;
 	private LocalDate time;
-	private String aUserAnswer;
-	private String bUserAnswer;
-	private String aUserNickname;
-	private String bUserNickname;
-	private String aUserImage;
-	private String bUserImage;
+	private List<Map<String, String>> userInfo;
+	private List<String> keyword;
 }
