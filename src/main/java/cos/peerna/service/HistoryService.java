@@ -85,6 +85,7 @@ public class HistoryService {
             Collections.reverse(replyList);
 
         return DetailHistoryResponseDto.builder()
+                .bUserId(replyList.get(1).getUser().getId())
                 .question(problem.getQuestion())
                 .category(problem.getCategory())
                 .time(history.getTime())

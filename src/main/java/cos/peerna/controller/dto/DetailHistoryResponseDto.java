@@ -9,6 +9,7 @@ import java.time.LocalDate;
 @Data
 @Builder
 public class DetailHistoryResponseDto {
+	private Long bUserId;
 	private String question;
 	private Category category;
 	private LocalDate time;
