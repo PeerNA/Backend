@@ -1,5 +1,6 @@
 package cos.peerna.domain;
 
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.Builder;
@@ -8,15 +9,21 @@ import org.springframework.data.redis.core.RedisHash;
 
 import java.time.LocalDateTime;
 
+import static jakarta.persistence.EnumType.STRING;
+
 @Data
 @RedisHash("WaitingUser")
 public class WaitingUser {
 
     @Id
     private Long id;
+    @Enumerated(value = STRING)
     private Category priority1;
+    @Enumerated(value = STRING)
     private Category priority2;
+    @Enumerated(value = STRING)
     private Category priority3;
+    @Enumerated(value = STRING)
     private Career career;
     private LocalDateTime createdAt;
 

@@ -1,11 +1,13 @@
 package cos.peerna.util;
 
+import cos.peerna.controller.dto.UserRegisterRequestDto;
 import cos.peerna.domain.*;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -16,9 +18,9 @@ public class InitDB {
 
     @PostConstruct
     public void initDB() {
-        initService.initDB1(); // User, Problem
-        initService.initDB2(); // Reply
-        initService.initDB3(); // Happhee, Mincheol Shin
+//        initService.initDB1(); // User, Problem
+//        initService.initDB2(); // Reply
+//        initService.initDB3(); // Happhee, Mincheol Shin
     }
 
     @Component
@@ -26,18 +28,17 @@ public class InitDB {
     @RequiredArgsConstructor
     static class InitService {
         private final EntityManager em;
+        private final BCryptPasswordEncoder passwordEncoder;
 
         @Transactional
         public void initDB1() {
             for (int i = 1; i <= 14; i++) {
-                User user = User.builder()
-                        .email("user" + i + "_email")
-                        .name("user" + i + "_name")
-                        .imageUrl("user" + i + "_picture")
-                        .role(Role.MENTEE)
-                        .bio("user" + i + "_bio")
+                User user = User.createUser(UserRegisterRequestDto.builder()
                         .id((long) i)
-                        .build();
+                        .name("user" + i + "_name")
+                        .email("user" + i + "_email")
+                        .password(passwordEncoder.encode("password"))
+                        .build());
                 Problem problem = Problem.createProblem("question" + i, "answer" + i, Category.OS);
                 em.persist(user);
                 em.persist(problem);

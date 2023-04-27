@@ -55,6 +55,7 @@ public class User {
         this.introduce = bio;
         this.career = Career.UNDER_1;
         this.interests = new Interest(Category.OS, Category.NETWORK, Category.DATA_STRUCTURE);
+        this.password = "password";
     }
 
     public User update(String name, String email, String profile, String introduce) {
