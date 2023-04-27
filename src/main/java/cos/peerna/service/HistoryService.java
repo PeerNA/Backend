@@ -1,16 +1,9 @@
 package cos.peerna.service;
 
-import cos.peerna.controller.dto.DetailHistoryRequestDto;
 import cos.peerna.controller.dto.DetailHistoryResponseDto;
 import cos.peerna.controller.dto.HistoryResponseDto;
-import cos.peerna.domain.History;
-import cos.peerna.domain.Problem;
-import cos.peerna.domain.Reply;
-import cos.peerna.domain.User;
-import cos.peerna.repository.HistoryRepository;
-import cos.peerna.repository.ProblemRepository;
-import cos.peerna.repository.ReplyRepository;
-import cos.peerna.repository.UserRepository;
+import cos.peerna.domain.*;
+import cos.peerna.repository.*;
 import cos.peerna.security.dto.SessionUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,8 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -33,6 +25,7 @@ public class HistoryService {
     private final UserRepository userRepository;
     private final ReplyRepository replyRepository;
     private final ProblemRepository problemRepository;
+    private final KeywordRepository keywordRepository;
 
 //    public void make(Problem problem) {
 //        validateProblem(problem);
@@ -73,28 +66,36 @@ public class HistoryService {
 //                .build()).toList());
     }
 
-    public DetailHistoryResponseDto findDetailHistory(SessionUser user, DetailHistoryRequestDto dto) {
-        History history = historyRepository.findById(dto.getHistoryId())
+    public DetailHistoryResponseDto findDetailHistory(SessionUser user, Long historyId) {
+        History history = historyRepository.findById(historyId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "History Not Found"));
         Problem problem = history.getProblem();
         List<Reply> replyList = replyRepository.findRepliesByHistory(history);
-
-        log.info("user: {}, first: {}", replyList.get(1).getUser().getId(), user.getId());
+        List<Keyword> keywordList = keywordRepository.findKeywordsByProblemOrderByCountDesc(problem).subList(0, 3);
+        List<Map<String, String>> userInfo = new ArrayList<>();
+        Map<String, String> mine = new HashMap<>();
 
         if (replyList.get(1).getUser().getId().equals(user.getId()))
             Collections.reverse(replyList);
 
+        mine.put("answer", replyList.get(0).getAnswer());
+        mine.put("userName", replyList.get(0).getUser().getName());
+        mine.put("imageUrl", replyList.get(0).getUser().getImageUrl());
+
+        Map<String, String> peer = new HashMap<>();
+        peer.put("answer", replyList.get(1).getAnswer());
+        peer.put("userName", replyList.get(1).getUser().getName());
+        peer.put("imageUrl", replyList.get(1).getUser().getImageUrl());
+
+        userInfo.add(mine);
+        userInfo.add(peer);
+
         return DetailHistoryResponseDto.builder()
-                .bUserId(replyList.get(1).getUser().getId())
+                .peerId(replyList.get(1).getUser().getId())
                 .question(problem.getQuestion())
-                .category(problem.getCategory())
                 .time(history.getTime())
-                .aUserAnswer(replyList.get(0).getAnswer())
-                .bUserAnswer(replyList.get(1).getAnswer())
-                .aUserNickname(replyList.get(0).getUser().getName())
-                .bUserNickname(replyList.get(1).getUser().getName())
-                .aUserImage(replyList.get(0).getUser().getImageUrl())
-                .bUserImage(replyList.get(1).getUser().getImageUrl())
+                .userInfo(userInfo)
+                .keyword(keywordList.stream().map(Keyword::getName).collect(Collectors.toList()))
                 .build();
     }
 

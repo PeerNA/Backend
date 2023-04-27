@@ -12,5 +12,6 @@ import java.util.Optional;
 public interface KeywordRepository extends JpaRepository<Keyword, Long> {
     List<Keyword> findKeywordsByProblem(Problem problem);
 
+    List<Keyword> findKeywordsByProblemOrderByCountDesc(Problem problem);
     Optional<Keyword> findKeywordByNameAndProblem(String name, Problem problem);
 }
