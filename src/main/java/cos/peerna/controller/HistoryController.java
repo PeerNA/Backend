@@ -1,5 +1,7 @@
 package cos.peerna.controller;
 
+import cos.peerna.controller.dto.DetailHistoryRequestDto;
+import cos.peerna.controller.dto.DetailHistoryResponseDto;
 import cos.peerna.controller.dto.HistoryResponseDto;
 import cos.peerna.security.LoginUser;
 import cos.peerna.security.dto.SessionUser;
@@ -27,6 +29,14 @@ public class HistoryController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No User Data");
         }
         return historyService.findUserHistory(user, page);
+    }
+
+    @GetMapping("/api/detail-history")
+    public DetailHistoryResponseDto findDetailHistory(@LoginUser SessionUser user, @RequestBody DetailHistoryRequestDto dto) {
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No User Data");
+        }
+        return historyService.findDetailHistory(user, dto);
     }
 
     /**
