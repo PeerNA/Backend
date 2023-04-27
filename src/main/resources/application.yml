@@ -40,5 +40,5 @@ server:
       cookie:
         secure: true
         same-site: none
-        max-age: 7200
+        max-age: 86400
 
