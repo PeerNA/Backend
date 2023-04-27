@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Entity
 @Getter
@@ -55,7 +56,7 @@ public class User {
         this.introduce = bio;
         this.career = Career.UNDER_1;
         this.interests = new Interest(Category.OS, Category.NETWORK, Category.DATA_STRUCTURE);
-        this.password = "password";
+        this.password = new BCryptPasswordEncoder().encode("password");
     }
 
     public User update(String name, String email, String profile, String introduce) {

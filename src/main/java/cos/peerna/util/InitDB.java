@@ -18,9 +18,9 @@ public class InitDB {
 
     @PostConstruct
     public void initDB() {
-//        initService.initDB1(); // User, Problem
-//        initService.initDB2(); // Reply
-//        initService.initDB3(); // Happhee, Mincheol Shin
+        initService.initDB1(); // User, Problem
+        initService.initDB2(); // Reply
+        initService.initDB3(); // Happhee, Mincheol Shin
     }
 
     @Component
