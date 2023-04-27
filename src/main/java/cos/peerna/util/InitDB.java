@@ -99,8 +99,15 @@ public class InitDB {
 
                 Reply reply1 = Reply.createReply(happhee, history, problem, "user:Happhee" + ", problem:" + i);
                 Reply reply2 = Reply.createReply(mincshin, history, problem, "user:mincshin" + ", problem:" + i);
+
+                Keyword keyword1 = Keyword.createKeyword("DB", problem);
+                Keyword keyword2 = Keyword.createKeyword("SQL", problem);
+                Keyword keyword3 = Keyword.createKeyword("MongoDB", problem);
                 em.persist(reply1);
                 em.persist(reply2);
+                em.persist(keyword1);
+                em.persist(keyword2);
+                em.persist(keyword3);
             }
         }
     }
