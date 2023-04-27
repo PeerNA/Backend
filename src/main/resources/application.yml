@@ -38,7 +38,7 @@ server:
   servlet:
     session:
       cookie:
-#        secure: true
+        secure: true
         same-site: none
         max-age: 7200
 
