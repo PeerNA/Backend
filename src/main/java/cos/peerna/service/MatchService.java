@@ -6,6 +6,7 @@ import cos.peerna.domain.WaitingUser;
 import cos.peerna.repository.UserRepository;
 import cos.peerna.repository.WaitingUserRepository;
 import cos.peerna.security.dto.SessionUser;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -22,10 +23,18 @@ public class MatchService {
     private final WaitingUserRepository waitingUserRepository;
     private final UserRepository userRepository;
 
+    @Transactional
     public void match(SessionUser user, DeferredResult<ResponseEntity<Room>> deferredResult) {
+//        List<WaitingUser> all = (List<WaitingUser>) waitingUserRepository.findAll();
+//        all.stream().map(waitingUser -> waitingUser.getPriority1()).forEach(p1 -> {
+//            log.debug("is_same: {}", p1.compareTo(user.getInterest().getPriority1()));
+//        });
+
+        log.debug("findAll():{}", waitingUserRepository.findAll());
         Category selectedCategory = user.getInterest().getPriority1();
+        log.debug("selectedCategory: {}", selectedCategory);
         List<WaitingUser> matchedUsers =
-                waitingUserRepository.findByPriority1OrderByCreatedAt(selectedCategory);
+                waitingUserRepository.findByPriority1(selectedCategory);
         if (matchedUsers.size() == 0) {
             selectedCategory = user.getInterest().getPriority2();
             matchedUsers = waitingUserRepository.findByPriority2OrderByCreatedAt(selectedCategory);
@@ -36,6 +45,7 @@ public class MatchService {
         }
         log.info("matchedUsers: {}", matchedUsers);
         if (matchedUsers.size() == 0) {
+            log.debug("{}: No matched user. Waiting for another user to join.", user.getName());
             waitingUserRepository.save(WaitingUser.builder()
                     .priority1(user.getInterest().getPriority1())
                     .priority2(user.getInterest().getPriority2())
@@ -44,6 +54,7 @@ public class MatchService {
                     .id(user.getId())
                     .build());
         } else {
+            log.debug("{}: Matched with {}", user.getName(), matchedUsers.get(0).getId());
             WaitingUser waitingUser = matchedUsers.get(0);
             waitingUserRepository.delete(waitingUser);
             ResponseEntity<Room> okResponse = ResponseEntity.ok(Room.builder()

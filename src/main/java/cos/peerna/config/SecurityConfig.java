@@ -51,10 +51,10 @@ public class SecurityConfig {
                 .userInfoEndpoint()
                     .userService(customOAuth2UserService)
         ;
-
+        http.httpBasic();
         http
                 .formLogin()
-                .loginPage("/spring-security-login")
+                .loginPage("/login")
                 .loginProcessingUrl("/api/login")
                 .usernameParameter("email")
                 .passwordParameter("password");
