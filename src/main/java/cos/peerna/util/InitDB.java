@@ -2,9 +2,10 @@ package cos.peerna.util;
 
 import cos.peerna.controller.dto.UserRegisterRequestDto;
 import cos.peerna.domain.*;
+import cos.peerna.repository.HistoryRepository;
 import cos.peerna.repository.ReplyRepository;
+import cos.peerna.repository.RoomRepository;
 import cos.peerna.service.KeywordService;
-import cos.peerna.service.ReplyService;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -33,6 +34,8 @@ public class InitDB {
         private final EntityManager em;
         private final KeywordService keywordService;
         private final ReplyRepository replyRepository;
+        private final RoomRepository roomRepository;
+        private final HistoryRepository historyRepository;
         private final BCryptPasswordEncoder passwordEncoder;
 
         @Transactional
@@ -79,40 +82,47 @@ public class InitDB {
 
         @Transactional
         public void initDB2() {
-//            for (int i = 1; i <= 14; i++) {
-//                User user = em.find(User.class, (long) i);
-//                for (int j = 1; j <= 14; j++) {
-//                    Problem problem = em.find(Problem.class, (long) j);
-//                    History history = History.createHistory(problem);
-//                    em.persist(history);
-//
-//                    Reply reply = Reply.createReply(user, history, problem, "user:" + i + ", problem:" + i);
-//                    em.persist(reply);
-//                }
-//            }
+            for (int i = 1; i <= 13; i++) {
+                User user1 = em.find(User.class, (long) i);
+                User user2 = em.find(User.class, (long) i + 1);
+                for (int j = 1; j <= 14; j++) {
+                    Problem problem = em.find(Problem.class, (long) j);
+                    Room room = roomRepository.save(Room.builder()
+                            .user1(user1)
+                            .user2(user2)
+                            .category(problem.getCategory())
+                            .build());
+                    History history = historyRepository.save(History.createHistory(problem, room));
+
+                    replyRepository.save(Reply.createReply(user1, history, problem, "user:" + i + ", problem:" + i));
+                    replyRepository.save(Reply.createReply(user2, history, problem, "user:" + i + 1 + ", problem:" + i + 1));
+                }
+            }
         }
 
         @Transactional
         public void initDB3() {
-//            User happhee = em.find(User.class, (long) 79238676);
-//            User mincshin = em.find(User.class, (long) 48898994);
-//
-//            for (int i = 1; i <= 14; i++) {
-//                Problem problem = em.find(Problem.class, (long) i);
-//                History history = History.createHistory(problem);
-//                em.persist(history);
-//
-//                Reply reply1 = Reply.createReply(happhee, history, problem, "안녕하세요 테스트를 위한 텍스트입니다. 텍스트, DB, SQL");
-//                Reply reply2 = Reply.createReply(mincshin, history, problem, "안경, 돌, 망치");
-//
-//                replyRepository.save(reply1);
-//                replyRepository.save(reply2);
-//
-//                em.flush();
-//
-//                keywordService.analyze(reply1.getAnswer(), (long)i);
-//                keywordService.analyze(reply2.getAnswer(), (long)i);
-//            }
+            User happhee = em.find(User.class, (long) 79238676);
+            User mincshin = em.find(User.class, (long) 48898994);
+
+            for (int i = 1; i <= 14; i++) {
+                Problem problem = em.find(Problem.class, (long) i);
+                Room room = roomRepository.save(Room.builder()
+                        .user1(happhee)
+                        .user2(mincshin)
+                        .category(problem.getCategory())
+                        .build());
+
+                History history = historyRepository.save(History.createHistory(problem, room));
+
+                Reply reply1 = replyRepository.save(Reply.createReply(happhee, history, problem, "안녕하세요 테스트를 위한 텍스트입니다. 텍스트, DB, SQL"));
+                Reply reply2 = replyRepository.save(Reply.createReply(mincshin, history, problem, "안경, 돌, 망치"));
+
+                em.flush();
+
+                keywordService.analyze(reply1.getAnswer(), (long) i);
+                keywordService.analyze(reply2.getAnswer(), (long) i);
+            }
         }
     }
 }

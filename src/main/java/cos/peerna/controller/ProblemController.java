@@ -44,7 +44,7 @@ public class ProblemController {
     }
 
     @GetMapping("/api/problems/category")
-    public ProblemResponseDto getProblemByCategory(@RequestParam Category category) {
+    public Problem getProblemByCategory(@RequestParam Category category) {
         return problemService.getRandomByCategory(category)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem Not Found"));
     }

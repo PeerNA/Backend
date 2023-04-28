@@ -51,7 +51,7 @@ public class ProblemService {
         return problemRepository.findAll();
     }
 
-    public Optional<ProblemResponseDto> getRandomByCategory(Category category) {
+    public Optional<Problem> getRandomByCategory(Category category) {
         List<Problem> problems = problemRepository.findProblemsByCategory(category);
 
         if (problems.isEmpty()) {
@@ -60,14 +60,7 @@ public class ProblemService {
             int randomElementIndex = ThreadLocalRandom.current().nextInt(problems.size()) % problems.size();
             Problem problem = problems.get(randomElementIndex);
 
-            List<Keyword> keywordList = keywordRepository.findKeywordsByProblem(problem);
-            return Optional.of(ProblemResponseDto.builder()
-                    .problemId(problem.getId())
-                    .question(problem.getQuestion())
-                    .answer(problem.getAnswer())
-                    .category(problem.getCategory())
-                    .keywordList(keywordList)
-                    .build());
+            return Optional.of(problem);
         }
     }
 }

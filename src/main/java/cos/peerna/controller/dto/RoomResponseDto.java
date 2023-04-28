@@ -13,5 +13,5 @@ import java.util.List;
 public class RoomResponseDto {
     private Long    roomId;
     private Long    historyId;
-    private ProblemResponseDto problem;
+    private Problem problem;
 }

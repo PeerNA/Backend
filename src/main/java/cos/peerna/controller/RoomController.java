@@ -7,6 +7,7 @@ import cos.peerna.security.dto.SessionUser;
 import cos.peerna.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,7 +25,7 @@ public class RoomController {
         DeferredResult<ResponseEntity<RoomResponseDto>> deferredResult = new DeferredResult<>();
 
         if (user == null) {
-            deferredResult.setResult(null);
+            deferredResult.setResult(ResponseEntity.status(401).build());
             return deferredResult;
         }
 

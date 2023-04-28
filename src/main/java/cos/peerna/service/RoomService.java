@@ -42,6 +42,7 @@ public class RoomService {
                 log.debug("{}: Already Matched", user.getName());
                 Room room = roomRepository.findById(findSelf.getRoomId()).orElse(null);
                 History history = historyRepository.findHistoryByRoom(room).orElse(null);
+                log.debug("Loading problem: {}", history.getProblem().getAnswer());
                 deferredResult.setResult(
                         ResponseEntity.ok(
                                 RoomResponseDto.builder()
@@ -84,14 +85,14 @@ public class RoomService {
                     .build());
             matchedUser.setRoomId(room.getId());
             waitingUserRepository.save(matchedUser);
-            ProblemResponseDto problemResponseDto = problemService.getRandomByCategory(selectedCategory).orElse(null);
-            History.createHistory()
+            Problem problem = problemService.getRandomByCategory(selectedCategory).orElse(null);
+            History history = historyRepository.save(History.createHistory(problem, room));
             deferredResult.setResult(
                     ResponseEntity.ok(
                             RoomResponseDto.builder()
                                     .roomId(room.getId())
                                     .historyId(history.getId())
-                                    .problem(problemResponseDto)
+                                    .problem(history.getProblem())
                                     .build()));
         }
     }
