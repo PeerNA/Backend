@@ -1,9 +1,10 @@
 package cos.peerna.controller.dto;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 @Data
+@ToString
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserRegisterRequestDto {
     private Long id;
     private String name;
