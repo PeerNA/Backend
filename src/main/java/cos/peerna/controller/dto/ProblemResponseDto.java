@@ -11,6 +11,7 @@ import java.util.List;
 @Builder
 public class ProblemResponseDto {
     private Long     problemId;
+    private String   question;
     private String   answer;
     private Category category;
     private List<Keyword> keywordList;

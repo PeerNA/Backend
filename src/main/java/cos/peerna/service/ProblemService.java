@@ -59,9 +59,11 @@ public class ProblemService {
         } else {
             int randomElementIndex = ThreadLocalRandom.current().nextInt(problems.size()) % problems.size();
             Problem problem = problems.get(randomElementIndex);
+
             List<Keyword> keywordList = keywordRepository.findKeywordsByProblem(problem);
             return Optional.of(ProblemResponseDto.builder()
                     .problemId(problem.getId())
+                    .question(problem.getQuestion())
                     .answer(problem.getAnswer())
                     .category(problem.getCategory())
                     .keywordList(keywordList)

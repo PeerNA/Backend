@@ -2,6 +2,9 @@ package cos.peerna.util;
 
 import cos.peerna.controller.dto.UserRegisterRequestDto;
 import cos.peerna.domain.*;
+import cos.peerna.repository.ReplyRepository;
+import cos.peerna.service.KeywordService;
+import cos.peerna.service.ReplyService;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -28,6 +31,8 @@ public class InitDB {
     @RequiredArgsConstructor
     static class InitService {
         private final EntityManager em;
+        private final KeywordService keywordService;
+        private final ReplyRepository replyRepository;
         private final BCryptPasswordEncoder passwordEncoder;
 
         @Transactional
@@ -97,17 +102,16 @@ public class InitDB {
                 History history = History.createHistory(problem);
                 em.persist(history);
 
-                Reply reply1 = Reply.createReply(happhee, history, problem, "user:Happhee" + ", problem:" + i);
-                Reply reply2 = Reply.createReply(mincshin, history, problem, "user:mincshin" + ", problem:" + i);
+                Reply reply1 = Reply.createReply(happhee, history, problem, "안녕하세요 테스트를 위한 텍스트입니다. 텍스트, DB, SQL");
+                Reply reply2 = Reply.createReply(mincshin, history, problem, "안경, 돌, 망치");
 
-                Keyword keyword1 = Keyword.createKeyword("DB", problem);
-                Keyword keyword2 = Keyword.createKeyword("SQL", problem);
-                Keyword keyword3 = Keyword.createKeyword("MongoDB", problem);
-                em.persist(reply1);
-                em.persist(reply2);
-                em.persist(keyword1);
-                em.persist(keyword2);
-                em.persist(keyword3);
+                replyRepository.save(reply1);
+                replyRepository.save(reply2);
+
+                em.flush();
+
+                keywordService.analyze(reply1.getAnswer(), (long)i);
+                keywordService.analyze(reply2.getAnswer(), (long)i);
             }
         }
     }
