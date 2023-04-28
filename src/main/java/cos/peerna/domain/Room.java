@@ -1,23 +1,30 @@
 package cos.peerna.domain;
 
-import cos.peerna.security.dto.SessionUser;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import lombok.Builder;
-import org.springframework.data.redis.core.RedisHash;
+import jakarta.persistence.*;
+import lombok.*;
+import net.minidev.json.annotate.JsonIgnore;
 
-@RedisHash("Room")
+import java.util.ArrayList;
+import java.util.List;
+
+@Getter
+@Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Room {
-    @Id @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
+    @Id @GeneratedValue
+    @Column(name = "room_id")
     private Long id;
-    private SessionUser user1;
-    private SessionUser user2;
+
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
+    private List<RoomUser> roomUsers = new ArrayList<>();
+
+    @Enumerated(EnumType.STRING)
     private Category category;
 
     @Builder
-    public Room(SessionUser user1, SessionUser user2, Category category) {
-        this.user1 = user1;
-        this.user2 = user2;
+    public Room(User user1, User user2, Category category) {
+        this.roomUsers.add(RoomUser.builder().room(this).user(user1).build());
+        this.roomUsers.add(RoomUser.builder().room(this).user(user2).build());
         this.category = category;
     }
 }
