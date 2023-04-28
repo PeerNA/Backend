@@ -74,34 +74,34 @@ public class InitDB {
 
         @Transactional
         public void initDB2() {
-            for (int i = 1; i <= 14; i++) {
-                User user = em.find(User.class, (long) i);
-                for (int j = 1; j <= 14; j++) {
-                    Problem problem = em.find(Problem.class, (long) j);
-                    History history = History.createHistory(problem);
-                    em.persist(history);
-
-                    Reply reply = Reply.createReply(user, history, problem, "user:" + i + ", problem:" + i);
-                    em.persist(reply);
-                }
-            }
+//            for (int i = 1; i <= 14; i++) {
+//                User user = em.find(User.class, (long) i);
+//                for (int j = 1; j <= 14; j++) {
+//                    Problem problem = em.find(Problem.class, (long) j);
+//                    History history = History.createHistory(problem);
+//                    em.persist(history);
+//
+//                    Reply reply = Reply.createReply(user, history, problem, "user:" + i + ", problem:" + i);
+//                    em.persist(reply);
+//                }
+//            }
         }
 
         @Transactional
         public void initDB3() {
-            User happhee = em.find(User.class, (long) 79238676);
-            User mincshin = em.find(User.class, (long) 48898994);
-
-            for (int i = 1; i <= 14; i++) {
-                Problem problem = em.find(Problem.class, (long) i);
-                History history = History.createHistory(problem);
-                em.persist(history);
-
-                Reply reply1 = Reply.createReply(happhee, history, problem, "user:Happhee" + ", problem:" + i);
-                Reply reply2 = Reply.createReply(mincshin, history, problem, "user:mincshin" + ", problem:" + i);
-                em.persist(reply1);
-                em.persist(reply2);
-            }
+//            User happhee = em.find(User.class, (long) 79238676);
+//            User mincshin = em.find(User.class, (long) 48898994);
+//
+//            for (int i = 1; i <= 14; i++) {
+//                Problem problem = em.find(Problem.class, (long) i);
+//                History history = History.createHistory(problem);
+//                em.persist(history);
+//
+//                Reply reply1 = Reply.createReply(happhee, history, problem, "user:Happhee" + ", problem:" + i);
+//                Reply reply2 = Reply.createReply(mincshin, history, problem, "user:mincshin" + ", problem:" + i);
+//                em.persist(reply1);
+//                em.persist(reply2);
+//            }
         }
     }
 }

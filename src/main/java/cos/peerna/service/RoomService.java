@@ -1,9 +1,9 @@
 package cos.peerna.service;
 
+import cos.peerna.controller.dto.ProblemResponseDto;
 import cos.peerna.controller.dto.RoomResponseDto;
-import cos.peerna.domain.Category;
-import cos.peerna.domain.Room;
-import cos.peerna.domain.WaitingUser;
+import cos.peerna.domain.*;
+import cos.peerna.repository.HistoryRepository;
 import cos.peerna.repository.RoomRepository;
 import cos.peerna.repository.UserRepository;
 import cos.peerna.repository.WaitingUserRepository;
@@ -26,6 +26,8 @@ public class RoomService {
     private final WaitingUserRepository waitingUserRepository;
     private final UserRepository userRepository;
     private final RoomRepository roomRepository;
+    private final HistoryRepository historyRepository;
+    private final ProblemService problemService;
 
     @Transactional
     public void match(SessionUser user, DeferredResult<ResponseEntity<RoomResponseDto>> deferredResult) {
@@ -38,10 +40,14 @@ public class RoomService {
             waitingUserRepository.delete(findSelf);
             if (findSelf.getRoomId() != -1L) {
                 log.debug("{}: Already Matched", user.getName());
+                Room room = roomRepository.findById(findSelf.getRoomId()).orElse(null);
+                History history = historyRepository.findHistoryByRoom(room).orElse(null);
                 deferredResult.setResult(
                         ResponseEntity.ok(
                                 RoomResponseDto.builder()
-                                        .roomId(findSelf.getRoomId())
+                                        .roomId(room.getId())
+                                        .historyId(history.getId())
+                                        .problem(history.getProblem())
                                         .build()));
                 return;
             }
@@ -78,10 +84,14 @@ public class RoomService {
                     .build());
             matchedUser.setRoomId(room.getId());
             waitingUserRepository.save(matchedUser);
+            ProblemResponseDto problemResponseDto = problemService.getRandomByCategory(selectedCategory).orElse(null);
+            History.createHistory()
             deferredResult.setResult(
                     ResponseEntity.ok(
                             RoomResponseDto.builder()
                                     .roomId(room.getId())
+                                    .historyId(history.getId())
+                                    .problem(problemResponseDto)
                                     .build()));
         }
     }

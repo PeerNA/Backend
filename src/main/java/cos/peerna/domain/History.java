@@ -25,10 +25,15 @@ public class History {
 	@JoinColumn(name = "problem_id")
 	private Problem problem;
 
-	public static History createHistory(Problem problem) {
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "room_id")
+	private Room room;
+
+	public static History createHistory(Problem problem, Room room) {
 		History history = new History();
 		history.time = LocalDate.now();
 		history.problem = problem;
+		history.room = room;
 		return history;
 	}
 }
