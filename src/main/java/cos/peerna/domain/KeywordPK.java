@@ -1,12 +1,10 @@
 package cos.peerna.domain;
 
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.io.Serializable;
+
 
 @Data
 @EqualsAndHashCode
@@ -17,4 +15,5 @@ public class KeywordPK implements Serializable {
 	private Problem problem;
 	@NotNull
 	private String name;
+
 }
