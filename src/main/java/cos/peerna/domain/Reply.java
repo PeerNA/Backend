@@ -8,6 +8,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -42,6 +43,9 @@ public class Reply {
     @NotNull @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    @OneToMany(mappedBy = "reply")
+    private List<Likey> likes = new ArrayList<>();
 
     public static Reply createReply(User user, History history, Problem problem, String answer) {
         Reply reply = new Reply();

@@ -1,9 +1,9 @@
 package cos.peerna.service;
 
-import com.twitter.penguin.korean.KoreanTokenJava;
+import cos.peerna.controller.dto.ReplyResponseDto;
 import cos.peerna.security.dto.SessionUser;
 import cos.peerna.controller.dto.ReplyRegisterRequestDto;
-import cos.peerna.controller.dto.ReplyResponseDto;
+import cos.peerna.controller.dto.data.ReplyData;
 import cos.peerna.domain.*;
 import cos.peerna.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -12,12 +12,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-
-import com.twitter.penguin.korean.TwitterKoreanProcessor;
-import com.twitter.penguin.korean.TwitterKoreanProcessorJava;
-import com.twitter.penguin.korean.phrase_extractor.KoreanPhraseExtractor;
-import com.twitter.penguin.korean.tokenizer.KoreanTokenizer;
-import scala.collection.Seq;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -50,17 +44,28 @@ public class ReplyService {
         keywordService.analyze(dto.getAnswer(), dto.getProblemId());
     }
 
-    public List<ReplyResponseDto> getRepliesByProblem(Long problemId) {
+    public ReplyResponseDto getRepliesByProblem(Long problemId, Long page) throws ResponseStatusException {
         Problem problem = problemRepository.findById(problemId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem Not Found"));
-        return replyRepository.findRepliesByProblem(problem).stream()
-                .map(r -> ReplyResponseDto.builder()
+
+        List<Reply> data = replyRepository.findRepliesByProblemOrderByLikeCountDesc(problem);
+        if (page*10 > data.size())
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "No More Data");
+
+        List<ReplyData> replyData = data.stream().skip(page*10).limit(10)
+                .map(r -> ReplyData.builder()
                         .replyId(r.getId())
                         .answer(r.getAnswer())
                         .userId(r.getUser().getId())
+                        .likes((long) r.getLikes().size())
                         .imageUrl(r.getUser().getImageUrl())
                         .name(r.getUser().getName())
                         .build()).collect(Collectors.toList());
+
+        return ReplyResponseDto.builder()
+                .replyData(replyData)
+                .totalCount((long) data.size())
+                .build();
     }
 
     public void recommendReply(SessionUser sessionUser, Long replyId) {

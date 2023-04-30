@@ -105,10 +105,14 @@ public class InitDB {
                 Reply reply1 = Reply.createReply(happhee, history, problem, "안녕하세요 테스트를 위한 텍스트입니다. 텍스트, DB, SQL");
                 Reply reply2 = Reply.createReply(mincshin, history, problem, "안경, 돌, 망치");
 
+
                 replyRepository.save(reply1);
                 replyRepository.save(reply2);
 
                 em.flush();
+
+                log.info("reply1: {}", reply1.getAnswer());
+                log.info("reply2: {}", reply2.getAnswer());
 
                 keywordService.analyze(reply1.getAnswer(), (long)i);
                 keywordService.analyze(reply2.getAnswer(), (long)i);

@@ -72,6 +72,7 @@ public class KeywordService {
                         .problem(problem)
                         .count((long) map.get(key))
                         .build();
+                log.info("###keyword Name : {}", keyword.getName());
                 keywords.add(keyword);
             } else {
                 Keyword.updateKeyword(findKeyword.get());
