@@ -7,7 +7,9 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -43,11 +45,17 @@ public class Reply {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @OneToMany(mappedBy = "reply")
+    private List<Likey> likes = new ArrayList<>();
+
+    private Long likeCount;
+
     public static Reply createReply(User user, History history, Problem problem, String answer) {
         Reply reply = new Reply();
         reply.answer = answer;
         reply.history = history;
         reply.problem = problem;
+        reply.likeCount = 0L;
         reply.user = user;
         return reply;
     }

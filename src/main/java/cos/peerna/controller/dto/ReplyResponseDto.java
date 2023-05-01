@@ -1,20 +1,14 @@
 package cos.peerna.controller.dto;
 
-import cos.peerna.domain.History;
-import cos.peerna.domain.User;
+import cos.peerna.controller.dto.data.ReplyData;
 import lombok.Builder;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 @Builder
 public class ReplyResponseDto {
-    private Long    replyId;
-    private Long    userId;
-    private String  name;
-    private String  imageUrl;
-    private String  answer;
-
+	private List<ReplyData> replyData;
+	private Long totalCount;
 }
-
-
-
