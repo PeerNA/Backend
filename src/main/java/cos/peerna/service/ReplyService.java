@@ -7,6 +7,7 @@ import cos.peerna.controller.dto.data.ReplyData;
 import cos.peerna.domain.*;
 import cos.peerna.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -44,27 +45,33 @@ public class ReplyService {
         keywordService.analyze(dto.getAnswer(), dto.getProblemId());
     }
 
-    public ReplyResponseDto getRepliesByProblem(Long problemId, Long page) throws ResponseStatusException {
+    public ReplyResponseDto getRepliesByProblem(Long problemId, int page) {
+        final int PAGE_SIZE = 10;
+
         Problem problem = problemRepository.findById(problemId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem Not Found"));
 
-        List<Reply> data = replyRepository.findRepliesByProblemOrderByLikeCountDesc(problem);
-        if (page*10 > data.size())
-            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "No More Data");
+        List<Reply> data = replyRepository.findRepliesByProblemOrderByLikeCountDesc(problem, PageRequest.of(page, PAGE_SIZE));
 
-        List<ReplyData> replyData = data.stream().skip(page*10).limit(10)
+        Long size = null;
+
+        if (page == 0) {
+            size = replyRepository.countByProblem(problem);
+        }
+
+        List<ReplyData> replyData = data.stream()
                 .map(r -> ReplyData.builder()
                         .replyId(r.getId())
                         .answer(r.getAnswer())
                         .userId(r.getUser().getId())
-                        .likes((long) r.getLikes().size())
+                        .likes(r.getLikeCount())
                         .imageUrl(r.getUser().getImageUrl())
                         .name(r.getUser().getName())
                         .build()).collect(Collectors.toList());
 
         return ReplyResponseDto.builder()
                 .replyData(replyData)
-                .totalCount((long) data.size())
+                .totalCount((page == 0) ? size : 0)
                 .build();
     }
 

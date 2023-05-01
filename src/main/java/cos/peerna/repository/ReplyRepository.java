@@ -20,6 +20,10 @@ public interface ReplyRepository extends JpaRepository<Reply, Long> {
     List<Reply> findRepliesByUserOrderByIdDesc(User user, Pageable pageable);
     List<Reply> findRepliesByProblem(Problem problem);
 
-    @Query("SELECT r FROM Reply r LEFT JOIN FETCH r.likes WHERE r.problem = :problem ORDER BY SIZE(r.likes) DESC")
-    List<Reply> findRepliesByProblemOrderByLikeCountDesc(@Param("problem") Problem problem);
+    List<Reply> findRepliesByProblemOrderByLikeCountDesc(Problem problem, Pageable pageable);
+
+    Long countByProblem(Problem problem);
+
+//    @Query("SELECT r FROM Reply r LEFT JOIN FETCH r.likes WHERE r.problem = :problem ORDER BY SIZE(r.likes) DESC")
+//    List<Reply> findRepliesByProblemOrderByLikeCountDesc(@Param("problem") Problem problem);
 }
