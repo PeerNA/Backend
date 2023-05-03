@@ -59,6 +59,15 @@ public class Reply {
         reply.user = user;
         return reply;
     }
+
+    public static void likeReply(Reply reply) {
+        ++reply.likeCount;
+    }
+
+    public static void dislikeReply(Reply reply) {
+        --reply.likeCount;
+    }
+
 //    id를 dto로 받는게 맞는가?
 
 //    public static Reply createProblem(ProblemRegisterRequestDto dto) {

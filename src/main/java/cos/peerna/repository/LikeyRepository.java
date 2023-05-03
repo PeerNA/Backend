@@ -9,5 +9,5 @@ import java.util.Optional;
 
 @Repository
 public interface LikeyRepository extends JpaRepository<Likey, Long> {
-    Optional<Likey> findLikeyByUserAndUser(User user, Reply reply);
+    Optional<Likey> findLikeyByUserAndReply(User user, Reply reply);
 }
