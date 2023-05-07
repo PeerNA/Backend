@@ -9,6 +9,5 @@ import java.util.Optional;
 
 @Repository
 public interface HistoryRepository extends JpaRepository<History, Long> {
-    List<History> findHistoriesById(Long id);
-    Optional<History> findHistoryByRoom(Room room);
+
 }

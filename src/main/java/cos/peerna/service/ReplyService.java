@@ -1,6 +1,5 @@
 package cos.peerna.service;
 
-import com.twitter.penguin.korean.KoreanTokenJava;
 import cos.peerna.security.dto.SessionUser;
 import cos.peerna.controller.dto.ReplyRegisterRequestDto;
 import cos.peerna.controller.dto.ReplyResponseDto;
@@ -12,12 +11,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-
-import com.twitter.penguin.korean.TwitterKoreanProcessor;
-import com.twitter.penguin.korean.TwitterKoreanProcessorJava;
-import com.twitter.penguin.korean.phrase_extractor.KoreanPhraseExtractor;
-import com.twitter.penguin.korean.tokenizer.KoreanTokenizer;
-import scala.collection.Seq;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,9 +27,11 @@ public class ReplyService {
     private final HistoryRepository historyRepository;
 
     private final KeywordService keywordService;
+    private final RoomRepository roomRepository;
 
-    public void make(ReplyRegisterRequestDto dto, SessionUser sessionUser) {
-        User user = userRepository.findById(sessionUser.getId())
+    @Transactional
+    public void make(ReplyRegisterRequestDto dto, Long userId) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("No User Data"));
         Problem problem = problemRepository.findById(dto.getProblemId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem Not Found"));
@@ -45,6 +40,12 @@ public class ReplyService {
 
         Reply reply = Reply.createReply(user, history, problem, dto.getAnswer());
         replyRepository.save(reply);
+        int numberOfUserInRoom = roomRepository.findById(dto.getRoomId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Room Not Found")).getConnectedUsers().size();
+        int numberOfReplyOfHistory = replyRepository.findRepliesByHistory(history).size();
+        if (numberOfUserInRoom <= numberOfReplyOfHistory) {
+            history.solve();
+        }
 
         /* 키워드 분석 및 KeywordRepository에 저장 */
         keywordService.analyze(dto.getAnswer(), dto.getProblemId());
@@ -69,7 +70,7 @@ public class ReplyService {
         Reply reply = replyRepository.findById(replyId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Reply Not Found"));
 
-        likeyRepository.findLikeyByUserAndUser(user, reply).ifPresent(recommend -> {
+        likeyRepository.findLikeyByUserAndReply(user, reply).ifPresent(recommend -> {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Already Recommended Reply");
         });
         Likey likey = Likey.createLikey(user, reply);

@@ -11,13 +11,14 @@ import java.util.Collection;
 
 @Getter
 public class SessionUser implements UserDetails {
-    private final Long id;
-    private final String name;
-    private final String email;
-    private final String password;
-    private final String imageUrl;
-    private final Interest interest;
-    private final Career career;
+    private Long id;
+    private String name;
+    private String email;
+    private String password;
+    private String imageUrl;
+    private Interest interest;
+    private Career career;
+    private boolean proceedAgree;
 
     public SessionUser(User user) {
         this.id = user.getId();
@@ -27,6 +28,7 @@ public class SessionUser implements UserDetails {
         this.imageUrl = user.getImageUrl();
         this.interest = user.getInterests();
         this.career = user.getCareer();
+        this.proceedAgree = false;
     }
 
     @Override

@@ -25,15 +25,19 @@ public class History {
 	@JoinColumn(name = "problem_id")
 	private Problem problem;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "room_id")
-	private Room room;
+	@Convert(converter = BooleanToYNConverter.class)
+	private boolean isSolved;
 
-	public static History createHistory(Problem problem, Room room) {
+	public static History createHistory(Problem problem) {
 		History history = new History();
 		history.time = LocalDate.now();
 		history.problem = problem;
-		history.room = room;
+		history.isSolved = false;
 		return history;
+	}
+
+	public History solve() {
+		this.isSolved = true;
+		return this;
 	}
 }

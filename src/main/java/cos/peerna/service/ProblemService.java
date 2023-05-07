@@ -1,6 +1,5 @@
 package cos.peerna.service;
 
-import cos.peerna.controller.dto.ProblemResponseDto;
 import cos.peerna.domain.Category;
 import cos.peerna.domain.Keyword;
 import cos.peerna.domain.Problem;

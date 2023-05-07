@@ -1,7 +1,7 @@
 package cos.peerna.repository;
 
 import cos.peerna.domain.Room;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.CrudRepository;
 
-public interface RoomRepository extends JpaRepository<Room, Long> {
+public interface RoomRepository extends CrudRepository<Room, Long> {
 }

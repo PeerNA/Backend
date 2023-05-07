@@ -3,28 +3,31 @@ package cos.peerna.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import net.minidev.json.annotate.JsonIgnore;
+import org.springframework.data.redis.core.RedisHash;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
-@Getter
-@Entity
+@Data
+@RedisHash("Room")
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Room {
     @Id @GeneratedValue
     @Column(name = "room_id")
     private Long id;
-
-    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
-    private List<RoomUser> roomUsers = new ArrayList<>();
-
     @Enumerated(EnumType.STRING)
     private Category category;
+    private LinkedList<Long> historyIdList = new LinkedList<>();
+    private HashMap<Long, ConnectedUser> connectedUsers = new HashMap<>();
 
     @Builder
-    public Room(User user1, User user2, Category category) {
-        this.roomUsers.add(RoomUser.builder().room(this).user(user1).build());
-        this.roomUsers.add(RoomUser.builder().room(this).user(user2).build());
+    public Room(List<Long> connectedUserIds, Long historyId, Category category) {
+        this.connectedUsers.put(connectedUserIds.get(0), new ConnectedUser(connectedUserIds.get(0)));
+        this.connectedUsers.put(connectedUserIds.get(1), new ConnectedUser(connectedUserIds.get(1)));
+        this.historyIdList.add(historyId);
         this.category = category;
     }
 }

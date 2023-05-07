@@ -101,12 +101,14 @@ public class HistoryService {
                 .build();
     }
 
-    public void createHistory(Long problemId, Long roomId) {
+    public History createHistory(Long problemId, Long roomId) {
         Problem problem = problemRepository.findById(problemId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem Not Found"));
         Room room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Room Not Found"));
-        History history = History.createHistory(problem, room);
-        historyRepository.save(history);
+        History history = historyRepository.save(History.createHistory(problem));
+        room.getHistoryIdList().add(history.getId());
+        roomRepository.save(room);
+        return history;
     }
 }

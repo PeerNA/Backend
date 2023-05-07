@@ -5,8 +5,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.index.Indexed;
 import org.springframework.web.context.request.async.DeferredResult;
@@ -18,8 +17,15 @@ import java.util.List;
 
 import static jakarta.persistence.EnumType.STRING;
 
+/**
+ * 동료매칭을 기다리는 유저
+ * 매칭을 기다리는 동안 Redis 안에 저장되어 있다가
+ * 매칭이 성사되면 Redis에서 삭제된다.
+ */
 @Data
 @RedisHash("WaitingUser")
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class WaitingUser {
 
     @Id

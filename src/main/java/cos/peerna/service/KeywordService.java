@@ -4,7 +4,6 @@ import com.twitter.penguin.korean.KoreanTokenJava;
 import com.twitter.penguin.korean.TwitterKoreanProcessorJava;
 import com.twitter.penguin.korean.tokenizer.KoreanTokenizer;
 import cos.peerna.controller.dto.KeywordRegisterRequestDto;
-import cos.peerna.controller.dto.ProblemResponseDto;
 import cos.peerna.domain.Category;
 import cos.peerna.domain.Keyword;
 import cos.peerna.domain.Problem;
