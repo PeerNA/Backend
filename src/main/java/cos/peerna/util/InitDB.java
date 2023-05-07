@@ -146,6 +146,7 @@ public class InitDB {
                         .historyId(history.getId())
                         .roomId(room.getId())
                         .build(), mincshin.getId());
+
             }
         }
     }

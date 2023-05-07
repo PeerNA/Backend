@@ -1,19 +1,18 @@
 package cos.peerna.controller;
 
 import cos.peerna.controller.dto.*;
+import cos.peerna.controller.dto.data.ReplyData;
 import cos.peerna.domain.Category;
-import cos.peerna.domain.Keyword;
-import cos.peerna.domain.Problem;
-import cos.peerna.domain.Reply;
 import cos.peerna.service.ProblemService;
 import cos.peerna.service.ReplyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import java.io.IOException;
+
 import java.util.List;
 
 
@@ -50,8 +49,8 @@ public class ProblemController {
     }
 
     @GetMapping("/api/problems/replies")
-    public List<ReplyResponseDto> getRepliesByProblem(@RequestParam Long problemId) {
-        return replyService.getRepliesByProblem(problemId);
+    public ReplyResponseDto getRepliesByProblem(@RequestParam Long problemId, @RequestParam @Nullable int page) {
+        return replyService.getRepliesByProblem(problemId, page);
     }
 
 }
