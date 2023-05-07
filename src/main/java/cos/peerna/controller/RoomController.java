@@ -64,6 +64,6 @@ public class RoomController {
         return deferredResult;
     }
 
-    @GetMapping("/api/match/cancel")
+//    @GetMapping("/api/match/cancel")
 
 }
