@@ -3,6 +3,7 @@ package cos.peerna.controller;
 import cos.peerna.controller.dto.*;
 import cos.peerna.controller.dto.data.ReplyData;
 import cos.peerna.domain.Category;
+import cos.peerna.domain.Problem;
 import cos.peerna.service.ProblemService;
 import cos.peerna.service.ReplyService;
 import lombok.RequiredArgsConstructor;

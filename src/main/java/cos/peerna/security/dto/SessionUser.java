@@ -18,7 +18,6 @@ public class SessionUser implements UserDetails {
     private String imageUrl;
     private Interest interest;
     private Career career;
-    private boolean proceedAgree;
 
     public SessionUser(User user) {
         this.id = user.getId();
@@ -28,7 +27,6 @@ public class SessionUser implements UserDetails {
         this.imageUrl = user.getImageUrl();
         this.interest = user.getInterests();
         this.career = user.getCareer();
-        this.proceedAgree = false;
     }
 
     @Override
