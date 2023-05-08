@@ -3,7 +3,9 @@ package cos.peerna.controller;
 import cos.peerna.controller.dto.*;
 import cos.peerna.controller.dto.data.ReplyData;
 import cos.peerna.domain.Category;
+import cos.peerna.domain.Keyword;
 import cos.peerna.domain.Problem;
+import cos.peerna.repository.KeywordRepository;
 import cos.peerna.service.ProblemService;
 import cos.peerna.service.ReplyService;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,7 @@ public class ProblemController {
 
     private final ProblemService problemService;
     private final ReplyService replyService;
+    private final KeywordRepository keywordRepository;
 
     @PostMapping("/api/problems/new")
     public ResponseEntity<String> registerProblem(@RequestBody ProblemRegisterRequestDto dto) {
@@ -44,9 +47,17 @@ public class ProblemController {
     }
 
     @GetMapping("/api/problems/category")
-    public Problem getProblemByCategory(@RequestParam Category category) {
-        return problemService.getRandomByCategory(category)
+    public ProblemResponseDto getProblemByCategory(@RequestParam Category category) {
+        Problem problem = problemService.getRandomByCategory(category)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem Not Found"));
+        List<Keyword> keywordList = keywordRepository.findKeywordsByProblem(problem);
+        return ProblemResponseDto.builder()
+                .problemId(problem.getId())
+                .question(problem.getQuestion())
+                .answer(problem.getAnswer())
+                .category(problem.getCategory())
+                .keywordList(keywordList)
+                .build();
     }
 
     @GetMapping("/api/problems/replies")
