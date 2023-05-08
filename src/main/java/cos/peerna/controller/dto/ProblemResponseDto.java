@@ -16,6 +16,3 @@ public class ProblemResponseDto {
     private Category category;
     private List<Keyword> keywordList;
 }
-
-
-

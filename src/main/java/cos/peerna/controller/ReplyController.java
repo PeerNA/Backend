@@ -25,7 +25,7 @@ public class ReplyController {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
 					.body("No User Data");
 		}
-		replyService.make(dto, user);
+		replyService.make(dto, user.getId());
 
 		return ResponseEntity.ok()
 				.body("success");

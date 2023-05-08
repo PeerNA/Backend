@@ -49,8 +49,7 @@ public class SecurityConfig {
                 .successHandler(customAuthenticationSuccessHandler)
                 .failureHandler(customAuthenticationFailureHandler)
                 .userInfoEndpoint()
-                    .userService(customOAuth2UserService)
-        ;
+                    .userService(customOAuth2UserService);
         http.httpBasic();
         http
                 .formLogin()

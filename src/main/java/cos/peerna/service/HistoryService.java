@@ -27,6 +27,8 @@ public class HistoryService {
     private final ProblemRepository problemRepository;
     private final KeywordRepository keywordRepository;
 
+    private final RoomRepository roomRepository;
+
 //    public void make(Problem problem) {
 //        validateProblem(problem);
 //        problemRepository.save(problem);
@@ -99,10 +101,14 @@ public class HistoryService {
                 .build();
     }
 
-    public void createHistory(Long problemId) {
+    public History createHistory(Long problemId, Long roomId) {
         Problem problem = problemRepository.findById(problemId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem Not Found"));
-        History history = History.createHistory(problem);
-        historyRepository.save(history);
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Room Not Found"));
+        History history = historyRepository.save(History.createHistory(problem));
+        room.getHistoryIdList().add(history.getId());
+        roomRepository.save(room);
+        return history;
     }
 }

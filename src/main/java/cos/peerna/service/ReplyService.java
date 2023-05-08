@@ -29,9 +29,11 @@ public class ReplyService {
     private final HistoryRepository historyRepository;
 
     private final KeywordService keywordService;
+    private final RoomRepository roomRepository;
 
-    public void make(ReplyRegisterRequestDto dto, SessionUser sessionUser) {
-        User user = userRepository.findById(sessionUser.getId())
+    @Transactional
+    public void make(ReplyRegisterRequestDto dto, Long userId) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("No User Data"));
         Problem problem = problemRepository.findById(dto.getProblemId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem Not Found"));
@@ -40,6 +42,12 @@ public class ReplyService {
 
         Reply reply = Reply.createReply(user, history, problem, dto.getAnswer());
         replyRepository.save(reply);
+        int numberOfUserInRoom = roomRepository.findById(dto.getRoomId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Room Not Found")).getConnectedUsers().size();
+        int numberOfReplyOfHistory = replyRepository.findRepliesByHistory(history).size();
+        if (numberOfUserInRoom <= numberOfReplyOfHistory) {
+            history.solve();
+        }
 
         /* 키워드 분석 및 KeywordRepository에 저장 */
         keywordService.analyze(dto.getAnswer(), dto.getProblemId());

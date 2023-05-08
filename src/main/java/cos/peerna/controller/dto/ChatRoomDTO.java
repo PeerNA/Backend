@@ -3,11 +3,12 @@ package cos.peerna.controller.dto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 @Getter
 @Setter
-public class ChatRoomDTO {
+public class ChatRoomDTO implements Serializable {
 
     private String roomId;
     private String name;

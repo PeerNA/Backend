@@ -1,23 +1,33 @@
 package cos.peerna.domain;
 
-import cos.peerna.security.dto.SessionUser;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import lombok.Builder;
+import jakarta.persistence.*;
+import lombok.*;
+import net.minidev.json.annotate.JsonIgnore;
 import org.springframework.data.redis.core.RedisHash;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+
+@Data
 @RedisHash("Room")
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Room {
-    @Id @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
+    @Id @GeneratedValue
+    @Column(name = "room_id")
     private Long id;
-    private SessionUser user1;
-    private SessionUser user2;
+    @Enumerated(EnumType.STRING)
     private Category category;
+    private LinkedList<Long> historyIdList = new LinkedList<>();
+    private HashMap<Long, ConnectedUser> connectedUsers = new HashMap<>();
 
     @Builder
-    public Room(SessionUser user1, SessionUser user2, Category category) {
-        this.user1 = user1;
-        this.user2 = user2;
+    public Room(List<Long> connectedUserIds, Long historyId, Category category) {
+        this.connectedUsers.put(connectedUserIds.get(0), new ConnectedUser(connectedUserIds.get(0)));
+        this.connectedUsers.put(connectedUserIds.get(1), new ConnectedUser(connectedUserIds.get(1)));
+        this.historyIdList.add(historyId);
         this.category = category;
     }
 }

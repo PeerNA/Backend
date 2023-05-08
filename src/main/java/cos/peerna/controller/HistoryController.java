@@ -44,12 +44,14 @@ public class HistoryController {
      * 원활한 테스트 환경을 위해 만듬
      */
     @PostMapping("/api/history/new")
-    public ResponseEntity<String> createHistory(@NotNull @LoginUser SessionUser user, @RequestParam Long problemId) {
+    public ResponseEntity<String> createHistory(@NotNull @LoginUser SessionUser user,
+                                                @RequestParam Long problemId,
+                                                @RequestParam Long roomId) {
         if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body("No User Data");
         }
-        historyService.createHistory(problemId);
+        historyService.createHistory(problemId, roomId);
         return ResponseEntity.ok()
                 .body("success");
     }
