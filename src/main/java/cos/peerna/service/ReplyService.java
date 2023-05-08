@@ -53,12 +53,6 @@ public class ReplyService {
 
         List<Reply> data = replyRepository.findRepliesByProblemOrderByLikeCountDesc(problem, PageRequest.of(page, PAGE_SIZE));
 
-        Long size = null;
-
-        if (page == 0) {
-            size = replyRepository.countByProblem(problem);
-        }
-
         List<ReplyData> replyData = data.stream()
                 .map(r -> ReplyData.builder()
                         .replyId(r.getId())
@@ -71,7 +65,7 @@ public class ReplyService {
 
         return ReplyResponseDto.builder()
                 .replyData(replyData)
-                .totalCount((page == 0) ? size : 0)
+                .totalCount(replyRepository.countByProblem(problem))
                 .build();
     }
 
