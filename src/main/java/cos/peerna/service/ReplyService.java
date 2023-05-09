@@ -6,6 +6,7 @@ import cos.peerna.controller.dto.ReplyRegisterRequestDto;
 import cos.peerna.controller.dto.data.ReplyData;
 import cos.peerna.domain.*;
 import cos.peerna.repository.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -27,6 +28,7 @@ public class ReplyService {
     private final ProblemRepository problemRepository;
     private final LikeyRepository likeyRepository;
     private final HistoryRepository historyRepository;
+    private final NotificationRepository notificationRepository;
 
     private final KeywordService keywordService;
     private final RoomRepository roomRepository;
@@ -77,7 +79,7 @@ public class ReplyService {
                 .build();
     }
 
-    public void recommendReply(SessionUser sessionUser, Long replyId) {
+    public void recommendReply(@NotNull SessionUser sessionUser, Long replyId) {
         User user = userRepository.findById(sessionUser.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User Not Found"));
         Reply reply = replyRepository.findById(replyId)
@@ -90,6 +92,12 @@ public class ReplyService {
         likeyRepository.save(likey);
 
         Reply.likeReply(reply);
+
+        /* 좋아요가 일정 수 이상 넘어가면 자동으로 PR 요청 메시지 */
+        if (reply.getLikeCount() == 10) {
+            Notification notification = Notification.createNotification(user, reply, NotificationType.PULL_REQ, "답변이 10개 이상이 되어 PR 요청을 보냈습니다.");
+            notificationRepository.save(notification);
+        }
     }
 
     public void unrecommendReply(SessionUser sessionUser, Long replyId) {
