@@ -1,6 +1,5 @@
 package cos.peerna.domain;
 
-import cos.peerna.controller.dto.UserRegisterRequestDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;

@@ -43,7 +43,7 @@ public class ReplyService {
         Reply reply = Reply.createReply(user, history, problem, dto.getAnswer());
         replyRepository.save(reply);
         int numberOfUserInRoom = roomRepository.findById(dto.getRoomId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Room Not Found")).getConnectedUsers().size();
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Room Not Found")).getConnectedUserIdList().size();
         int numberOfReplyOfHistory = replyRepository.findRepliesByHistory(history).size();
         if (numberOfUserInRoom <= numberOfReplyOfHistory) {
             history.solve();

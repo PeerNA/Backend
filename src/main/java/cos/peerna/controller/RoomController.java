@@ -1,14 +1,15 @@
 package cos.peerna.controller;
 
 import cos.peerna.controller.dto.RoomResponseDto;
+import cos.peerna.repository.ConnectedUserRepository;
 import cos.peerna.security.LoginUser;
 import cos.peerna.security.dto.SessionUser;
 import cos.peerna.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,8 +22,7 @@ import org.springframework.web.context.request.async.DeferredResult;
 public class RoomController {
 
     private final RoomService roomService;
-//    private final SessionRepository<SessionUser> sessionRepository;
-//    private final RedisOperationsSessionRepository sessionRepository;
+    private final ConnectedUserRepository connectedUserRepository;
 
     @GetMapping("/api/match")
     public DeferredResult<ResponseEntity<RoomResponseDto>> match(@LoginUser SessionUser user) {
@@ -30,6 +30,10 @@ public class RoomController {
 
         if (user == null) {
             deferredResult.setResult(ResponseEntity.status(401).build());
+            return deferredResult;
+        }
+        if (connectedUserRepository.findById(user.getId()).orElse(null) != null) {
+            deferredResult.setResult(ResponseEntity.status(HttpStatus.CONFLICT).build());
             return deferredResult;
         }
 
@@ -64,6 +68,22 @@ public class RoomController {
         return deferredResult;
     }
 
-//    @GetMapping("/api/match/cancel")
+    // match 대기열 취소
+    @DeleteMapping("/api/match")
+    public ResponseEntity<String> matchCancel(@LoginUser SessionUser user) {
+        if (user == null)
+            return ResponseEntity.status(401).build();
+
+        return roomService.matchCancel(user);
+    }
+
+    // 방 삭제
+    @DeleteMapping("/api/room")
+    public ResponseEntity<String> leave(@LoginUser SessionUser user, @RequestParam Long roomId) {
+        if (user == null)
+            return ResponseEntity.status(401).build();
+
+        return roomService.leave(user, roomId);
+    }
 
 }
