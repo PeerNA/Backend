@@ -2,8 +2,10 @@ package cos.peerna.controller.dto;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class ReplyRegisterRequestDto {
 	private String answer;
 	private Long problemId;

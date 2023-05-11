@@ -6,6 +6,7 @@ import com.twitter.penguin.korean.tokenizer.KoreanTokenizer;
 import cos.peerna.controller.dto.KeywordRegisterRequestDto;
 import cos.peerna.domain.Category;
 import cos.peerna.domain.Keyword;
+import cos.peerna.domain.KeywordPK;
 import cos.peerna.domain.Problem;
 import cos.peerna.repository.KeywordRepository;
 import cos.peerna.repository.ProblemRepository;
@@ -33,14 +34,14 @@ public class KeywordService {
     public void make(String name, Long problemId) {
         Problem problem = problemRepository.findById(problemId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem Not Found"));
-        Optional<Keyword> find = keywordRepository.findKeywordByNameAndProblem(name, problem);
+        Keyword find = keywordRepository.findKeywordByNameAndProblem(name, problem);
 
-        if (!find.isPresent()) {
+        if (find == null) {
             Keyword keyword = Keyword.createKeyword(name, problem);
             keywordRepository.save(keyword);
         }
         else {
-            Keyword.updateKeyword(find.get());
+            Keyword.updateKeyword(find);
         }
     }
 
@@ -64,8 +65,8 @@ public class KeywordService {
         Problem problem = problemRepository.findById(problemId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem Not Found"));
         for (String key : map.keySet()) {
-            Optional<Keyword> findKeyword = keywordRepository.findKeywordByNameAndProblem(key, problem);
-            if (!findKeyword.isPresent()) {
+            Keyword findKeyword = keywordRepository.findKeywordByNameAndProblem(key, problem);
+            if (findKeyword == null) {
                 Keyword keyword = Keyword.builder()
                         .name(key)
                         .problem(problem)
@@ -74,7 +75,7 @@ public class KeywordService {
                 log.info("###keyword Name : {}", keyword.getName());
                 keywords.add(keyword);
             } else {
-                Keyword.updateKeyword(findKeyword.get());
+                Keyword.updateKeyword(findKeyword);
             }
         }
         keywordRepository.saveAll(keywords);

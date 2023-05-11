@@ -9,19 +9,21 @@ import org.checkerframework.checker.units.qual.N;
 
 @Entity
 @Getter
-@EqualsAndHashCode
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@IdClass(KeywordPK.class)
 public class Keyword {
 
-    @Id @Column(name = "name", nullable = false)
+	@GeneratedValue
+	@Id @Column(name = "keyword_id", nullable = false)
+	private Long id;
+
+	@Column(name = "name", nullable = false)
     private String name;
 
     @NotNull @Column(name = "count", nullable = false)
     private Long count;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @Id @JoinColumn(name = "problem", nullable = false)
+    @JoinColumn(name = "problem", nullable = false)
     private Problem problem;
 
 	@Builder
