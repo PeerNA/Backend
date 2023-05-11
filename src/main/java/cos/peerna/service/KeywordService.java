@@ -3,8 +3,6 @@ package cos.peerna.service;
 import com.twitter.penguin.korean.KoreanTokenJava;
 import com.twitter.penguin.korean.TwitterKoreanProcessorJava;
 import com.twitter.penguin.korean.tokenizer.KoreanTokenizer;
-import cos.peerna.controller.dto.KeywordRegisterRequestDto;
-import cos.peerna.domain.Category;
 import cos.peerna.domain.Keyword;
 import cos.peerna.domain.Problem;
 import cos.peerna.repository.KeywordRepository;
@@ -35,7 +33,7 @@ public class KeywordService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem Not Found"));
         Optional<Keyword> find = keywordRepository.findKeywordByNameAndProblem(name, problem);
 
-        if (!find.isPresent()) {
+        if (find.isEmpty()) {
             Keyword keyword = Keyword.createKeyword(name, problem);
             keywordRepository.save(keyword);
         }
@@ -65,7 +63,7 @@ public class KeywordService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem Not Found"));
         for (String key : map.keySet()) {
             Optional<Keyword> findKeyword = keywordRepository.findKeywordByNameAndProblem(key, problem);
-            if (!findKeyword.isPresent()) {
+            if (findKeyword.isEmpty()) {
                 Keyword keyword = Keyword.builder()
                         .name(key)
                         .problem(problem)

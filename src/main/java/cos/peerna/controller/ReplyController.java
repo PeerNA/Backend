@@ -42,4 +42,16 @@ public class ReplyController {
 		return ResponseEntity.ok()
 				.body("success");
 	}
+
+	@GetMapping("/api/reply/dislikey")
+	public ResponseEntity<String> unrecommendReply(@Nullable @LoginUser SessionUser user, @RequestParam Long replyId) {
+		if (user == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+					.body("No User Data");
+		}
+		replyService.unrecommendReply(user, replyId);
+
+		return ResponseEntity.ok()
+				.body("success");
+	}
 }

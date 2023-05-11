@@ -88,5 +88,20 @@ public class ReplyService {
         });
         Likey likey = Likey.createLikey(user, reply);
         likeyRepository.save(likey);
+
+        Reply.likeReply(reply);
+    }
+
+    public void unrecommendReply(SessionUser sessionUser, Long replyId) {
+        User user = userRepository.findById(sessionUser.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User Not Found"));
+        Reply reply = replyRepository.findById(replyId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Reply Not Found"));
+        Likey likey = likeyRepository.findLikeyByUserAndReply(user, reply)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Likey Not Found"));
+
+        Reply.dislikeReply(reply);
+
+        likeyRepository.findLikeyByUserAndReply(user, reply).ifPresent(likeyRepository::delete);
     }
 }
