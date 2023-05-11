@@ -3,10 +3,7 @@ package cos.peerna.service;
 import com.twitter.penguin.korean.KoreanTokenJava;
 import com.twitter.penguin.korean.TwitterKoreanProcessorJava;
 import com.twitter.penguin.korean.tokenizer.KoreanTokenizer;
-import cos.peerna.controller.dto.KeywordRegisterRequestDto;
-import cos.peerna.domain.Category;
 import cos.peerna.domain.Keyword;
-import cos.peerna.domain.KeywordPK;
 import cos.peerna.domain.Problem;
 import cos.peerna.repository.KeywordRepository;
 import cos.peerna.repository.ProblemRepository;
@@ -34,14 +31,14 @@ public class KeywordService {
     public void make(String name, Long problemId) {
         Problem problem = problemRepository.findById(problemId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem Not Found"));
-        Keyword find = keywordRepository.findKeywordByNameAndProblem(name, problem);
+        Optional<Keyword> find = keywordRepository.findKeywordByNameAndProblem(name, problem);
 
-        if (find == null) {
+        if (find.isEmpty()) {
             Keyword keyword = Keyword.createKeyword(name, problem);
             keywordRepository.save(keyword);
         }
         else {
-            Keyword.updateKeyword(find);
+            Keyword.updateKeyword(find.get());
         }
     }
 
@@ -65,8 +62,8 @@ public class KeywordService {
         Problem problem = problemRepository.findById(problemId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem Not Found"));
         for (String key : map.keySet()) {
-            Keyword findKeyword = keywordRepository.findKeywordByNameAndProblem(key, problem);
-            if (findKeyword == null) {
+            Optional<Keyword> findKeyword = keywordRepository.findKeywordByNameAndProblem(key, problem);
+            if (findKeyword.isEmpty()) {
                 Keyword keyword = Keyword.builder()
                         .name(key)
                         .problem(problem)
@@ -75,7 +72,7 @@ public class KeywordService {
                 log.info("###keyword Name : {}", keyword.getName());
                 keywords.add(keyword);
             } else {
-                Keyword.updateKeyword(findKeyword);
+                Keyword.updateKeyword(findKeyword.get());
             }
         }
         keywordRepository.saveAll(keywords);
