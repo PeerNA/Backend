@@ -90,13 +90,13 @@ public class InitDB {
                 for (int j = 1; j <= 14; j++) {
                     Problem problem = em.find(Problem.class, (long) j);
                     HashMap<Long, ConnectedUser> userMap = new HashMap<>();
-                    userMap.put(user1.getId(), new ConnectedUser(user1.getId()));
-                    userMap.put(user2.getId(), new ConnectedUser(user2.getId()));
 
                     Room room = roomRepository.save(Room.builder()
                             .connectedUserIds(new ArrayList<>(List.of(user1.getId(), user2.getId())))
                             .category(problem.getCategory())
                             .build());
+                    userMap.put(user1.getId(), new ConnectedUser(user1.getId(), room.getId()));
+                    userMap.put(user2.getId(), new ConnectedUser(user2.getId(), room.getId()));
 
                     History history = historyService.createHistory(problem.getId(), room.getId());
 
@@ -124,13 +124,13 @@ public class InitDB {
             for (int i = 1; i <= 14; i++) {
                 Problem problem = em.find(Problem.class, (long) i);
                 HashMap<Long, ConnectedUser> userMap = new HashMap<>();
-                userMap.put(mincshin.getId(), new ConnectedUser(mincshin.getId()));
-                userMap.put(happhee.getId(), new ConnectedUser(happhee.getId()));
 
                 Room room = roomRepository.save(Room.builder()
                         .connectedUserIds(new ArrayList<>(List.of(mincshin.getId(), happhee.getId())))
                         .category(problem.getCategory())
                         .build());
+                userMap.put(mincshin.getId(), new ConnectedUser(mincshin.getId(), room.getId()));
+                userMap.put(happhee.getId(), new ConnectedUser(happhee.getId(), room.getId()));
 
                 History history = historyService.createHistory(problem.getId(), room.getId());
 

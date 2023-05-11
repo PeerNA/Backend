@@ -40,8 +40,10 @@ public class RoomService {
             waitingUserRepository.delete(findSelf);
             if (findSelf.getRoomId() != -1L) {
                 log.debug("{}: Already Matched", user.getName());
-                connectedUserRepository.save(new ConnectedUser(user.getId()));
+
                 Room room = roomRepository.findById(findSelf.getRoomId()).orElse(null);
+                connectedUserRepository.save(new ConnectedUser(user.getId(), room.getId()));
+
                 User peer = userRepository.findById(room.getConnectedUserIdList().get(0)).orElse(null);
                 History history = historyRepository.findById(room.getHistoryIdList().get(0)).orElse(null);
                 log.debug("Loading problem: {}", history.getProblem().getAnswer());
@@ -85,12 +87,13 @@ public class RoomService {
             Problem problem = problemService.getRandomByCategory(selectedCategory).orElse(null);
             History history = historyRepository.save(History.createHistory(problem));
             User peer = userRepository.findById(matchedUser.getId()).orElse(null);
-            connectedUserRepository.save(new ConnectedUser(user.getId()));
+
             Room room = roomRepository.save(Room.builder()
                     .connectedUserIds(new ArrayList<>(List.of(user.getId(), matchedUser.getId())))
                     .historyId(history.getId())
                     .category(selectedCategory)
                     .build());
+            connectedUserRepository.save(new ConnectedUser(user.getId(), room.getId()));
 
             matchedUser.setRoomId(room.getId());
             waitingUserRepository.save(matchedUser);
