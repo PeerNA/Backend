@@ -21,12 +21,11 @@ public class Room {
     @Enumerated(EnumType.STRING)
     private Category category;
     private LinkedList<Long> historyIdList = new LinkedList<>();
-    private HashMap<Long, ConnectedUser> connectedUsers = new HashMap<>();
+    private List<Long> connectedUserIdList = new ArrayList<>();
 
     @Builder
     public Room(List<Long> connectedUserIds, Long historyId, Category category) {
-        this.connectedUsers.put(connectedUserIds.get(0), new ConnectedUser(connectedUserIds.get(0)));
-        this.connectedUsers.put(connectedUserIds.get(1), new ConnectedUser(connectedUserIds.get(1)));
+        this.connectedUserIdList = connectedUserIds;
         this.historyIdList.add(historyId);
         this.category = category;
     }

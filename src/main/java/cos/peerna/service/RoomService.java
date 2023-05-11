@@ -1,19 +1,16 @@
 package cos.peerna.service;
 
+import cos.peerna.controller.dto.MatchedUserDto;
 import cos.peerna.controller.dto.RoomResponseDto;
 import cos.peerna.domain.*;
-import cos.peerna.repository.HistoryRepository;
-import cos.peerna.repository.RoomRepository;
-import cos.peerna.repository.WaitingUserRepository;
+import cos.peerna.repository.*;
 import cos.peerna.security.dto.SessionUser;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.async.DeferredResult;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -25,10 +22,12 @@ import java.util.List;
 public class RoomService {
 
     private final WaitingUserRepository waitingUserRepository;
+    private final ConnectedUserRepository connectedUserRepository;
     private final RoomRepository roomRepository;
     private final HistoryRepository historyRepository;
     private final HistoryService historyService;
     private final ProblemService problemService;
+    private final UserRepository userRepository;
 
     @Transactional
     public void match(SessionUser user, DeferredResult<ResponseEntity<RoomResponseDto>> deferredResult) {
@@ -41,7 +40,9 @@ public class RoomService {
             waitingUserRepository.delete(findSelf);
             if (findSelf.getRoomId() != -1L) {
                 log.debug("{}: Already Matched", user.getName());
+                connectedUserRepository.save(new ConnectedUser(user.getId()));
                 Room room = roomRepository.findById(findSelf.getRoomId()).orElse(null);
+                User peer = userRepository.findById(room.getConnectedUserIdList().get(0)).orElse(null);
                 History history = historyRepository.findById(room.getHistoryIdList().get(0)).orElse(null);
                 log.debug("Loading problem: {}", history.getProblem().getAnswer());
                 deferredResult.setResult(
@@ -50,6 +51,7 @@ public class RoomService {
                                         .roomId(room.getId())
                                         .historyId(history.getId())
                                         .problem(history.getProblem())
+                                        .peer(new MatchedUserDto(peer))
                                         .build()));
                 return;
             }
@@ -77,16 +79,19 @@ public class RoomService {
             deferredResult.setResult(ResponseEntity.accepted().build());
         } else {
             // 매칭된 유저가 있다면 매칭된 유저와 방을 생성하고 200(OK) 응답 반환
-            log.debug("{}: Matched with {}", user.getName(), matchedUsers.get(0).getId());
             WaitingUser matchedUser = matchedUsers.get(0);
+            log.debug("{}: Matched with {}", user.getName(), matchedUser.getId());
+
             Problem problem = problemService.getRandomByCategory(selectedCategory).orElse(null);
             History history = historyRepository.save(History.createHistory(problem));
-
+            User peer = userRepository.findById(matchedUser.getId()).orElse(null);
+            connectedUserRepository.save(new ConnectedUser(user.getId()));
             Room room = roomRepository.save(Room.builder()
                     .connectedUserIds(new ArrayList<>(List.of(user.getId(), matchedUser.getId())))
                     .historyId(history.getId())
                     .category(selectedCategory)
                     .build());
+
             matchedUser.setRoomId(room.getId());
             waitingUserRepository.save(matchedUser);
             deferredResult.setResult(
@@ -95,6 +100,7 @@ public class RoomService {
                                     .roomId(room.getId())
                                     .historyId(history.getId())
                                     .problem(history.getProblem())
+                                    .peer(new MatchedUserDto(peer))
                                     .build()));
         }
     }
@@ -116,11 +122,11 @@ public class RoomService {
     public void duoNext(SessionUser user, Long roomId, Long peerId,
                         DeferredResult<ResponseEntity<RoomResponseDto>> deferredResult) throws NullPointerException {
         Room room = roomRepository.findById(roomId).orElse(null);
-        ConnectedUser self = room.getConnectedUsers().get(user.getId());
+        ConnectedUser self = connectedUserRepository.findById(user.getId()).orElse(null);
         self.setProceedAgree(true);
         self.setLastConnectedAt(LocalDateTime.now());
         roomRepository.save(room);
-        ConnectedUser peer = room.getConnectedUsers().get(peerId);
+        ConnectedUser peer = connectedUserRepository.findById(peerId).orElse(null);
         for (Long id : room.getHistoryIdList()) {
             log.debug("historyId: {}", id);
         }
@@ -162,5 +168,29 @@ public class RoomService {
     }
     public void soloNext (SessionUser user, Long roomId,
                           DeferredResult < ResponseEntity < RoomResponseDto >> deferredResult){
+    }
+
+    public ResponseEntity<String> matchCancel(SessionUser user) {
+        waitingUserRepository.deleteById(user.getId());
+        return ResponseEntity.ok().body("success");
+    }
+
+    public ResponseEntity<String> leave(SessionUser user, Long roomId) {
+        Room room = roomRepository.findById(roomId).orElse(null);
+        if (room == null) {
+            return ResponseEntity.badRequest().body("Room not found");
+        }
+        for (Long id : room.getConnectedUserIdList()) {
+            if (id.equals(user.getId())) {
+                room.getConnectedUserIdList().remove(id);
+                if (room.getConnectedUserIdList().size() == 0) {
+                    roomRepository.deleteById(roomId);
+                } else {
+                    roomRepository.save(room);
+                }
+                return ResponseEntity.ok().body("success");
+            }
+        }
+        return ResponseEntity.badRequest().body("User not found");
     }
 }

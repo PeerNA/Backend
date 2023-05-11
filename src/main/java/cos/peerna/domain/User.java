@@ -37,7 +37,7 @@ public class User {
         user.name = dto.getName();
         user.email = dto.getEmail();
         user.password = dto.getPassword();
-        user.imageUrl = "";
+        user.imageUrl = "https://avatars.githubusercontent.com/u/0?v=4";
         user.introduce = "";
         user.career = Career.UNDER_1;
         user.interests = new Interest(Category.OS, Category.NETWORK, Category.DATA_STRUCTURE);

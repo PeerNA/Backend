@@ -14,4 +14,6 @@ public class RoomResponseDto {
     private Long    roomId;
     private Long    historyId;
     private Problem problem;
+    private MatchedUserDto peer;
+
 }
