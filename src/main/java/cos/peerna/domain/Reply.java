@@ -50,6 +50,8 @@ public class Reply {
 
     private Long likeCount;
 
+    private boolean isRequested;
+
     public static Reply createReply(User user, History history, Problem problem, String answer) {
         Reply reply = new Reply();
         reply.answer = answer;
@@ -57,6 +59,7 @@ public class Reply {
         reply.problem = problem;
         reply.likeCount = 0L;
         reply.user = user;
+        reply.isRequested = false;
         return reply;
     }
 
@@ -66,6 +69,10 @@ public class Reply {
 
     public static void dislikeReply(Reply reply) {
         --reply.likeCount;
+    }
+
+    public static void requestReply(Reply reply) {
+        reply.isRequested = true;
     }
 
 //    id를 dto로 받는게 맞는가?

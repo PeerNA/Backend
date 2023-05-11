@@ -35,4 +35,16 @@ public class Notification {
 
 		return notification;
 	}
+
+	public static void acceptNotification(Notification notification) {
+		if (notification.type.equals(NotificationType.PULL_REQ)) {
+			notification.type = NotificationType.PULL_REQ_ACC;
+			notification.msg = "Pull-Request가 수락되었습니다.";
+		}
+		else if (notification.type.equals(NotificationType.FRIEND)) {
+			notification.type = NotificationType.FRIEND_ACC;
+			notification.msg = "친구 추가를 수락하였습니다.";
+		}
+		notification.time = LocalDate.now();
+	}
 }

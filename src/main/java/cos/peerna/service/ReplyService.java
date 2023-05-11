@@ -94,9 +94,10 @@ public class ReplyService {
         Reply.likeReply(reply);
 
         /* 좋아요가 일정 수 이상 넘어가면 자동으로 PR 요청 메시지 */
-        if (reply.getLikeCount() == 10) {
+        if (!reply.isRequested() && reply.getLikeCount() == 10) {
             Notification notification = Notification.createNotification(user, reply, NotificationType.PULL_REQ, "답변이 10개 이상이 되어 PR 요청을 보냈습니다.");
             notificationRepository.save(notification);
+            Reply.requestReply(reply);
         }
     }
 

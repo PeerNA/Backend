@@ -11,11 +11,13 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
 @Slf4j
+@Service
 @Transactional
 @RequiredArgsConstructor
 public class NotificationService {
@@ -31,5 +33,13 @@ public class NotificationService {
 		return NotificationResponseDto.builder()
 				.notificationList(notificationList)
 				.build();
+	}
+
+	public void acceptNotification(SessionUser sessionUser, Long notificationId) {
+		User user = userRepository.findById(sessionUser.getId())
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User Not Found"));
+		Notification notification = notificationRepository.findById(notificationId)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Notification Not Found"));
+		Notification.acceptNotification(notification);
 	}
 }

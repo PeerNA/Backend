@@ -1,7 +1,6 @@
 package cos.peerna.controller.dto;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 @Data
 public class ReplyRegisterRequestDto {
