@@ -40,11 +40,14 @@ public class RoomService {
             waitingUserRepository.delete(findSelf);
             if (findSelf.getRoomId() != -1L) {
                 log.debug("{}: Already Matched", user.getName());
-                connectedUserRepository.save(new ConnectedUser(user.getId()));
+
                 Room room = roomRepository.findById(findSelf.getRoomId()).orElse(null);
+                connectedUserRepository.save(new ConnectedUser(user.getId(), room.getId()));
+
                 User peer = userRepository.findById(room.getConnectedUserIdList().get(0)).orElse(null);
                 History history = historyRepository.findById(room.getHistoryIdList().get(0)).orElse(null);
                 log.debug("Loading problem: {}", history.getProblem().getAnswer());
+                log.debug("First User's RoomId: {}", room.getId());
                 deferredResult.setResult(
                         ResponseEntity.ok(
                                 RoomResponseDto.builder()
@@ -85,13 +88,14 @@ public class RoomService {
             Problem problem = problemService.getRandomByCategory(selectedCategory).orElse(null);
             History history = historyRepository.save(History.createHistory(problem));
             User peer = userRepository.findById(matchedUser.getId()).orElse(null);
-            connectedUserRepository.save(new ConnectedUser(user.getId()));
+
             Room room = roomRepository.save(Room.builder()
                     .connectedUserIds(new ArrayList<>(List.of(user.getId(), matchedUser.getId())))
                     .historyId(history.getId())
                     .category(selectedCategory)
                     .build());
-
+            connectedUserRepository.save(new ConnectedUser(user.getId(), room.getId()));
+            log.debug("Second User's RoomId: {}", room.getId());
             matchedUser.setRoomId(room.getId());
             waitingUserRepository.save(matchedUser);
             deferredResult.setResult(
@@ -119,7 +123,7 @@ public class RoomService {
     }
 
     @Transactional
-    public void duoNext(SessionUser user, Long roomId, Long peerId,
+    public void duoNext(SessionUser user, Integer roomId, Long peerId,
                         DeferredResult<ResponseEntity<RoomResponseDto>> deferredResult) throws NullPointerException {
         Room room = roomRepository.findById(roomId).orElse(null);
         ConnectedUser self = connectedUserRepository.findById(user.getId()).orElse(null);
@@ -166,7 +170,7 @@ public class RoomService {
                                 .problem(history.getProblem())
                                 .build()));
     }
-    public void soloNext (SessionUser user, Long roomId,
+    public void soloNext (SessionUser user, Integer roomId,
                           DeferredResult < ResponseEntity < RoomResponseDto >> deferredResult){
     }
 
@@ -175,7 +179,7 @@ public class RoomService {
         return ResponseEntity.ok().body("success");
     }
 
-    public ResponseEntity<String> leave(SessionUser user, Long roomId) {
+    public ResponseEntity<String> leave(SessionUser user, Integer roomId) {
         Room room = roomRepository.findById(roomId).orElse(null);
         if (room == null) {
             return ResponseEntity.badRequest().body("Room not found");
@@ -183,6 +187,7 @@ public class RoomService {
         for (Long id : room.getConnectedUserIdList()) {
             if (id.equals(user.getId())) {
                 room.getConnectedUserIdList().remove(id);
+                connectedUserRepository.deleteById(id);
                 if (room.getConnectedUserIdList().size() == 0) {
                     roomRepository.deleteById(roomId);
                 } else {

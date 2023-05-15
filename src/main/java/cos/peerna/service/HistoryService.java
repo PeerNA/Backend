@@ -101,7 +101,7 @@ public class HistoryService {
                 .build();
     }
 
-    public History createHistory(Long problemId, Long roomId) {
+    public History createHistory(Long problemId, Integer roomId) {
         Problem problem = problemRepository.findById(problemId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem Not Found"));
         Room room = roomRepository.findById(roomId)

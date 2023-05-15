@@ -10,10 +10,10 @@ public class ReplyRegisterRequestDto {
 	private String answer;
 	private Long problemId;
 	private Long historyId;
-	private Long roomId;
+	private Integer roomId;
 
 	@Builder
-	public ReplyRegisterRequestDto(String answer, Long problemId, Long historyId, Long roomId) {
+	public ReplyRegisterRequestDto(String answer, Long problemId, Long historyId, Integer roomId) {
 		this.answer = answer;
 		this.problemId = problemId;
 		this.historyId = historyId;
