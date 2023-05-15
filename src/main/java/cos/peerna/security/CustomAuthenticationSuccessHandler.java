@@ -22,8 +22,6 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         // Code to perform after a successful authentication
         HttpSession session = request.getSession();
 
-        session.setMaxInactiveInterval(60);
-
         // Create a map with the key-value pair "message":"success"
         Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("status", 200);
