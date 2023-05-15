@@ -3,6 +3,7 @@ package cos.peerna.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import net.minidev.json.annotate.JsonIgnore;
+import org.springframework.data.annotation.Reference;
 import org.springframework.data.redis.core.RedisHash;
 
 import java.util.ArrayList;
@@ -14,10 +15,12 @@ import java.util.List;
 @RedisHash("Room")
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SequenceGenerator(name = "room_id_generator", sequenceName = "room_id_seq", allocationSize = 1)
 public class Room {
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "room_id_generator")
     @Column(name = "room_id")
-    private Long id;
+    private Integer id;
+
     @Enumerated(EnumType.STRING)
     private Category category;
     private LinkedList<Long> historyIdList = new LinkedList<>();

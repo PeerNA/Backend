@@ -55,7 +55,7 @@ public class RoomController {
 
             Long peerId = null;
             for (Long connectedUserId : room.getConnectedUserIdList()) {
-                if (connectedUserId != user.getId()) {
+                if (connectedUserId.equals(user.getId())) {
                     peerId = connectedUserId;
                     break;
                 }
@@ -82,7 +82,7 @@ public class RoomController {
 
     @GetMapping("/api/match/next")
     public DeferredResult<ResponseEntity<RoomResponseDto>> next(@LoginUser SessionUser user,
-                                                                @RequestParam Long roomId,
+                                                                @RequestParam Integer roomId,
                                                                 @RequestParam Long peerId) {
 
         DeferredResult<ResponseEntity<RoomResponseDto>> deferredResult = new DeferredResult<>();
@@ -116,7 +116,7 @@ public class RoomController {
 
     // 방 나가기 (모두 나가면 방 삭제)
     @DeleteMapping("/api/room")
-    public ResponseEntity<String> leave(@LoginUser SessionUser user, @RequestParam Long roomId) {
+    public ResponseEntity<String> leave(@LoginUser SessionUser user, @RequestParam Integer roomId) {
         if (user == null)
             return ResponseEntity.status(401).build();
 
@@ -125,7 +125,7 @@ public class RoomController {
 
     @GetMapping("/api/match/status")
     public DeferredResult<ResponseEntity<DetailHistoryResponseDto>> next(@LoginUser SessionUser user,
-                                                                         @RequestParam Long roomId) {
+                                                                         @RequestParam Integer roomId) {
 
         DeferredResult<ResponseEntity<DetailHistoryResponseDto>> deferredResult = new DeferredResult<>();
         if (user == null) {
