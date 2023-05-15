@@ -9,5 +9,6 @@ import java.util.Optional;
 
 @Repository
 public interface HistoryRepository extends JpaRepository<History, Long> {
+    List<Long> findProblemIdsByHistoryIds(List<Long> historyIds);
 
 }

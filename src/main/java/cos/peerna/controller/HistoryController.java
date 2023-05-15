@@ -46,7 +46,7 @@ public class HistoryController {
     @PostMapping("/api/history/new")
     public ResponseEntity<String> createHistory(@NotNull @LoginUser SessionUser user,
                                                 @RequestParam Long problemId,
-                                                @RequestParam Long roomId) {
+                                                @RequestParam Integer roomId) {
         if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body("No User Data");

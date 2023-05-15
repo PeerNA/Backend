@@ -23,11 +23,13 @@ public class ConnectedUser {
 
     @Id
     private Long id;
+    private Integer roomId;
     private boolean proceedAgree;
     private LocalDateTime lastConnectedAt;
 
-    public ConnectedUser(Long id) {
+    public ConnectedUser(Long id, Integer roomId) {
         this.id = id;
+        this.roomId = roomId;
         this.proceedAgree = false;
         this.lastConnectedAt = LocalDateTime.now();
     }

@@ -10,7 +10,6 @@ import java.util.Optional;
 
 @Repository
 public interface ProblemRepository extends JpaRepository<Problem, Long> {
-    Optional<Problem> findById(Long id);
     Optional<Problem> findProblemByQuestion(String question);
-    List<Problem> findProblemsByCategory(Category question);
+    Long countByCategory(Category category);
 }

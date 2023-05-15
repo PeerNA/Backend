@@ -29,8 +29,11 @@ public class RoomService {
     private final ProblemService problemService;
     private final UserRepository userRepository;
 
+    public void soloMatch(SessionUser user, DeferredResult<ResponseEntity<RoomResponseDto>> deferredResult) {
+
+    }
     @Transactional
-    public void match(SessionUser user, DeferredResult<ResponseEntity<RoomResponseDto>> deferredResult) {
+    public void duoMatch(SessionUser user, DeferredResult<ResponseEntity<RoomResponseDto>> deferredResult) {
         // 이미 매칭된 유저인지 확인
         // 매칭된 유저라면 대기열에서 자신을 삭제하고 방 정보를 반환
         // 매칭이 되지 않았더라도, 자신이랑 비슷한 유저를 찾을 때, 후보들에 자신이 있으면 안 되니 잠시 삭제
@@ -40,11 +43,14 @@ public class RoomService {
             waitingUserRepository.delete(findSelf);
             if (findSelf.getRoomId() != -1L) {
                 log.debug("{}: Already Matched", user.getName());
-                connectedUserRepository.save(new ConnectedUser(user.getId()));
+
                 Room room = roomRepository.findById(findSelf.getRoomId()).orElse(null);
+                connectedUserRepository.save(new ConnectedUser(user.getId(), room.getId()));
+
                 User peer = userRepository.findById(room.getConnectedUserIdList().get(0)).orElse(null);
                 History history = historyRepository.findById(room.getHistoryIdList().get(0)).orElse(null);
                 log.debug("Loading problem: {}", history.getProblem().getAnswer());
+                log.debug("First User's RoomId: {}", room.getId());
                 deferredResult.setResult(
                         ResponseEntity.ok(
                                 RoomResponseDto.builder()
@@ -85,13 +91,14 @@ public class RoomService {
             Problem problem = problemService.getRandomByCategory(selectedCategory).orElse(null);
             History history = historyRepository.save(History.createHistory(problem));
             User peer = userRepository.findById(matchedUser.getId()).orElse(null);
-            connectedUserRepository.save(new ConnectedUser(user.getId()));
+
             Room room = roomRepository.save(Room.builder()
                     .connectedUserIds(new ArrayList<>(List.of(user.getId(), matchedUser.getId())))
                     .historyId(history.getId())
                     .category(selectedCategory)
                     .build());
-
+            connectedUserRepository.save(new ConnectedUser(user.getId(), room.getId()));
+            log.debug("Second User's RoomId: {}", room.getId());
             matchedUser.setRoomId(room.getId());
             waitingUserRepository.save(matchedUser);
             deferredResult.setResult(
@@ -119,12 +126,13 @@ public class RoomService {
     }
 
     @Transactional
-    public void duoNext(SessionUser user, Long roomId, Long peerId,
+    public void duoNext(SessionUser user, Integer roomId, Long peerId,
                         DeferredResult<ResponseEntity<RoomResponseDto>> deferredResult) throws NullPointerException {
         Room room = roomRepository.findById(roomId).orElse(null);
         ConnectedUser self = connectedUserRepository.findById(user.getId()).orElse(null);
         self.setProceedAgree(true);
         self.setLastConnectedAt(LocalDateTime.now());
+        connectedUserRepository.save(self);
         roomRepository.save(room);
         ConnectedUser peer = connectedUserRepository.findById(peerId).orElse(null);
         for (Long id : room.getHistoryIdList()) {
@@ -150,11 +158,13 @@ public class RoomService {
 
 
         if (history.isSolved()) { // 마지막 history가 풀린 상태, 즉 새로운 history가 필요한 상태
-            Problem problem = problemService.getRandomByCategory(room.getCategory()).orElse(null);
+            Problem problem = problemService.getRandomByCategoryNonDuplicate(room.getCategory(), room.getHistoryIdList());
             history = historyService.createHistory(problem.getId(), room.getId());
         } else { // 마지막 history가 풀리지 않은 상태, 즉 이미 동료가 만들어둔 상태라면 그대로 사용 + 진행동의 초기화
             peer.setProceedAgree(false);
             self.setProceedAgree(false);
+            connectedUserRepository.save(peer);
+            connectedUserRepository.save(self);
             roomRepository.save(room);
         }
         log.debug("Loading problem: {}", history.getProblem().getAnswer());
@@ -166,10 +176,10 @@ public class RoomService {
                                 .problem(history.getProblem())
                                 .build()));
     }
-    public void soloNext (SessionUser user, Long roomId,
+    public void soloNext (SessionUser user, Integer roomId,
                           DeferredResult < ResponseEntity < RoomResponseDto >> deferredResult) {
         Room room = roomRepository.findById(roomId).orElse(null);
-        Problem problem = problemService.getRandomByCategory(room.getCategory()).orElse(null);
+        Problem problem = problemService.getRandomByCategoryNonDuplicate(room.getCategory(), room.getHistoryIdList());
         History history = historyService.createHistory(problem.getId(), room.getId());
         deferredResult.setResult(
                 ResponseEntity.ok(
@@ -178,6 +188,7 @@ public class RoomService {
                                 .historyId(history.getId())
                                 .problem(history.getProblem())
                                 .build()));
+
     }
 
     public ResponseEntity<String> matchCancel(SessionUser user) {
@@ -185,7 +196,7 @@ public class RoomService {
         return ResponseEntity.ok().body("success");
     }
 
-    public ResponseEntity<String> leave(SessionUser user, Long roomId) {
+    public ResponseEntity<String> leave(SessionUser user, Integer roomId) {
         Room room = roomRepository.findById(roomId).orElse(null);
         if (room == null) {
             return ResponseEntity.badRequest().body("Room not found");
@@ -193,6 +204,7 @@ public class RoomService {
         for (Long id : room.getConnectedUserIdList()) {
             if (id.equals(user.getId())) {
                 room.getConnectedUserIdList().remove(id);
+                connectedUserRepository.deleteById(id);
                 if (room.getConnectedUserIdList().size() == 0) {
                     roomRepository.deleteById(roomId);
                 } else {
@@ -203,4 +215,6 @@ public class RoomService {
         }
         return ResponseEntity.badRequest().body("User not found");
     }
+
+
 }

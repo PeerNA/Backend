@@ -1,11 +1,11 @@
 package cos.peerna.service;
 
-import cos.peerna.controller.dto.ReplyResponseDto;
-import cos.peerna.security.dto.SessionUser;
 import cos.peerna.controller.dto.ReplyRegisterRequestDto;
+import cos.peerna.controller.dto.ReplyResponseDto;
 import cos.peerna.controller.dto.data.ReplyData;
 import cos.peerna.domain.*;
 import cos.peerna.repository.*;
+import cos.peerna.security.dto.SessionUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -43,7 +43,8 @@ public class ReplyService {
         Reply reply = Reply.createReply(user, history, problem, dto.getAnswer());
         replyRepository.save(reply);
         int numberOfUserInRoom = roomRepository.findById(dto.getRoomId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Room Not Found")).getConnectedUserIdList().size();
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Room Not Found"))
+                .getConnectedUserIdList().size();
         int numberOfReplyOfHistory = replyRepository.findRepliesByHistory(history).size();
         if (numberOfUserInRoom <= numberOfReplyOfHistory) {
             history.solve();
@@ -53,13 +54,23 @@ public class ReplyService {
         keywordService.analyze(dto.getAnswer(), dto.getProblemId());
     }
 
+    public boolean checkDuplicate(Long userId, Long historyId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("No User Data"));
+        History history = historyRepository.findById(historyId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "History Not Found"));
+
+        return replyRepository.findReplyByUserAndHistory(user, history).isPresent();
+    }
+
     public ReplyResponseDto getRepliesByProblem(Long problemId, int page) {
         final int PAGE_SIZE = 10;
 
         Problem problem = problemRepository.findById(problemId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem Not Found"));
 
-        List<Reply> data = replyRepository.findRepliesByProblemOrderByLikeCountDesc(problem, PageRequest.of(page, PAGE_SIZE));
+        List<Reply> data =
+                replyRepository.findRepliesByProblemOrderByLikeCountDesc(problem, PageRequest.of(page, PAGE_SIZE));
 
         List<ReplyData> replyData = data.stream()
                 .map(r -> ReplyData.builder()

@@ -43,4 +43,5 @@ logging.level:
 server:
   error:
     include-stacktrace: on_param
+    include-message: always
 

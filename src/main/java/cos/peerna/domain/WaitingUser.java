@@ -1,21 +1,13 @@
 package cos.peerna.domain;
 
-import cos.peerna.controller.dto.RoomResponseDto;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.*;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.index.Indexed;
-import org.springframework.web.context.request.async.DeferredResult;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
-import static jakarta.persistence.EnumType.STRING;
 
 /**
  * 동료매칭을 기다리는 유저
@@ -43,7 +35,7 @@ public class WaitingUser {
     @Enumerated(EnumType.STRING)
     private Career career;
     private LocalDateTime createdAt;
-    private Long roomId;
+    private Integer roomId;
 
     @Builder
     public WaitingUser(Long id, Category priority1, Category priority2, Category priority3, Career career) {
@@ -53,6 +45,6 @@ public class WaitingUser {
         this.priority3 = priority3;
         this.career = career;
         this.createdAt = LocalDateTime.now();
-        this.roomId = -1L;
+        this.roomId = -1;
     }
 }

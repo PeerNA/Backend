@@ -25,6 +25,10 @@ public class ReplyController {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
 					.body("No User Data");
 		}
+		if (replyService.checkDuplicate(user.getId(), dto.getHistoryId())) {
+			return ResponseEntity.status(HttpStatus.CONFLICT)
+					.body("Duplicate Reply");
+		}
 		replyService.make(dto, user.getId());
 
 		return ResponseEntity.ok()
