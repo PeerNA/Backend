@@ -69,7 +69,7 @@ public class ProblemService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No More Problem");
         }
 
-        List<Long> problemIds = historyRepository.findProblemIdsByHistoryIds(historyIds);
+        List<Long> problemIds = historyRepository.findProblemIdByIdIn(historyIds);
         Problem randomProblem = getRandomByCategory(category).orElse(null);
 
         while (historyIds.contains(randomProblem.getId())) {
