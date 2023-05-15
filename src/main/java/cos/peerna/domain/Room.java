@@ -15,9 +15,8 @@ import java.util.List;
 @RedisHash("Room")
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SequenceGenerator(name = "room_id_generator", sequenceName = "room_id_seq", allocationSize = 1)
 public class Room {
-    @Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "room_id_generator")
+    @Id @GeneratedValue
     @Column(name = "room_id")
     private Integer id;
 
