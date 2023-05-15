@@ -55,7 +55,7 @@ public class RoomController {
 
             Long peerId = null;
             for (Long connectedUserId : room.getConnectedUserIdList()) {
-                if (connectedUserId.equals(user.getId())) {
+                if (!connectedUserId.equals(user.getId())) {
                     peerId = connectedUserId;
                     break;
                 }
