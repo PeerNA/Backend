@@ -167,7 +167,17 @@ public class RoomService {
                                 .build()));
     }
     public void soloNext (SessionUser user, Long roomId,
-                          DeferredResult < ResponseEntity < RoomResponseDto >> deferredResult){
+                          DeferredResult < ResponseEntity < RoomResponseDto >> deferredResult) {
+        Room room = roomRepository.findById(roomId).orElse(null);
+        Problem problem = problemService.getRandomByCategory(room.getCategory()).orElse(null);
+        History history = historyService.createHistory(problem.getId(), room.getId());
+        deferredResult.setResult(
+                ResponseEntity.ok(
+                        RoomResponseDto.builder()
+                                .roomId(room.getId())
+                                .historyId(history.getId())
+                                .problem(history.getProblem())
+                                .build()));
     }
 
     public ResponseEntity<String> matchCancel(SessionUser user) {

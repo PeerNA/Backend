@@ -54,16 +54,16 @@ public class RoomController {
             return deferredResult;
         }
 
-        if (peerId == 0)
-            roomService.soloNext(user, roomId, deferredResult);
-        else {
-            try {
+        try {
+            if (peerId == 0)
+                roomService.soloNext(user, roomId, deferredResult);
+            else {
                 roomService.duoNext(user, roomId, peerId, deferredResult);
-            } catch (NullPointerException e) {
-                deferredResult.setResult(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
             }
-
+        } catch (NullPointerException e) {
+            deferredResult.setResult(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
         }
+
 
         return deferredResult;
     }
