@@ -12,4 +12,5 @@ import java.util.Optional;
 public interface ProblemRepository extends JpaRepository<Problem, Long> {
     Optional<Problem> findProblemByQuestion(String question);
     Long countByCategory(Category category);
+    List<Long> findIdsByCategory(Category category);
 }

@@ -4,13 +4,9 @@ import cos.peerna.controller.dto.ChatMessageReceiveDTO;
 import cos.peerna.controller.dto.ChatMessageSendDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-
-import java.io.IOException;
 
 @Slf4j
 @Controller
@@ -35,19 +31,6 @@ public class StompChatController {
         template.convertAndSend("/sub/chat/room/" + sendMessage.getRoomId(), sendMessage);
     }
 
-    @MessageMapping(value = "/chat/file")
-    public void handleFileUpload(@Payload ImageReceiveDTO data) throws IOException {
-
-        template.convertAndSend("/sub/chat/room/" + data.roomId + "/file", data);
-    }
-
-    static class ImageReceiveDTO {
-        private Integer roomId;
-        private Long writerId;
-        private String fileName;
-        private String type;
-        private byte[] data;
-    }
     /*
     @MessageMapping(value = "/chat/enter")
     public void enter(ChatMessageDTO message) {

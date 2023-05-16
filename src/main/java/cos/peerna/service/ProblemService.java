@@ -68,20 +68,23 @@ public class ProblemService {
     public Problem getRandomByCategoryNonDuplicate(Category category, List<Long> historyIds) {
         Long categorySize = problemRepository.countByCategory(category);
 
-        List<Long> problemIds = new ArrayList<>();
+        List<Long> solvedProblemIds = new ArrayList<>();
         for (Long historyId : historyIds) {
-            problemIds.add(historyRepository.findById(historyId).orElse(null).getProblem().getId());
+            solvedProblemIds.add(historyRepository.findById(historyId).orElse(null).getProblem().getId());
         }
-        if (problemIds.size() == categorySize) {
+        if (solvedProblemIds.size() == categorySize) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No More Problem");
         }
 
-        Problem randomProblem = getRandomByCategory(category).orElse(null);
-
-        while (problemIds.contains(randomProblem.getId())) {
-            randomProblem = getRandomByCategory(category).orElse(null);
+        List<Long> noDuplicateIds = new ArrayList<>();
+        for (Long id : problemRepository.findIdsByCategory(category)) {
+            if (!solvedProblemIds.contains(id)) {
+                noDuplicateIds.add(id);
+            }
         }
-        return randomProblem;
+        Long randomProblemId = noDuplicateIds.get((int) (ThreadLocalRandom.current().nextLong(1, noDuplicateIds.size()+1) % (noDuplicateIds.size()+1)));
+
+        return problemRepository.findById(randomProblemId).orElse(null);
     }
 }
 
