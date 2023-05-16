@@ -5,6 +5,7 @@ import cos.peerna.domain.Problem;
 import cos.peerna.repository.HistoryRepository;
 import cos.peerna.repository.KeywordRepository;
 import cos.peerna.repository.ProblemRepository;
+import cos.peerna.repository.dto.ProblemIdDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -66,23 +67,21 @@ public class ProblemService {
     }
 
     public Problem getRandomByCategoryNonDuplicate(Category category, List<Long> historyIds) {
-        Long categorySize = problemRepository.countByCategory(category);
-
         List<Long> solvedProblemIds = new ArrayList<>();
         for (Long historyId : historyIds) {
             solvedProblemIds.add(historyRepository.findById(historyId).orElse(null).getProblem().getId());
         }
-        if (solvedProblemIds.size() == categorySize) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No More Problem");
-        }
 
         List<Long> noDuplicateIds = new ArrayList<>();
-        for (Long id : problemRepository.findIdsByCategory(category)) {
-            if (!solvedProblemIds.contains(id)) {
-                noDuplicateIds.add(id);
+         for (ProblemIdDto dto : problemRepository.findAllByCategory(category)) {
+            if (!solvedProblemIds.contains(dto.getId())) {
+                noDuplicateIds.add(dto.getId());
             }
         }
-        Long randomProblemId = noDuplicateIds.get((int) (ThreadLocalRandom.current().nextLong(1, noDuplicateIds.size()+1) % (noDuplicateIds.size()+1)));
+        if (noDuplicateIds.size() == 0) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No More Problem");
+        }
+        Long randomProblemId = noDuplicateIds.get((int) (ThreadLocalRandom.current().nextLong(noDuplicateIds.size())));
 
         return problemRepository.findById(randomProblemId).orElse(null);
     }
