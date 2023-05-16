@@ -6,15 +6,18 @@ import cos.peerna.repository.HistoryRepository;
 import cos.peerna.repository.KeywordRepository;
 import cos.peerna.repository.ProblemRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -54,25 +57,28 @@ public class ProblemService {
 
     public Optional<Problem> getRandomByCategory(Category category) {
         Long categorySize = problemRepository.countByCategory(category);
-
         if (categorySize == 0) {
             return Optional.empty();
         } else {
-            long randomElementIndex = ThreadLocalRandom.current().nextLong(categorySize) % categorySize;
+            long randomElementIndex = ThreadLocalRandom.current().nextLong(1, categorySize+1) % (categorySize+1);
             return problemRepository.findById(randomElementIndex);
         }
     }
 
     public Problem getRandomByCategoryNonDuplicate(Category category, List<Long> historyIds) {
         Long categorySize = problemRepository.countByCategory(category);
-        if (historyIds.size() == categorySize) {
+
+        List<Long> problemIds = new ArrayList<>();
+        for (Long historyId : historyIds) {
+            problemIds.add(historyRepository.findById(historyId).orElse(null).getProblem().getId());
+        }
+        if (problemIds.size() == categorySize) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No More Problem");
         }
 
-        List<Long> problemIds = historyRepository.findProblemIdByIdIn(historyIds);
         Problem randomProblem = getRandomByCategory(category).orElse(null);
 
-        while (historyIds.contains(randomProblem.getId())) {
+        while (problemIds.contains(randomProblem.getId())) {
             randomProblem = getRandomByCategory(category).orElse(null);
         }
         return randomProblem;

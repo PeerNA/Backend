@@ -109,6 +109,7 @@ public class RoomController {
                 roomService.duoNext(user, roomId, peerId, deferredResult);
             }
         } catch (NullPointerException e) {
+            log.error("NullPointerException: {}", e.getMessage());
             deferredResult.setResult(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
         }
 

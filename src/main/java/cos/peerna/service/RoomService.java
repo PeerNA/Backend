@@ -199,6 +199,7 @@ public class RoomService {
                                 .roomId(room.getId())
                                 .historyId(history.getId())
                                 .problem(history.getProblem())
+                                .peer(new MatchedUserDto(userRepository.findById(peer.getId()).orElse(null)))
                                 .build()));
     }
     public void soloNext (SessionUser user, Integer roomId,
