@@ -5,7 +5,7 @@ import cos.peerna.domain.Problem;
 import cos.peerna.repository.HistoryRepository;
 import cos.peerna.repository.KeywordRepository;
 import cos.peerna.repository.ProblemRepository;
-import cos.peerna.repository.dto.ProblemIdDto;
+import cos.peerna.repository.dto.ProblemIdMapping;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -73,7 +73,7 @@ public class ProblemService {
         }
 
         List<Long> noDuplicateIds = new ArrayList<>();
-         for (ProblemIdDto dto : problemRepository.findAllByCategory(category)) {
+         for (ProblemIdMapping dto : problemRepository.findAllByCategory(category)) {
             if (!solvedProblemIds.contains(dto.getId())) {
                 noDuplicateIds.add(dto.getId());
             }

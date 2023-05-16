@@ -16,13 +16,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.DeferredResult;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.lang.module.ResolutionException;
 
 
@@ -131,4 +130,20 @@ public class RoomController {
 
         return deferredResult;
     }
+
+//    @PostMapping("/api/match/upload")
+//    public ResponseEntity<String> uploadImage(@RequestParam MultipartFile file) throws IOException {
+//        long fileSize = file.getSize();
+//        if (fileSize > 1024 * 1024 * 10) {
+//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "File size is too big");
+//        }
+//        String contentType = file.getContentType();
+//        if (contentType == null || !contentType.equals("image/jpeg") && !contentType.equals("image/png")) {
+//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "File type is not supported");
+//        }
+//
+//        return ResponseEntity.ok(
+//                HttpStatus.CREATED, s3Upload.upload(multipartFile.getInputStream(), multipartFile.getOriginalFilename(), fileSize)
+//        );
+//    }
 }
