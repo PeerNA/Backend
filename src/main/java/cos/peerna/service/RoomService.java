@@ -116,7 +116,7 @@ public class RoomService {
     private boolean checkMatched(SessionUser user, DeferredResult<ResponseEntity<RoomResponseDto>> deferredResult, WaitingUser findSelf) {
         log.debug("findSelf:{} rooId: {}", findSelf.getId(), findSelf.getRoomId());
         waitingUserRepository.delete(findSelf);
-        if (findSelf.getRoomId() != -1L) {
+        if (findSelf.getRoomId() != -1) {
             log.debug("{}: Already Matched", user.getName());
 
             Room room = roomRepository.findById(findSelf.getRoomId()).orElse(null);
