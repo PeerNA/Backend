@@ -16,13 +16,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.DeferredResult;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.lang.module.ResolutionException;
 
 
@@ -39,46 +38,28 @@ public class RoomController {
     private final ConnectedUserRepository connectedUserRepository;
 
     @GetMapping("/api/match")
-    public DeferredResult<ResponseEntity<RoomResponseDto>> match(@LoginUser SessionUser user) {
+    public DeferredResult<ResponseEntity<RoomResponseDto>> match(@LoginUser SessionUser user,
+                                                                 @RequestParam Integer player) {
         DeferredResult<ResponseEntity<RoomResponseDto>> deferredResult = new DeferredResult<>();
 
         if (user == null) {
             deferredResult.setResult(ResponseEntity.status(401).build());
             return deferredResult;
         }
-        ConnectedUser connectedUser = connectedUserRepository.findById(user.getId()).orElse(null);
-        if (connectedUser != null) {
-            Room room = roomRepository.findById(connectedUser.getRoomId())
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Room Not Found"));
-            History history = historyRepository.findById(room.getHistoryIdList().get(0))
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "History Not Found"));
 
-            Long peerId = null;
-            for (Long connectedUserId : room.getConnectedUserIdList()) {
-                if (!connectedUserId.equals(user.getId())) {
-                    peerId = connectedUserId;
-                    break;
-                }
-            }
-            User peer = userRepository.findById(peerId)
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Peer Not Found"));
-            Problem problem = history.getProblem();
-            log.debug("loading problem: {}", problem.getQuestion());
-
-            deferredResult.setResult(ResponseEntity.status(HttpStatus.CONFLICT).body(RoomResponseDto.builder()
-                    .roomId(room.getId())
-                    .historyId(history.getId())
-                    .problem(problem)
-                    .peer(new MatchedUserDto(peer))
-                    .build()));
+        if (roomService.findAlreadyExist(user, deferredResult, player)) {
             return deferredResult;
         }
 
-        roomService.match(user, deferredResult);
-
+        if (player == 1) {
+            roomService.soloMatch(user, deferredResult);
+        } else {
+            roomService.duoMatch(user, deferredResult);
+        }
         return deferredResult;
-        // setResult 안 하면 timeout -> 503 Service Unavailable
     }
+
+
 
     @GetMapping("/api/match/next")
     public DeferredResult<ResponseEntity<RoomResponseDto>> next(@LoginUser SessionUser user,
@@ -91,16 +72,17 @@ public class RoomController {
             return deferredResult;
         }
 
-        if (peerId == 0)
-            roomService.soloNext(user, roomId, deferredResult);
-        else {
-            try {
+        try {
+            if (peerId == 0)
+                roomService.soloNext(user, roomId, deferredResult);
+            else {
                 roomService.duoNext(user, roomId, peerId, deferredResult);
-            } catch (NullPointerException e) {
-                deferredResult.setResult(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
             }
-
+        } catch (NullPointerException e) {
+            log.error("NullPointerException: {}", e.getMessage());
+            deferredResult.setResult(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
         }
+
 
         return deferredResult;
     }
@@ -148,4 +130,20 @@ public class RoomController {
 
         return deferredResult;
     }
+
+//    @PostMapping("/api/match/upload")
+//    public ResponseEntity<String> uploadImage(@RequestParam MultipartFile file) throws IOException {
+//        long fileSize = file.getSize();
+//        if (fileSize > 1024 * 1024 * 10) {
+//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "File size is too big");
+//        }
+//        String contentType = file.getContentType();
+//        if (contentType == null || !contentType.equals("image/jpeg") && !contentType.equals("image/png")) {
+//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "File type is not supported");
+//        }
+//
+//        return ResponseEntity.ok(
+//                HttpStatus.CREATED, s3Upload.upload(multipartFile.getInputStream(), multipartFile.getOriginalFilename(), fileSize)
+//        );
+//    }
 }

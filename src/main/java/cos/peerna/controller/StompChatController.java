@@ -1,12 +1,14 @@
 package cos.peerna.controller;
 
-import cos.peerna.controller.dto.ChatMessageReceiveDTO;
-import cos.peerna.controller.dto.ChatMessageSendDTO;
+import cos.peerna.controller.dto.ChatMessageReceiveDto;
+import cos.peerna.controller.dto.ChatMessageSendDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 public class StompChatController {
@@ -23,8 +25,9 @@ public class StompChatController {
 
 
     @MessageMapping(value = "/chat/message")
-    public void message(ChatMessageReceiveDTO receiveMessage) {
-        ChatMessageSendDTO sendMessage = new ChatMessageSendDTO(receiveMessage);
+    public void message(ChatMessageReceiveDto receiveMessage) {
+        ChatMessageSendDto sendMessage = new ChatMessageSendDto(receiveMessage);
+        log.debug("receiveMessage: {}", receiveMessage);
         template.convertAndSend("/sub/chat/room/" + sendMessage.getRoomId(), sendMessage);
     }
 
