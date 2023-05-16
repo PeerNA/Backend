@@ -48,48 +48,19 @@ public class RoomController {
             return deferredResult;
         }
 
+        if (roomService.findAlreadyExist(user, deferredResult, player)) {
+            return deferredResult;
+        }
+
         if (player == 1) {
             roomService.soloMatch(user, deferredResult);
-            return deferredResult;
+        } else {
+            roomService.duoMatch(user, deferredResult);
         }
-
-        ConnectedUser connectedUser = connectedUserRepository.findById(user.getId()).orElse(null);
-        if (connectedUser != null) {
-            findAlreadyExist(user, deferredResult, connectedUser);
-            return deferredResult;
-        }
-
-        roomService.duoMatch(user, deferredResult);
-
         return deferredResult;
-        // setResult 안 하면 timeout -> 503 Service Unavailable
     }
 
-    private void findAlreadyExist(SessionUser user, DeferredResult<ResponseEntity<RoomResponseDto>> deferredResult, ConnectedUser connectedUser) {
-        Room room = roomRepository.findById(connectedUser.getRoomId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Room Not Found"));
-        History history = historyRepository.findById(room.getHistoryIdList().get(0))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "History Not Found"));
 
-        Long peerId = null;
-        for (Long connectedUserId : room.getConnectedUserIdList()) {
-            if (!connectedUserId.equals(user.getId())) {
-                peerId = connectedUserId;
-                break;
-            }
-        }
-        User peer = userRepository.findById(peerId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Peer Not Found"));
-        Problem problem = history.getProblem();
-        log.debug("loading problem: {}", problem.getQuestion());
-
-        deferredResult.setResult(ResponseEntity.status(HttpStatus.CONFLICT).body(RoomResponseDto.builder()
-                .roomId(room.getId())
-                .historyId(history.getId())
-                .problem(problem)
-                .peer(new MatchedUserDto(peer))
-                .build()));
-    }
 
     @GetMapping("/api/match/next")
     public DeferredResult<ResponseEntity<RoomResponseDto>> next(@LoginUser SessionUser user,

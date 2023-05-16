@@ -8,9 +8,11 @@ import cos.peerna.security.dto.SessionUser;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.async.DeferredResult;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -242,5 +244,40 @@ public class RoomService {
         return ResponseEntity.badRequest().body("User not found");
     }
 
+    public boolean findAlreadyExist(SessionUser user, DeferredResult<ResponseEntity<RoomResponseDto>> deferredResult, Integer player) {
+        ConnectedUser connectedUser = connectedUserRepository.findById(user.getId()).orElse(null);
+        if (connectedUser == null) {
+            return false;
+        }
+
+        Room room = roomRepository.findById(connectedUser.getRoomId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Room Not Found"));
+        History history = historyRepository.findById(room.getHistoryIdList().get(0))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "History Not Found"));
+        Problem problem = history.getProblem();
+        log.debug("loading problem: {}", problem.getQuestion());
+        MatchedUserDto matchedUserDto = null;
+
+        if (player == 2) {
+            Long peerId = null;
+            for (Long connectedUserId : room.getConnectedUserIdList()) {
+                if (!connectedUserId.equals(user.getId())) {
+                    peerId = connectedUserId;
+                    break;
+                }
+            }
+            User peer = userRepository.findById(peerId)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Peer Not Found"));
+            matchedUserDto = new MatchedUserDto(peer);
+        }
+
+        deferredResult.setResult(ResponseEntity.status(HttpStatus.CONFLICT).body(RoomResponseDto.builder()
+                .roomId(room.getId())
+                .historyId(history.getId())
+                .problem(problem)
+                .peer(matchedUserDto)
+                .build()));
+        return true;
+    }
 
 }
