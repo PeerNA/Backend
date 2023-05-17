@@ -1,6 +1,7 @@
 package cos.peerna.config;
 
 import com.amazonaws.auth.InstanceProfileCredentialsProvider;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,15 +11,13 @@ import org.springframework.context.annotation.Profile;
 
 @Configuration
 public class S3Config {
-    @Value("${cloud.aws.region.static}")
-    private String region;
 
 //    @Profile("!local")
     @Bean
     public AmazonS3 amazonS3Client() {
         return AmazonS3ClientBuilder
                 .standard()
-                .withRegion(region)
+                .withRegion(Regions.AP_NORTHEAST_2)
                 .withCredentials(InstanceProfileCredentialsProvider.getInstance())
                 .build();
     }
