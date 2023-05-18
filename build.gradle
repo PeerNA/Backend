@@ -61,6 +61,8 @@ dependencies {
 
 	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
 	annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
+
+	implementation 'org.eclipse.jgit:org.eclipse.jgit:3.5.0.201409260305-r'
 }
 
 tasks.named('test') {

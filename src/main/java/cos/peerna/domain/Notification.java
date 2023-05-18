@@ -1,10 +1,12 @@
 package cos.peerna.domain;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 
 import java.time.LocalDate;
 
 @Entity
+@Getter
 public class Notification {
 
 	@Id @GeneratedValue
@@ -46,5 +48,9 @@ public class Notification {
 			notification.msg = "친구 추가를 수락하였습니다.";
 		}
 		notification.time = LocalDate.now();
+	}
+
+	public static boolean isPRNotification(Notification notification) {
+		return notification.type.equals(NotificationType.PULL_REQ);
 	}
 }

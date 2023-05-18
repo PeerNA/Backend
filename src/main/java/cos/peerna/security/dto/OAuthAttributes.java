@@ -15,11 +15,14 @@ public class OAuthAttributes {
     private String email;
     private String imageUrl;
     private String bio;
+    private String login;
+    private String token;
 
     @Builder
     public OAuthAttributes(Map<String, Object> attributes, Long id,
                            String nameAttributeKey, String name,
-                           String email, String imageUrl, String bio) {
+                           String email, String imageUrl, String bio,
+                           String token, String login) {
         this.id = id;
         this.attributes = attributes;
         this.nameAttributeKey = nameAttributeKey;
@@ -27,13 +30,15 @@ public class OAuthAttributes {
         this.email = email;
         this.imageUrl = imageUrl;
         this.bio = bio;
+        this.token = token;
+        this.login = login;
     }
 
     public static OAuthAttributes of(String registrationId,
                                      String userNameAttributeName,
                                      Map<String, Object> attributes,
-                                     String userEmail) {
-        return ofGitHub(userNameAttributeName, attributes, userEmail);
+                                     String userEmail, String token) {
+        return ofGitHub(userNameAttributeName, attributes, userEmail, token);
     }
 
     private static OAuthAttributes ofGoogle(String userNameAttributeName,
@@ -49,7 +54,7 @@ public class OAuthAttributes {
 
     private static OAuthAttributes ofGitHub(String userNameAttributeName,
                                             Map<String, Object> attributes,
-                                            String userEmail) {
+                                            String userEmail, String token) {
         Long id = Long.parseLong(String.valueOf(attributes.get("id")));
         String login = (String) attributes.get("login");
         String name = (String) attributes.get("name");
@@ -60,6 +65,8 @@ public class OAuthAttributes {
                 .id(id)
                 .name(name)
                 .email(userEmail)
+                .login(login)
+                .token(token)
                 .imageUrl(avatarUrl)
                 .attributes(attributes)
                 .nameAttributeKey(userNameAttributeName)
