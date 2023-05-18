@@ -3,6 +3,7 @@ package cos.peerna.domain;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -19,10 +20,7 @@ public class Chat {
 	private Long id;
 
 	@NotNull
-	private Long aUserId;
-
-	@NotNull
-	private Long bUserId;
+	private Long writerId;
 
 	private String content;
 
@@ -33,4 +31,11 @@ public class Chat {
 	@JoinColumn(name = "history_id")
 	private History history;
 
+	@Builder
+	public Chat(Long writerId, String content, History history) {
+		this.writerId = writerId;
+		this.content = content;
+		this.history = history;
+		this.time = LocalTime.now();
+	}
 }
