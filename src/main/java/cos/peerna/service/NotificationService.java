@@ -66,7 +66,7 @@ public class NotificationService {
 		}
 	}
 
-	private void forkRepository(String token, String url) {
+	public void forkRepository(String token, String url) {
 		RestTemplate restTemplate = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Collections.singletonList(MediaType.parseMediaType("application/vnd.github.v3+json")));

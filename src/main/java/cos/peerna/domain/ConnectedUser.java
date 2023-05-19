@@ -18,15 +18,18 @@ import java.time.LocalDateTime;
  * userB가 Wi-fi를 끊고 다시 연결한다던가, 실수로 창을 다시 닫았다가 다시 접속할 때
  */
 @Data
+@RedisHash("ConnectedUser")
 public class ConnectedUser {
 
     @Id
     private Long id;
+    private Integer roomId;
     private boolean proceedAgree;
     private LocalDateTime lastConnectedAt;
 
-    public ConnectedUser(Long id) {
+    public ConnectedUser(Long id, Integer roomId) {
         this.id = id;
+        this.roomId = roomId;
         this.proceedAgree = false;
         this.lastConnectedAt = LocalDateTime.now();
     }

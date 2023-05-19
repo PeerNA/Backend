@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -51,12 +52,13 @@ public class ProblemController {
         Problem problem = problemService.getRandomByCategory(category)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem Not Found"));
         List<Keyword> keywordList = keywordRepository.findKeywordsByProblem(problem);
+        List<String> keywords = keywordList.stream().map(Keyword::getName).collect(Collectors.toList());
         return ProblemResponseDto.builder()
                 .problemId(problem.getId())
                 .question(problem.getQuestion())
                 .answer(problem.getAnswer())
                 .category(problem.getCategory())
-                .keywordList(keywordList)
+                .keywordList(keywords)
                 .build();
     }
 

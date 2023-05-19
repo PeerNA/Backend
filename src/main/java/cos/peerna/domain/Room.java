@@ -3,6 +3,7 @@ package cos.peerna.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import net.minidev.json.annotate.JsonIgnore;
+import org.springframework.data.annotation.Reference;
 import org.springframework.data.redis.core.RedisHash;
 
 import java.util.ArrayList;
@@ -17,16 +18,16 @@ import java.util.List;
 public class Room {
     @Id @GeneratedValue
     @Column(name = "room_id")
-    private Long id;
+    private Integer id;
+
     @Enumerated(EnumType.STRING)
     private Category category;
     private LinkedList<Long> historyIdList = new LinkedList<>();
-    private HashMap<Long, ConnectedUser> connectedUsers = new HashMap<>();
+    private List<Long> connectedUserIdList = new ArrayList<>();
 
     @Builder
     public Room(List<Long> connectedUserIds, Long historyId, Category category) {
-        this.connectedUsers.put(connectedUserIds.get(0), new ConnectedUser(connectedUserIds.get(0)));
-        this.connectedUsers.put(connectedUserIds.get(1), new ConnectedUser(connectedUserIds.get(1)));
+        this.connectedUserIdList = connectedUserIds;
         this.historyIdList.add(historyId);
         this.category = category;
     }

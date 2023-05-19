@@ -31,7 +31,7 @@ public class SecurityConfig {
         /**
          * 주의: 생각보다 순서가 굉장히 중요하다.
          */
-        http.authorizeHttpRequests().anyRequest().permitAll();
+//        http.authorizeHttpRequests().anyRequest().permitAll();
 
 //        http
 //                .headers()
@@ -39,7 +39,10 @@ public class SecurityConfig {
 //                .maxAgeInSeconds(31536000)
 //                .includeSubDomains(true)
 //                .preload(true);
-
+//        http
+//                .authorizeHttpRequests()
+//                .requestMatchers("/oauth2/**", "/login").anonymous()
+//                .anyRequest().permitAll();
         http
                 .csrf()
                     .disable()
@@ -50,7 +53,8 @@ public class SecurityConfig {
                 .failureHandler(customAuthenticationFailureHandler)
                 .userInfoEndpoint()
                     .userService(customOAuth2UserService);
-        http.httpBasic();
+        http
+                .httpBasic();
         http
                 .formLogin()
                 .loginPage("/login")
@@ -76,6 +80,8 @@ public class SecurityConfig {
                 .authenticationProvider(customAuthenticationProvider)
                     .exceptionHandling()
                         .authenticationEntryPoint(customAuthenticationEntryPoint);
+
+
 
 //        http
 //                .sessionManagement()

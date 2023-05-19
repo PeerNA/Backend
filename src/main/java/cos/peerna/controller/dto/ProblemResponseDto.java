@@ -14,5 +14,5 @@ public class ProblemResponseDto {
     private String   question;
     private String   answer;
     private Category category;
-    private List<Keyword> keywordList;
+    private List<String> keywordList;
 }
