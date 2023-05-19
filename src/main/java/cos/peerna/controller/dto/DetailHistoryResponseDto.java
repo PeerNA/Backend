@@ -26,5 +26,5 @@ public class DetailHistoryResponseDto {
 	private List<String> keyword;
 	private List<ChatMessageSendDto> chat;
 	 */
-	class Re
+//	class Re
 }
