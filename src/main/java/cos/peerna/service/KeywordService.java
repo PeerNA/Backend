@@ -49,7 +49,7 @@ public class KeywordService {
 
         Map<String, Integer> map = new HashMap<String, Integer>();
         for (KoreanTokenJava token : koreanTokens) {
-            if (token.toString().contains("Noun")) {
+            if (token.toString().contains("Noun") && token.toString().length() != 1) {
                 if (map.containsKey(token.getText())) {
                     map.put(token.getText(), map.get(token.getText()) + 1);
                 } else {
@@ -69,7 +69,6 @@ public class KeywordService {
                         .problem(problem)
                         .count((long) map.get(key))
                         .build();
-                log.info("###keyword Name : {}", keyword.getName());
                 keywords.add(keyword);
             } else {
                 Keyword.updateKeyword(findKeyword.get());
@@ -77,15 +76,5 @@ public class KeywordService {
         }
         keywordRepository.saveAll(keywords);
     }
-//
-//    public Keyword findOne(KeywordRegisterRequestDto dto) {
-//        Problem problem = problemRepository.findById(dto.getProblemId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem Not Found"));
-//        Keyword keyword = keywordRepository.findKeywordByNameAndProblem(dto.getAnswer(), problem).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Keyword Not Found"));
-//        return keyword;
-//    }
-
-//    private void validateKeyword(Keyword keyword) {
-//        keywordRepository.findKeywordByNameAndProblem(keyword.getName(), keyword.getProblem()).ifPresent(Keyword::updateKeyword);
-//    }
 }
 
