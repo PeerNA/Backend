@@ -11,6 +11,9 @@ import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisAccessor;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -26,10 +29,11 @@ public class InitDB {
 
     @PostConstruct
     public void initDB() {
-        initService.initDB();
-        initService.initDB1(); // User, Problem
-        initService.initDB2(); // Reply
-        initService.initDB3(); // Happhee, Mincheol Shin
+        initService.initRedis();
+//        initService.initDB();
+//        initService.initDB1(); // User, Problem
+//        initService.initDB2(); // Reply
+//        initService.initDB3(); // Happhee, Mincheol Shin
     }
 
     @Component
@@ -45,9 +49,16 @@ public class InitDB {
         private final ProblemService problemService;
         private final BCryptPasswordEncoder passwordEncoder;
         private final ReplyService replyService;
+        private final StringRedisTemplate redisTemplate;
+
+        @Transactional
+        public void initRedis() {
+            redisTemplate.getConnectionFactory().getConnection().serverCommands().flushAll();
+        }
 
         @Transactional
         public void initDB() {
+
             problemService.make("TCP와 UDP의 차이점에 대해서 설명해보세요.", "TCP는 연결 지향형 프로토콜이고 UDP는 데이터를 데이터그램단위로 전송하는 프로토콜입니다.", Category.NETWORK);
             problemService.make("TCP 3, 4 way handshake에 대해서 설명해보세요.", "TCP 3way handshake는 가상회선을 수립하는 단계입니다. 클라이언트는 서버에 요청을 전송할 수 있는지, 서버는 클라이언트에게 응답을 전송할 수 있는지 확인하는 과정입니다."
                     , Category.NETWORK);

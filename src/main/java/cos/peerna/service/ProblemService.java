@@ -57,11 +57,16 @@ public class ProblemService {
     }
 
     public Optional<Problem> getRandomByCategory(Category category) {
-        Long categorySize = problemRepository.countByCategory(category);
+        List<ProblemIdMapping> problemIdList = problemRepository.findAllByCategory(category);
+        int categorySize = problemIdList.size();
+        log.debug("category: {}", category);
+        log.debug("categorySize: {}", categorySize);
+
         if (categorySize == 0) {
             return Optional.empty();
         } else {
-            long randomElementIndex = ThreadLocalRandom.current().nextLong(1, categorySize+1) % (categorySize+1);
+            int randomNumber = ThreadLocalRandom.current().nextInt(1, categorySize + 1) % (categorySize + 1);
+            long randomElementIndex = problemIdList.get(randomNumber-1).getId();
             return problemRepository.findById(randomElementIndex);
         }
     }

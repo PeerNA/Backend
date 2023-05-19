@@ -78,6 +78,7 @@ public class HistoryService {
         List<Map<String, String>> userInfo = new ArrayList<>();
         Map<String, String> mine = new HashMap<>();
 
+
         if (replyList.get(1).getUser().getId().equals(user.getId()))
             Collections.reverse(replyList);
 

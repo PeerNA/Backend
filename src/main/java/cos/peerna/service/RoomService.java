@@ -90,6 +90,7 @@ public class RoomService {
             log.debug("{}: Matched with {}", user.getName(), matchedUser.getId());
 
             Problem problem = problemService.getRandomByCategory(selectedCategory).orElse(null);
+            log.debug("RoomService: problem: {}", problem.getQuestion());
             History history = historyRepository.save(History.createHistory(problem));
             User peer = userRepository.findById(matchedUser.getId()).orElse(null);
 

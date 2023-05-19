@@ -18,4 +18,13 @@ public class DetailHistoryResponseDto {
 	private List<Map<String, String>> userInfo;
 	private List<String> keyword;
 	private List<ChatMessageSendDto> chat;
+
+	/*
+	private String question;
+	private LocalDate date;
+
+	private List<String> keyword;
+	private List<ChatMessageSendDto> chat;
+	 */
+	class Re
 }
