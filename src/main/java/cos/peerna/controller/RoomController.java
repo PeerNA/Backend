@@ -11,6 +11,7 @@ import cos.peerna.repository.UserRepository;
 import cos.peerna.security.LoginUser;
 import cos.peerna.security.dto.SessionUser;
 import cos.peerna.service.HistoryService;
+import cos.peerna.service.ImageService;
 import cos.peerna.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,12 +31,12 @@ import java.lang.module.ResolutionException;
 @RequiredArgsConstructor
 public class RoomController {
 
-    private final UserRepository userRepository;
     private final RoomService roomService;
     private final RoomRepository roomRepository;
     private final HistoryService historyService;
     private final HistoryRepository historyRepository;
-    private final ConnectedUserRepository connectedUserRepository;
+    private final ImageService imageService;
+
 
     @GetMapping("/api/match")
     public DeferredResult<ResponseEntity<RoomResponseDto>> match(@LoginUser SessionUser user,
@@ -131,19 +132,20 @@ public class RoomController {
         return deferredResult;
     }
 
-//    @PostMapping("/api/match/upload")
-//    public ResponseEntity<String> uploadImage(@RequestParam MultipartFile file) throws IOException {
-//        long fileSize = file.getSize();
-//        if (fileSize > 1024 * 1024 * 10) {
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "File size is too big");
-//        }
-//        String contentType = file.getContentType();
-//        if (contentType == null || !contentType.equals("image/jpeg") && !contentType.equals("image/png")) {
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "File type is not supported");
-//        }
-//
-//        return ResponseEntity.ok(
-//                HttpStatus.CREATED, s3Upload.upload(multipartFile.getInputStream(), multipartFile.getOriginalFilename(), fileSize)
-//        );
-//    }
+    @PostMapping("/api/match/upload")
+    public ResponseEntity<String> uploadImage(@LoginUser SessionUser user,
+                                              @RequestParam MultipartFile file) throws IOException {
+        long fileSize = file.getSize();
+        if (fileSize > 1024 * 1024 * 10) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "File size is too big");
+        }
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.equals("image/jpeg") && !contentType.equals("image/png")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "File type is not supported");
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                imageService.uploadImage(user.getId(), file)
+        );
+    }
 }

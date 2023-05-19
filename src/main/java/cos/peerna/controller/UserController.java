@@ -29,13 +29,14 @@ public class UserController {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
 
-    @GetMapping("/api/users/signout")
+    @DeleteMapping ("/api/users/sign-out")
     public ResponseEntity<String> signOut(@LoginUser SessionUser user) {
         if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body("No User Data");
         }
         userService.delete(user);
+
         return ResponseEntity.ok()
                 .body("success");
     }
