@@ -1,11 +1,8 @@
 package cos.peerna.controller.dto;
 
-<<<<<<< HEAD
-=======
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
->>>>>>> 8e6fb1e6c067671dac60ccb3db784c48583cd06e
 
 @Data
 @NoArgsConstructor

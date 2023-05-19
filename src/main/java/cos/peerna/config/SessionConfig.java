@@ -17,7 +17,7 @@ public class SessionConfig {
         serializer.setCookiePath("/");
         serializer.setDomainNamePattern("^.+?\\.(\\w+\\.[a-z]+)$"); // 호출한 도메인으로 설정됨
         serializer.setCookieMaxAge(86400); // -1 = 브라우저 닫힐때까지
-//        serializer.setUseSecureCookie(true); // https 만 허용
+        serializer.setUseSecureCookie(true); // https 만 허용
         serializer.setUseHttpOnlyCookie(true); // js 에서 쿠키 접근 가능
         serializer.setSameSite("None");
         return serializer;

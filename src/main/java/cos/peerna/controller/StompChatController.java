@@ -2,6 +2,9 @@ package cos.peerna.controller;
 
 import cos.peerna.controller.dto.ChatMessageReceiveDto;
 import cos.peerna.controller.dto.ChatMessageSendDto;
+import cos.peerna.domain.Chat;
+import cos.peerna.repository.ChatRepository;
+import cos.peerna.repository.HistoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -14,21 +17,27 @@ import org.springframework.stereotype.Controller;
 public class StompChatController {
 
     private final SimpMessagingTemplate template; //특정 Broker로 메세지를 전달
+    private final ChatRepository chatRepository;
+    private final HistoryRepository historyRepository;
+
     /*
-    private final HttpSession httpSession;
-    Http request 가 아니라 WebSocket 통신이라 위 방식은 불가능
+    Client가 SEND할 수 있는 경로
+     stompConfig에서 설정한 applicationDestinationPrefixes와 @MessageMapping 경로가 병합됨
+    "/pub/chat/enter"
      */
-
-    // Client가 SEND할 수 있는 경로
-    // stompConfig에서 설정한 applicationDestinationPrefixes와 @MessageMapping 경로가 병합됨
-    //"/pub/chat/enter"
-
-
     @MessageMapping(value = "/chat/message")
     public void message(ChatMessageReceiveDto receiveMessage) {
         ChatMessageSendDto sendMessage = new ChatMessageSendDto(receiveMessage);
-        log.debug("receiveMessage: {}", receiveMessage);
-        template.convertAndSend("/sub/chat/room/" + sendMessage.getRoomId(), sendMessage);
+        template.convertAndSend("/sub/chat/room/" + receiveMessage.getRoomId(), sendMessage);
+
+        log.debug("receiveMessage: {}", receiveMessage.getMessage());
+
+        Chat chat = chatRepository.save(Chat.builder()
+                .writerId(receiveMessage.getWriterId())
+                .content(receiveMessage.getMessage())
+                .history(historyRepository.findById(receiveMessage.getHistoryId()).orElse(null))
+                .build());
+
     }
 
     /*

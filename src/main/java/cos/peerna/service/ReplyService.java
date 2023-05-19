@@ -5,10 +5,7 @@ import cos.peerna.controller.dto.ReplyResponseDto;
 import cos.peerna.controller.dto.data.ReplyData;
 import cos.peerna.domain.*;
 import cos.peerna.repository.*;
-<<<<<<< HEAD
-=======
 import cos.peerna.security.dto.SessionUser;
->>>>>>> 8e6fb1e6c067671dac60ccb3db784c48583cd06e
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -92,7 +89,7 @@ public class ReplyService {
                 .build();
     }
 
-    public void recommendReply(@NotNull SessionUser sessionUser, Long replyId) {
+    public void recommendReply(SessionUser sessionUser, Long replyId) {
         User user = userRepository.findById(sessionUser.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User Not Found"));
         Reply reply = replyRepository.findById(replyId)

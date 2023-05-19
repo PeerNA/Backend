@@ -1,5 +1,6 @@
 package cos.peerna.service;
 
+import cos.peerna.controller.dto.ChatMessageSendDto;
 import cos.peerna.controller.dto.DetailHistoryResponseDto;
 import cos.peerna.controller.dto.HistoryResponseDto;
 import cos.peerna.domain.*;
@@ -26,8 +27,8 @@ public class HistoryService {
     private final ReplyRepository replyRepository;
     private final ProblemRepository problemRepository;
     private final KeywordRepository keywordRepository;
-
     private final RoomRepository roomRepository;
+    private final ChatRepository chatRepository;
 
 //    public void make(Problem problem) {
 //        validateProblem(problem);
@@ -77,6 +78,7 @@ public class HistoryService {
         List<Map<String, String>> userInfo = new ArrayList<>();
         Map<String, String> mine = new HashMap<>();
 
+
         if (replyList.get(1).getUser().getId().equals(user.getId()))
             Collections.reverse(replyList);
 
@@ -92,12 +94,15 @@ public class HistoryService {
         userInfo.add(mine);
         userInfo.add(peer);
 
+        List<Chat> chat = chatRepository.findAllByHistory(history);
+
         return DetailHistoryResponseDto.builder()
                 .peerId(replyList.get(1).getUser().getId())
                 .question(problem.getQuestion())
                 .time(history.getTime())
                 .userInfo(userInfo)
                 .keyword(keywordList.stream().map(Keyword::getName).collect(Collectors.toList()))
+                .chat(chat.stream().map(ChatMessageSendDto::new).collect(Collectors.toList()))
                 .build();
     }
 

@@ -90,6 +90,7 @@ public class RoomService {
             log.debug("{}: Matched with {}", user.getName(), matchedUser.getId());
 
             Problem problem = problemService.getRandomByCategory(selectedCategory).orElse(null);
+            log.debug("RoomService: problem: {}", problem.getQuestion());
             History history = historyRepository.save(History.createHistory(problem));
             User peer = userRepository.findById(matchedUser.getId()).orElse(null);
 
@@ -116,7 +117,7 @@ public class RoomService {
     private boolean checkMatched(SessionUser user, DeferredResult<ResponseEntity<RoomResponseDto>> deferredResult, WaitingUser findSelf) {
         log.debug("findSelf:{} rooId: {}", findSelf.getId(), findSelf.getRoomId());
         waitingUserRepository.delete(findSelf);
-        if (findSelf.getRoomId() != -1L) {
+        if (findSelf.getRoomId() != -1) {
             log.debug("{}: Already Matched", user.getName());
 
             Room room = roomRepository.findById(findSelf.getRoomId()).orElse(null);

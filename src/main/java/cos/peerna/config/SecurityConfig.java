@@ -65,10 +65,11 @@ public class SecurityConfig {
                 .logout()
                 .logoutUrl("/logout")
                 .invalidateHttpSession(true)
-//                .deleteCookies("SESSION")
-                .logoutSuccessHandler((request, response, authentication) -> {
-                    response.sendRedirect("http://localhost:3000/callback?logout=success");
-                });
+                .deleteCookies("SESSION");
+//                .logoutSuccessHandler((request, response, authentication) -> {
+////                    response.sendRedirect("http://localhost:3000/callback?logout=success");
+////                    response.sendRedirect("http://peerna.kr/callback?logout=success");
+//                });
 //        http.logout()
 //                .logoutUrl("/logout")
 //                .logoutSuccessUrl("/login?logout")
