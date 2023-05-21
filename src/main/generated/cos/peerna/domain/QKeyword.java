@@ -24,6 +24,8 @@ public class QKeyword extends EntityPathBase<Keyword> {
 
     public final NumberPath<Long> count = createNumber("count", Long.class);
 
+    public final NumberPath<Long> id = createNumber("id", Long.class);
+
     public final StringPath name = createString("name");
 
     public final QProblem problem;

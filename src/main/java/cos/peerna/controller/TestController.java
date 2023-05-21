@@ -19,9 +19,5 @@ public class TestController {
         return "loginPage";
     }
 
-    @PostMapping("/api/fork")
-    public void fork(@LoginUser SessionUser sessionUser) {
-        notificationService.forkRepository(sessionUser.getToken(),
-                "https://api.github.com/repos/{owner}/{repo}/forks");
-    }
+
 }

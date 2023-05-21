@@ -22,10 +22,6 @@ public class QChat extends EntityPathBase<Chat> {
 
     public static final QChat chat = new QChat("chat");
 
-    public final NumberPath<Long> aUserId = createNumber("aUserId", Long.class);
-
-    public final NumberPath<Long> bUserId = createNumber("bUserId", Long.class);
-
     public final StringPath content = createString("content");
 
     public final QHistory history;
@@ -33,6 +29,8 @@ public class QChat extends EntityPathBase<Chat> {
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
     public final TimePath<java.time.LocalTime> time = createTime("time", java.time.LocalTime.class);
+
+    public final NumberPath<Long> writerId = createNumber("writerId", Long.class);
 
     public QChat(String variable) {
         this(Chat.class, forVariable(variable), INITS);

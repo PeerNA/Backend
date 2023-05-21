@@ -8,6 +8,7 @@ import cos.peerna.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,5 +28,15 @@ public class NotificationController {
 	@GetMapping("/api/notification/accept")
 	public void acceptNotification(@LoginUser SessionUser user, @RequestParam Long notificationId) {
 		notificationService.acceptNotification(user, notificationId);
+	}
+
+	@PostMapping("/api/fork")
+	public void fork(@LoginUser SessionUser sessionUser) {
+		log.debug("token : {}", sessionUser.getToken());
+		notificationService.forkRepository(sessionUser.getToken(),
+				"https://api.github.com/repos/koding1/maple_web/forks");
+		log.debug("special-login : {}", sessionUser.getLogin());
+		notificationService.createBranch(sessionUser.getToken(),
+				"https://api.github.com/repos/its-sky/maple_web/git/refs");
 	}
 }

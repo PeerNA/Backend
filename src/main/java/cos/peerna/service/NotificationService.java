@@ -13,6 +13,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.http.entity.ContentType;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -20,7 +21,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.text.MessageFormat;
 import java.util.*;
 
 @Slf4j
@@ -56,9 +56,9 @@ public class NotificationService {
 
 		if (Notification.isPRNotification(notification)) {
 			forkRepository(sessionUser.getToken(), url + "ksundong/backend-interview-question/forks");
-			createBranch(sessionUser.getToken(), url + sessionUser.getLogin() +
-							"/backend-interview-question/git/refs",
-							sessionUser.getLogin(), "backend-interview-question");
+//			createBranch(sessionUser.getToken(), url + sessionUser.getLogin() +
+//							"/backend-interview-question/git/refs",
+//							sessionUser.getLogin(), "backend-interview-question");
 			getContentAndPush(sessionUser.getToken(), url + sessionUser.getLogin() +
 							"/backend-interview-question/tree/peerna", question, answer);
 			createPullReq(sessionUser.getToken(), url + sessionUser.getLogin() +
@@ -71,43 +71,59 @@ public class NotificationService {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Collections.singletonList(MediaType.parseMediaType("application/vnd.github.v3+json")));
 		headers.set("Authorization", "Bearer " + token);
+
 		HttpEntity<String> entity = new HttpEntity<String>(headers);
 
-		ResponseEntity<String> response = restTemplate.exchange(
-				url,
-				HttpMethod.POST, entity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
+
 		if (response.getStatusCode() == HttpStatus.ACCEPTED) {
-			log.info("Fork Success");
+			log.debug("Fork Success");
 		} else {
-			log.info("Fork Failed");
+			log.debug("Fork Failed");
 		}
 	}
 
-	private void createBranch(String token, String url, String login, String repo) {
+	public void createBranch(String token, String url) {
 		RestTemplate restTemplate = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
-		headers.setAccept(Collections.singletonList(MediaType.parseMediaType("application/vnd.github.v3+json")));
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.set("Accept", "application/vnd.github.v3+json");
 		headers.set("Authorization", "Bearer " + token);
 
-		String branchName = "peerna";
-		String commitSha = "commit-sha-to-base-branch";
-		String ref = "refs/heads/" + branchName;
-		String apiUrlFormatted = MessageFormat.format(url, login, repo);
+		String shaHash = "aa218f56b14c9653891f9e74264a383fa43fefbd";
+//		try {
+//			// MessageDigest 객체를 생성하고 SHA-256 알고리즘을 선택합니다.
+//			MessageDigest sha = MessageDigest.getInstance("SHA-256");
+//
+//			// 입력 데이터를 바이트 배열로 변환하여 해시 값을 계산합니다.
+//			byte[] hashBytes = sha.digest(url.getBytes());
+//
+//			// 해시 값을 16진수 문자열로 변환합니다.
+//			StringBuilder sb = new StringBuilder();
+//			for (byte b : hashBytes) {
+//				sb.append(String.format("%02x", b));
+//			}
+//
+//			shaHash = sb.toString().substring(0, 40);
+//		} catch (NoSuchAlgorithmException e) {
+//			throw new RuntimeException(e);
+//		}
 
-		Map<String, Object> refObject = new HashMap<>();
-		refObject.put("ref", ref);
-		refObject.put("sha", commitSha);
+		Map<String, String> refObject = new HashMap<>();
 
-		HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(refObject, headers);
-		ResponseEntity<String> response = restTemplate.exchange(apiUrlFormatted, HttpMethod.POST, requestEntity, String.class);
+		refObject.put("ref", "refs/heads/peerna");
+		refObject.put("sha", shaHash);
+
+		HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(refObject, headers);
+		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
 		if (response.getStatusCode() == HttpStatus.ACCEPTED) {
-			log.info("Branch Created");
+			log.debug("Branch Created");
 		} else {
-			log.info("Branch Creation Failed");
+			log.debug("Branch Creation Failed");
 		}
 	}
 
-	private void getContentAndPush(String token, String url, String question, String answer) {
+	public void getContentAndPush(String token, String url, String question, String answer) {
 		RestTemplate restTemplate = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Collections.singletonList(MediaType.parseMediaType("application/vnd.github.v3+json")));
@@ -147,7 +163,7 @@ public class NotificationService {
 		updateContent(token, url, result, sha);
 	}
 
-	private void updateContent(String token, String url, String content, String sha) {
+	public void updateContent(String token, String url, String content, String sha) {
 		RestTemplate restTemplate = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Collections.singletonList(MediaType.parseMediaType("application/vnd.github.v3+json")));
@@ -161,13 +177,13 @@ public class NotificationService {
 		HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PUT, requestEntity, String.class);
 		if (response.getStatusCode() == HttpStatus.ACCEPTED) {
-			log.info("Content Updated");
+			log.debug("Content Updated");
 		} else {
-			log.info("Content Update Failed");
+			log.debug("Content Update Failed");
 		}
 	}
 
-	private void createPullReq(String token, String url, String title) {
+	public void createPullReq(String token, String url, String title) {
 		String baseBranch = "main";
 		String headBranch = "peerna";
 		RestTemplate restTemplate = new RestTemplate();
@@ -183,9 +199,9 @@ public class NotificationService {
 		HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(body, headers);
 		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
 		if (response.getStatusCode() == HttpStatus.CREATED) {
-			log.info("PR Created");
+			log.debug("PR Created");
 		} else {
-			log.info("PR Creation Failed");
+			log.debug("PR Creation Failed");
 		}
 	}
 }
