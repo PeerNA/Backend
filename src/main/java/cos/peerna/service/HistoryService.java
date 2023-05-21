@@ -3,6 +3,7 @@ package cos.peerna.service;
 import cos.peerna.controller.dto.ChatMessageSendDto;
 import cos.peerna.controller.dto.DetailHistoryResponseDto;
 import cos.peerna.controller.dto.HistoryResponseDto;
+import cos.peerna.controller.dto.data.ReplyData;
 import cos.peerna.domain.*;
 import cos.peerna.repository.*;
 import cos.peerna.security.dto.SessionUser;
@@ -75,32 +76,39 @@ public class HistoryService {
         Problem problem = history.getProblem();
         List<Reply> replyList = replyRepository.findRepliesByHistory(history);
         List<Keyword> keywordList = keywordRepository.findKeywordsByProblemOrderByCountDesc(problem).subList(0, 3);
-        List<Map<String, String>> userInfo = new ArrayList<>();
-        Map<String, String> mine = new HashMap<>();
 
+        ReplyData mine = null;
+        ReplyData peer = null;
 
-        if (replyList.get(1).getUser().getId().equals(user.getId()))
-            Collections.reverse(replyList);
-
-        mine.put("answer", replyList.get(0).getAnswer());
-        mine.put("userName", replyList.get(0).getUser().getName());
-        mine.put("imageUrl", replyList.get(0).getUser().getImageUrl());
-
-        Map<String, String> peer = new HashMap<>();
-        peer.put("answer", replyList.get(1).getAnswer());
-        peer.put("userName", replyList.get(1).getUser().getName());
-        peer.put("imageUrl", replyList.get(1).getUser().getImageUrl());
-
-        userInfo.add(mine);
-        userInfo.add(peer);
+        for (Reply reply : replyList) {
+            if (reply.getUser().getId().equals(user.getId())) {
+                mine = ReplyData.builder()
+                        .replyId(reply.getId())
+                        .userId(reply.getUser().getId())
+                        .likes((long) reply.getLikes().size())
+                        .name(reply.getUser().getName())
+                        .imageUrl(reply.getUser().getImageUrl())
+                        .answer(reply.getAnswer())
+                        .build();
+            } else {
+                peer = ReplyData.builder()
+                        .replyId(reply.getId())
+                        .userId(reply.getUser().getId())
+                        .likes((long) reply.getLikes().size())
+                        .name(reply.getUser().getName())
+                        .imageUrl(reply.getUser().getImageUrl())
+                        .answer(reply.getAnswer())
+                        .build();
+            }
+        }
 
         List<Chat> chat = chatRepository.findAllByHistory(history);
 
         return DetailHistoryResponseDto.builder()
-                .peerId(replyList.get(1).getUser().getId())
                 .question(problem.getQuestion())
                 .time(history.getTime())
-                .userInfo(userInfo)
+                .mine(mine)
+                .peer(peer)
                 .keyword(keywordList.stream().map(Keyword::getName).collect(Collectors.toList()))
                 .chat(chat.stream().map(ChatMessageSendDto::new).collect(Collectors.toList()))
                 .build();
