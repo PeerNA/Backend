@@ -13,14 +13,15 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.http.entity.ContentType;
+import org.json.JSONObject;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @Slf4j
@@ -31,6 +32,8 @@ public class NotificationService {
 
 	private final NotificationRepository notificationRepository;
 	private final UserRepository userRepository;
+
+	private final RestTemplate restTemplate = new RestTemplate();
 
 	public NotificationResponseDto getNotifications(SessionUser sessionUser) {
 		User user = userRepository.findById(sessionUser.getId())
@@ -53,21 +56,18 @@ public class NotificationService {
 		String answer = notification.getReply().getAnswer();
 
 		String url = "https://api.github.com/repos/";
+		String repo = "backend-interview-question";
 
 		if (Notification.isPRNotification(notification)) {
 			forkRepository(sessionUser.getToken(), url + "ksundong/backend-interview-question/forks");
-//			createBranch(sessionUser.getToken(), url + sessionUser.getLogin() +
-//							"/backend-interview-question/git/refs",
-//							sessionUser.getLogin(), "backend-interview-question");
-			getContentAndPush(sessionUser.getToken(), url + sessionUser.getLogin() +
-							"/backend-interview-question/tree/peerna", question, answer);
-			createPullReq(sessionUser.getToken(), url + sessionUser.getLogin() +
-							"/backend-interview-question/tree/peerna/pulls", question);
+			createBranch(sessionUser, url, repo);
+			getContentAndPush(sessionUser, url + sessionUser.getLogin() + "/" + repo + "/", question, answer);
+			createPullReq(sessionUser, url + sessionUser.getLogin() + "/" + repo + "/pulls",
+					"PeerNA 자동 Pull-Request 입니다.");
 		}
 	}
 
 	public void forkRepository(String token, String url) {
-		RestTemplate restTemplate = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Collections.singletonList(MediaType.parseMediaType("application/vnd.github.v3+json")));
 		headers.set("Authorization", "Bearer " + token);
@@ -83,39 +83,41 @@ public class NotificationService {
 		}
 	}
 
-	public void createBranch(String token, String url) {
-		RestTemplate restTemplate = new RestTemplate();
+	public String getShaHash(String token, String url) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.set("Accept", "application/vnd.github.v3+json");
+		headers.setAccept(Collections.singletonList(MediaType.parseMediaType("application/vnd.github.v3+json")));
 		headers.set("Authorization", "Bearer " + token);
 
-		String shaHash = "aa218f56b14c9653891f9e74264a383fa43fefbd";
-//		try {
-//			// MessageDigest 객체를 생성하고 SHA-256 알고리즘을 선택합니다.
-//			MessageDigest sha = MessageDigest.getInstance("SHA-256");
-//
-//			// 입력 데이터를 바이트 배열로 변환하여 해시 값을 계산합니다.
-//			byte[] hashBytes = sha.digest(url.getBytes());
-//
-//			// 해시 값을 16진수 문자열로 변환합니다.
-//			StringBuilder sb = new StringBuilder();
-//			for (byte b : hashBytes) {
-//				sb.append(String.format("%02x", b));
-//			}
-//
-//			shaHash = sb.toString().substring(0, 40);
-//		} catch (NoSuchAlgorithmException e) {
-//			throw new RuntimeException(e);
-//		}
+		HttpEntity<String> entity = new HttpEntity<String>(headers);
 
-		Map<String, String> refObject = new HashMap<>();
+		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+		Gson gson = new Gson();
+		String body = response.getBody();
+		JsonObject jsonObject = gson.fromJson(body, JsonObject.class);
 
-		refObject.put("ref", "refs/heads/peerna");
-		refObject.put("sha", shaHash);
+		// sha 추출
+		String sha = jsonObject.get("object").getAsJsonObject().get("sha").getAsString();
+		log.info("getSha : {}", sha);
+		return sha;
+	}
 
-		HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(refObject, headers);
+	public void createBranch(SessionUser sessionUser, String url, String repo) {
+		String token = sessionUser.getToken();
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Authorization", "Bearer " + token);
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.set("Accept", "application/vnd.github.v3+json");
+
+		String shaHash = getShaHash(token, "https://api.github.com/repos/"+ sessionUser.getLogin() + "/"
+				+ repo + "/git/ref/heads/main");
+
+		JSONObject body = new JSONObject();
+		body.put("ref", "refs/heads/peerna");
+		body.put("sha", shaHash);
+
+		HttpEntity<String> requestEntity = new HttpEntity<>(body.toString(), headers);
 		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
+
 		if (response.getStatusCode() == HttpStatus.ACCEPTED) {
 			log.debug("Branch Created");
 		} else {
@@ -123,58 +125,80 @@ public class NotificationService {
 		}
 	}
 
-	public void getContentAndPush(String token, String url, String question, String answer) {
-		RestTemplate restTemplate = new RestTemplate();
+//	특정 브랜치에 대한 정보
+//	https://api.github.com/repos/its-sky/maple_web/git/ref/heads/peerna
+//	heads/[브랜치명]
+
+//	readme의 sha값을 가져올 수 있음
+//	https://api.github.com/repos/its-sky/maple_web/readme?ref="peerna"
+
+//	https://api.github.com/repos/its-sky/maple_web/contents/README.md
+	// -d '{"message":"commit","committer":{"name":"shin","email":"smc9919@naver.com"},"content":"bXkgdXBkYXRlZCBmaWxlIGNvbnRlbnRz",
+	// "branch":"peerna","sha":"b23b7d39137334973c8425177041d3988ec82dee"}'
+
+	public void getContentAndPush(SessionUser sessionUser, String url, String question, String answer) {
+		String token = sessionUser.getToken();
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Collections.singletonList(MediaType.parseMediaType("application/vnd.github.v3+json")));
 		headers.set("Authorization", "Bearer " + token);
 
+		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url + "/readme")
+				.queryParam("ref", "peerna");
+		String newUrl = builder.toUriString();
+
 		HttpEntity<String> entity = new HttpEntity<String>(headers);
 
 		ResponseEntity<String> response = restTemplate.exchange(
-				url, HttpMethod.GET, entity, String.class);
+				newUrl, HttpMethod.GET, entity, String.class);
 		Gson gson = new Gson();
 		String body = response.getBody();
 		JsonObject responseJsonObject = gson.fromJson(body, JsonObject.class);
 
 		// sha 추출
 		String sha = responseJsonObject.get("sha").getAsString();
-		log.info("sha: " + sha);
 
 		// content 추출 및 Base64 디코딩
 		String contentBase64 = responseJsonObject.get("content").getAsString();
 		String content = new String(Base64.decodeBase64(contentBase64));
-//		log.info("content: " + content);
 
-		String[] split = content.split("<contents>|</contents>");
+		String[] split = content.split("<details>|</details>");
 		String result = "";
+		String reserve = "";
 		for (String s : split) {
 			if (s.contains(question)) {
-				result += "<details>\n" +
-						"  <summary>" + question + "</summary>\n" +
-						"  </br>\n" +
-						"  <p>" + answer + "</p>\n"
-						+ "</details>\n";
+				result += "<details>\n" + s
+						+ "  <p>[PeerNA 좋아요 답변] : " + answer + "</p>\n" + "</details>\n";
+				reserve = s;
 			} else {
-				result += "<details>" + s + "</details>\n";
+				result += "<details>\n" + s + "\n</details>\n";
 			}
 		}
 
-		updateContent(token, url, result, sha);
+		String newContent = Base64.encodeBase64String(result.getBytes(StandardCharsets.UTF_8));
+
+		updateContent(sessionUser, url, newContent, sha);
 	}
 
-	public void updateContent(String token, String url, String content, String sha) {
-		RestTemplate restTemplate = new RestTemplate();
+	public void updateContent(SessionUser sessionUser, String url, String content, String sha) {
+		String token = sessionUser.getToken();
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Collections.singletonList(MediaType.parseMediaType("application/vnd.github.v3+json")));
+		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.set("Authorization", "Bearer " + token);
 
-		Map<String, Object> body = new HashMap<>();
-		body.put("message", "update");
-		body.put("content", Base64.encodeBase64(content.getBytes()));
-		body.put("sha", sha);
+		url += "/contents/README.md";
 
-		HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+		JSONObject body = new JSONObject();
+		body.put("message", "Updated By PeerNA and " + sessionUser.getLogin());
+		body.put("content", content);
+		body.put("sha", sha);
+		JSONObject committer = new JSONObject();
+		committer.put("name", sessionUser.getLogin());
+		committer.put("email", sessionUser.getEmail());
+		body.put("committer", committer);
+		body.put("branch", "peerna");
+
+		HttpEntity<String> requestEntity = new HttpEntity<>(body.toString(), headers);
 		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PUT, requestEntity, String.class);
 		if (response.getStatusCode() == HttpStatus.ACCEPTED) {
 			log.debug("Content Updated");
@@ -183,12 +207,13 @@ public class NotificationService {
 		}
 	}
 
-	public void createPullReq(String token, String url, String title) {
+	public void createPullReq(SessionUser sessionUser, String url, String title) {
+		String token = sessionUser.getToken();
 		String baseBranch = "main";
-		String headBranch = "peerna";
-		RestTemplate restTemplate = new RestTemplate();
+		String headBranch = sessionUser.getLogin() + ":peerna";
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Collections.singletonList(MediaType.parseMediaType("application/vnd.github.v3+json")));
+		headers.set("Authorization", "Bearer " + token);
 
 		Map<String, String> body = new HashMap<>();
 		body.put("title", title);
