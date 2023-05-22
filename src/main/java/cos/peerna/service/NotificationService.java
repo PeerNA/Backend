@@ -4,6 +4,7 @@ package cos.peerna.service;
 import com.nimbusds.jose.shaded.gson.Gson;
 import com.nimbusds.jose.shaded.gson.JsonObject;
 import cos.peerna.controller.dto.NotificationResponseDto;
+import cos.peerna.controller.dto.data.NotificationData;
 import cos.peerna.domain.Notification;
 import cos.peerna.domain.User;
 import cos.peerna.repository.NotificationRepository;
@@ -23,6 +24,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -40,8 +42,16 @@ public class NotificationService {
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User Not Found"));
 		List<Notification> notificationList = notificationRepository.findByUser(user);
 
+		List<NotificationData> list = notificationList.stream().map(notification -> NotificationData.builder()
+				.notificationId(notification.getId())
+				.answer(notification.getReply().getAnswer())
+				.msg(notification.getMsg())
+				.time(notification.getTime())
+				.build()
+		).collect(Collectors.toList());
+
 		return NotificationResponseDto.builder()
-				.notificationList(notificationList)
+				.notificationList(list)
 				.build();
 	}
 
@@ -108,15 +118,17 @@ public class NotificationService {
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.set("Accept", "application/vnd.github.v3+json");
 
-		String shaHash = getShaHash(token, "https://api.github.com/repos/"+ sessionUser.getLogin() + "/"
-				+ repo + "/git/ref/heads/main");
+		String newUrl = "https://api.github.com/repos/"+ sessionUser.getLogin() + "/"
+				+ repo;
+
+		String shaHash = getShaHash(token, newUrl + "/git/ref/heads/master");
 
 		JSONObject body = new JSONObject();
 		body.put("ref", "refs/heads/peerna");
 		body.put("sha", shaHash);
 
 		HttpEntity<String> requestEntity = new HttpEntity<>(body.toString(), headers);
-		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(newUrl + "/git/refs", HttpMethod.POST, requestEntity, String.class);
 
 		if (response.getStatusCode() == HttpStatus.ACCEPTED) {
 			log.debug("Branch Created");
@@ -209,7 +221,7 @@ public class NotificationService {
 
 	public void createPullReq(SessionUser sessionUser, String url, String title) {
 		String token = sessionUser.getToken();
-		String baseBranch = "main";
+		String baseBranch = "master";
 		String headBranch = sessionUser.getLogin() + ":peerna";
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Collections.singletonList(MediaType.parseMediaType("application/vnd.github.v3+json")));

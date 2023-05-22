@@ -51,6 +51,6 @@ public class Notification {
 	}
 
 	public static boolean isPRNotification(Notification notification) {
-		return notification.type.equals(NotificationType.PULL_REQ);
+		return notification.type.equals(NotificationType.PULL_REQ_ACC);
 	}
 }
