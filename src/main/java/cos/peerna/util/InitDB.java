@@ -30,12 +30,12 @@ public class InitDB {
 
     @PostConstruct
     public void initDB() {
-//        initService.initRedis();
-//        initService.initDB();
-//        initService.initDB1(); // User, Problem
-//        initService.initDB2(); // Reply
-//        initService.initDB3(); // Happhee, Mincheol Shin
-//        initService.initDb4();
+        initService.initRedis();
+        initService.initDB();
+        initService.initDB1(); // User, Problem
+        initService.initDB2(); // Reply
+        initService.initDB3(); // Happhee, Mincheol Shin
+        initService.initDb4();
     }
 
     @Component

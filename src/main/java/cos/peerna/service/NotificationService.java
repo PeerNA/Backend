@@ -7,6 +7,7 @@ import cos.peerna.controller.dto.NotificationResponseDto;
 import cos.peerna.controller.dto.data.NotificationData;
 import cos.peerna.domain.Notification;
 import cos.peerna.domain.User;
+import cos.peerna.repository.FollowRepository;
 import cos.peerna.repository.NotificationRepository;
 import cos.peerna.repository.UserRepository;
 import cos.peerna.security.dto.SessionUser;
@@ -34,7 +35,7 @@ public class NotificationService {
 
 	private final NotificationRepository notificationRepository;
 	private final UserRepository userRepository;
-
+	private final UserService userService;
 	private final RestTemplate restTemplate = new RestTemplate();
 
 	public NotificationResponseDto getNotifications(SessionUser sessionUser) {
@@ -44,6 +45,7 @@ public class NotificationService {
 
 		List<NotificationData> list = notificationList.stream().map(notification -> NotificationData.builder()
 				.notificationId(notification.getId())
+				.type(notification.getType().toString())
 				.answer(notification.getReply().getAnswer())
 				.msg(notification.getMsg())
 				.time(notification.getTime())
@@ -60,20 +62,27 @@ public class NotificationService {
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User Not Found"));
 		Notification notification = notificationRepository.findNotificationById(notificationId);
 
+		if (notification.getUser().getId().equals(user.getId())) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User Not Matched");
+		}
+
 		Notification.acceptNotification(notification);
 
-		String question = notification.getReply().getProblem().getQuestion();
-		String answer = notification.getReply().getAnswer();
-
-		String url = "https://api.github.com/repos/";
-		String repo = "backend-interview-question";
-
 		if (Notification.isPRNotification(notification)) {
+			String question = notification.getReply().getProblem().getQuestion();
+			String answer = notification.getReply().getAnswer();
+
+			String url = "https://api.github.com/repos/";
+			String repo = "backend-interview-question";
+
 			forkRepository(sessionUser.getToken(), url + "ksundong/backend-interview-question/forks");
 			createBranch(sessionUser, url, repo);
 			getContentAndPush(sessionUser, url + sessionUser.getLogin() + "/" + repo + "/", question, answer);
 			createPullReq(sessionUser, url + sessionUser.getLogin() + "/" + repo + "/pulls",
 					"PeerNA 자동 Pull-Request 입니다.");
+		}
+		if (Notification.isFollowNotification(notification)) {
+			userService.follow(sessionUser, notification.getFollower().getId());
 		}
 	}
 

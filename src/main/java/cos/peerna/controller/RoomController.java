@@ -1,13 +1,10 @@
 package cos.peerna.controller;
 
 import cos.peerna.controller.dto.DetailHistoryResponseDto;
-import cos.peerna.controller.dto.MatchedUserDto;
 import cos.peerna.controller.dto.RoomResponseDto;
 import cos.peerna.domain.*;
-import cos.peerna.repository.ConnectedUserRepository;
 import cos.peerna.repository.HistoryRepository;
 import cos.peerna.repository.RoomRepository;
-import cos.peerna.repository.UserRepository;
 import cos.peerna.security.LoginUser;
 import cos.peerna.security.dto.SessionUser;
 import cos.peerna.service.HistoryService;

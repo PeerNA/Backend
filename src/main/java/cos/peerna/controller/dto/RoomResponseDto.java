@@ -10,6 +10,6 @@ public class RoomResponseDto {
     private Integer roomId;
     private Long    historyId;
     private Problem problem;
-    private MatchedUserDto peer;
+    private UserProfileDto peer;
 
 }
