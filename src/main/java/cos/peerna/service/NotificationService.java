@@ -4,6 +4,7 @@ package cos.peerna.service;
 import com.nimbusds.jose.shaded.gson.Gson;
 import com.nimbusds.jose.shaded.gson.JsonObject;
 import cos.peerna.controller.dto.NotificationResponseDto;
+import cos.peerna.controller.dto.UserProfileDto;
 import cos.peerna.controller.dto.data.NotificationData;
 import cos.peerna.domain.Notification;
 import cos.peerna.domain.User;
@@ -41,12 +42,13 @@ public class NotificationService {
 	public NotificationResponseDto getNotifications(SessionUser sessionUser) {
 		User user = userRepository.findById(sessionUser.getId())
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User Not Found"));
-		List<Notification> notificationList = notificationRepository.findByUser(user);
+		List<Notification> notificationList = notificationRepository.findAllByUser(user);
 
 		List<NotificationData> list = notificationList.stream().map(notification -> NotificationData.builder()
 				.notificationId(notification.getId())
 				.type(notification.getType().toString())
-				.answer(notification.getReply().getAnswer())
+				.answer(notification.getReply() == null ? null : notification.getReply().getAnswer())
+				.sender(notification.getFollower() == null ? null : new UserProfileDto(notification.getFollower()))
 				.msg(notification.getMsg())
 				.time(notification.getTime())
 				.build()
@@ -62,7 +64,7 @@ public class NotificationService {
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User Not Found"));
 		Notification notification = notificationRepository.findNotificationById(notificationId);
 
-		if (notification.getUser().getId().equals(user.getId())) {
+		if (!notification.getUser().getId().equals(user.getId())) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User Not Matched");
 		}
 

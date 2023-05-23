@@ -242,6 +242,8 @@ public class InitDB {
             userService.follow(happhee.getId(), 2L);
             userService.follow(2L, happhee.getId());
             userService.follow(3L, happhee.getId());
+            userService.follow(2L, mincshin.getId());
+            userService.follow(3L, mincshin.getId());
 
         }
     }
