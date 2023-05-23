@@ -11,7 +11,7 @@ spring:
           github:
             client-id: ${OAUTH_GITHUB_ID}
             client-secret: ${OAUTH_GITHUB_SECRET}
-            scope: user,repo
+            scope: user,public_repo
 #            redirect-uri: "https://www.peerna.kr/login/oauth2/code/github"
 #            redirect-uri: "http://localhost:8080/login/oauth2/code/github"
 #            redirect-uri: "http://43.200.47.43.nip.io/login/oauth2/code/github"
