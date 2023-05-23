@@ -16,10 +16,12 @@ public class SessionUser implements UserDetails {
     private String email;
     private String password;
     private String imageUrl;
+    private String token;
+    private String login;
     private Interest interest;
     private Career career;
 
-    public SessionUser(User user) {
+    public SessionUser(User user, String token, String login) {
         this.id = user.getId();
         this.name = user.getName();
         this.email = user.getEmail();
@@ -27,6 +29,8 @@ public class SessionUser implements UserDetails {
         this.imageUrl = user.getImageUrl();
         this.interest = user.getInterests();
         this.career = user.getCareer();
+        this.token = token;
+        this.login = login;
     }
 
     @Override

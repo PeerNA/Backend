@@ -3,6 +3,7 @@ package cos.peerna.util;
 import cos.peerna.controller.dto.ReplyRegisterRequestDto;
 import cos.peerna.controller.dto.UserRegisterRequestDto;
 import cos.peerna.domain.*;
+import cos.peerna.repository.NotificationRepository;
 import cos.peerna.repository.ReplyRepository;
 import cos.peerna.repository.RoomRepository;
 import cos.peerna.service.*;
@@ -29,11 +30,12 @@ public class InitDB {
 
     @PostConstruct
     public void initDB() {
-        initService.initRedis();
+//        initService.initRedis();
 //        initService.initDB();
 //        initService.initDB1(); // User, Problem
 //        initService.initDB2(); // Reply
 //        initService.initDB3(); // Happhee, Mincheol Shin
+//        initService.initDb4();
     }
 
     @Component
@@ -45,6 +47,7 @@ public class InitDB {
         private final HistoryService historyService;
         private final ReplyRepository replyRepository;
         private final RoomRepository roomRepository;
+        private final NotificationRepository notificationRepository;
         private final UserService userService;
         private final ProblemService problemService;
         private final BCryptPasswordEncoder passwordEncoder;
@@ -208,6 +211,22 @@ public class InitDB {
                         .roomId(room.getId())
                         .build(), mincshin.getId());
 
+            }
+        }
+
+        @Transactional
+        public void initDb4() {
+            User happhee = em.find(User.class, (long) 79238676);
+            User mincshin = em.find(User.class, (long) 48898994);
+            for(int i = 365; i < 393; i++) {
+                Reply reply = em.find(Reply.class, (long) i);
+                if (i % 2 == 0) {
+                    Notification notification = Notification.createNotification(mincshin, reply, NotificationType.PULL_REQ, "PR이 요청되었습니다." + i);
+                    notificationRepository.save(notification);
+                } else {
+                    Notification notification = Notification.createNotification(happhee, reply, NotificationType.PULL_REQ, "PR이 요청되었습니다." + i);
+                    notificationRepository.save(notification);
+                }
             }
         }
     }

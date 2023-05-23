@@ -53,11 +53,11 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         if (registrationId.equals("github"))
             userEmail = getUserEmail(userRequest);
 
-
-        OAuthAttributes attributes = OAuthAttributes.of(registrationId, userNameAttributeName, oAuth2User.getAttributes(), userEmail);
+        String token = userRequest.getAccessToken().getTokenValue();
+        OAuthAttributes attributes = OAuthAttributes.of(registrationId, userNameAttributeName, oAuth2User.getAttributes(), userEmail, token);
         User user = saveOrUpdate(attributes);
 
-        httpSession.setAttribute("user", new SessionUser(user));
+        httpSession.setAttribute("user", new SessionUser(user, token, attributes.getLogin()));
         log.info("setAttribute() user: {}", user);
 
         return new DefaultOAuth2User(
