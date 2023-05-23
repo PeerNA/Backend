@@ -68,7 +68,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body("No User Data");
         }
-        userService.follow(user, followeeId);
+        userService.follow(user.getId(), followeeId);
         return ResponseEntity.ok()
                 .body("success");
     }
@@ -79,7 +79,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body("No User Data");
         }
-        userService.unfollow(user, followeeId);
+        userService.unfollow(user.getId(), followeeId);
         return ResponseEntity.ok()
                 .body("success");
     }

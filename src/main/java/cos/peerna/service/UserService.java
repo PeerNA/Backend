@@ -67,8 +67,8 @@ public class UserService {
         user.updateCondition(newInterest, career);
     }
 
-    public void follow(SessionUser sessionUser, Long followeeId) {
-        User follower = userRepository.findById(sessionUser.getId())
+    public void follow(Long followerId, Long followeeId) {
+        User follower = userRepository.findById(followerId)
                 .orElseThrow(() -> new UsernameNotFoundException("User Not Found"));
         User followee =
                 userRepository.findById(followeeId).orElseThrow(() -> new UsernameNotFoundException("User Not Found"));
@@ -91,8 +91,8 @@ public class UserService {
                 .build());
     }
 
-    public void unfollow(SessionUser sessionUser, Long followeeId) {
-        User follower = userRepository.findById(sessionUser.getId())
+    public void unfollow(Long followerId, Long followeeId) {
+        User follower = userRepository.findById(followerId)
                 .orElseThrow(() -> new UsernameNotFoundException("User Not Found"));
         User followee =
                 userRepository.findById(followeeId).orElseThrow(() -> new UsernameNotFoundException("User Not Found"));

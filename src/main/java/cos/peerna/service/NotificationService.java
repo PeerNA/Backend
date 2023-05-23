@@ -82,7 +82,7 @@ public class NotificationService {
 					"PeerNA 자동 Pull-Request 입니다.");
 		}
 		if (Notification.isFollowNotification(notification)) {
-			userService.follow(sessionUser, notification.getFollower().getId());
+			userService.follow(sessionUser.getId(), notification.getFollower().getId());
 		}
 	}
 

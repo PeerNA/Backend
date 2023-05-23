@@ -35,17 +35,6 @@ public class Notification {
 
 	private LocalDate time;
 
-	public static Notification createNotification(User user, Reply reply, NotificationType type, String msg) {
-		Notification notification = new Notification();
-		notification.user = user;
-		notification.reply = reply;
-		notification.type = type;
-		notification.msg = msg;
-		notification.time = LocalDate.now();
-
-		return notification;
-	}
-
 	@Builder
 	public Notification(String msg, User user, Reply reply, User follower, NotificationType type) {
 		this.msg = msg;

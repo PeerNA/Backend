@@ -236,6 +236,13 @@ public class InitDB {
                     notificationRepository.save(notification);
                 }
             }
+            userService.follow(mincshin.getId(), happhee.getId());
+            userService.follow(happhee.getId(), mincshin.getId());
+            userService.follow(1L, happhee.getId());
+            userService.follow(happhee.getId(), 2L);
+            userService.follow(2L, happhee.getId());
+            userService.follow(3L, happhee.getId());
+
         }
     }
 }
