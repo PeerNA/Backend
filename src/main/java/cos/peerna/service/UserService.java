@@ -86,7 +86,6 @@ public class UserService {
         notificationRepository.save(Notification.builder()
                 .user(followee)
                 .msg(msg)
-                .reply(null)
                 .follower(follower)
                 .type(type)
                 .build());
