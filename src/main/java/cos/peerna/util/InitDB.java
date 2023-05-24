@@ -12,8 +12,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisAccessor;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -30,12 +28,12 @@ public class InitDB {
 
     @PostConstruct
     public void initDB() {
-//        initService.initRedis();
-//        initService.initDB();
-//        initService.initDB1(); // User, Problem
-//        initService.initDB2(); // Reply
-//        initService.initDB3(); // Happhee, Mincheol Shin
-//        initService.initDb4();
+        initService.initRedis();
+        initService.initDB();
+        initService.initDB1(); // User, Problem
+        initService.initDB2(); // Reply
+        initService.initDB3(); // Happhee, Mincheol Shin
+        initService.initDb4();
     }
 
     @Component
@@ -199,13 +197,13 @@ public class InitDB {
                 History history = historyService.createHistory(problem.getId(), room.getId());
 
                 replyService.make(ReplyRegisterRequestDto.builder()
-                        .answer(list.get(i-1))
+                        .answer(list.get(i - 1))
                         .problemId(problem.getId())
                         .historyId(history.getId())
                         .roomId(room.getId())
                         .build(), happhee.getId());
                 replyService.make(ReplyRegisterRequestDto.builder()
-                        .answer(list2.get(i-1))
+                        .answer(list2.get(i - 1))
                         .problemId(problem.getId())
                         .historyId(history.getId())
                         .roomId(room.getId())
@@ -218,16 +216,35 @@ public class InitDB {
         public void initDb4() {
             User happhee = em.find(User.class, (long) 79238676);
             User mincshin = em.find(User.class, (long) 48898994);
-            for(int i = 365; i < 393; i++) {
+            for (int i = 365; i < 393; i++) {
                 Reply reply = em.find(Reply.class, (long) i);
                 if (i % 2 == 0) {
-                    Notification notification = Notification.createNotification(mincshin, reply, NotificationType.PULL_REQ, "PR이 요청되었습니다." + i);
+                    Notification notification = Notification.builder()
+                            .user(mincshin)
+                            .reply(reply)
+                            .type(NotificationType.PULL_REQ)
+                            .msg("PR이 요청되었습니다." + i)
+                            .build();
                     notificationRepository.save(notification);
                 } else {
-                    Notification notification = Notification.createNotification(happhee, reply, NotificationType.PULL_REQ, "PR이 요청되었습니다." + i);
+                    Notification notification = Notification.builder()
+                            .user(happhee)
+                            .reply(reply)
+                            .type(NotificationType.PULL_REQ)
+                            .msg("PR이 요청되었습니다." + i)
+                            .build();
                     notificationRepository.save(notification);
                 }
             }
+            userService.follow(mincshin.getId(), happhee.getId());
+            userService.follow(happhee.getId(), mincshin.getId());
+            userService.follow(1L, happhee.getId());
+            userService.follow(happhee.getId(), 2L);
+            userService.follow(2L, happhee.getId());
+            userService.follow(3L, happhee.getId());
+            userService.follow(2L, mincshin.getId());
+            userService.follow(3L, mincshin.getId());
+
         }
     }
 }

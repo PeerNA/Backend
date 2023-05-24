@@ -62,15 +62,26 @@ public class UserController {
                 .body("success");
     }
 
-    @GetMapping("/oauth2-login-fail")
-    public void oauth2LoginFail(HttpServletResponse response) {
-        String redirectUri = "http://ec2-43-200-47-43.ap-northeast-2.compute.amazonaws.com:3000/";
-
-        try {
-            response.sendRedirect(redirectUri);
-        } catch (IOException e) {
-            e.printStackTrace();
+    @PostMapping("/api/users/follow")
+    public ResponseEntity<String> follow(@LoginUser SessionUser user, @RequestParam Long followeeId) {
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("No User Data");
         }
+        userService.follow(user.getId(), followeeId);
+        return ResponseEntity.ok()
+                .body("success");
+    }
+
+    @DeleteMapping("/api/users/follow")
+    public ResponseEntity<String> unfollow(@LoginUser SessionUser user, @RequestParam Long followeeId) {
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("No User Data");
+        }
+        userService.unfollow(user.getId(), followeeId);
+        return ResponseEntity.ok()
+                .body("success");
     }
 
     // 테스트 or 디버그 용 회원가입

@@ -8,6 +8,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.util.LinkedList;
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -30,6 +33,11 @@ public class User {
     private Role role;
     @Embedded
     private Interest interests;
+
+    @OneToMany(mappedBy="followee", cascade=CascadeType.PERSIST)
+    private final List<Follow> followers = new LinkedList<>();
+    @OneToMany(mappedBy="follower", cascade=CascadeType.PERSIST)
+    private final List<Follow> followings = new LinkedList<>();
 
     public static User createUser(UserRegisterRequestDto dto) {
         User user = new User();

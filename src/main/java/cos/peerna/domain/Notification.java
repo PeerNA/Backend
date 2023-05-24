@@ -1,12 +1,16 @@
 package cos.peerna.domain;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
 @Entity
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Notification {
 
 	@Id @GeneratedValue
@@ -22,20 +26,23 @@ public class Notification {
 	@JoinColumn(name = "reply_id", nullable = true)
 	private Reply reply;
 
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(nullable = true)
+	private User follower;
+
 	@Enumerated(EnumType.STRING)
 	private NotificationType type;
 
 	private LocalDate time;
 
-	public static Notification createNotification(User user, Reply reply, NotificationType type, String msg) {
-		Notification notification = new Notification();
-		notification.user = user;
-		notification.reply = reply;
-		notification.type = type;
-		notification.msg = msg;
-		notification.time = LocalDate.now();
-
-		return notification;
+	@Builder
+	public Notification(String msg, User user, Reply reply, User follower, NotificationType type) {
+		this.msg = msg;
+		this.user = user;
+		this.reply = reply;
+		this.follower = follower;
+		this.type = type;
+		this.time = LocalDate.now();
 	}
 
 	public static void acceptNotification(Notification notification) {
@@ -43,14 +50,17 @@ public class Notification {
 			notification.type = NotificationType.PULL_REQ_ACC;
 			notification.msg = "Pull-Request가 수락되었습니다.";
 		}
-		else if (notification.type.equals(NotificationType.FRIEND)) {
-			notification.type = NotificationType.FRIEND_ACC;
-			notification.msg = "친구 추가를 수락하였습니다.";
+		else if (notification.type.equals(NotificationType.FOLLOW)) {
+			notification.type = NotificationType.FOLLOW_EACH;
 		}
 		notification.time = LocalDate.now();
 	}
 
 	public static boolean isPRNotification(Notification notification) {
+		return notification.type.equals(NotificationType.PULL_REQ_ACC);
+	}
+
+	public static boolean isFollowNotification(Notification notification) {
 		return notification.type.equals(NotificationType.PULL_REQ_ACC);
 	}
 }
