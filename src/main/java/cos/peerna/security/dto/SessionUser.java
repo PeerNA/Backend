@@ -20,6 +20,7 @@ public class SessionUser implements UserDetails {
     private String login;
     private Interest interest;
     private Career career;
+    private Integer score;
 
     public SessionUser(User user, String token, String login) {
         this.id = user.getId();
@@ -29,6 +30,7 @@ public class SessionUser implements UserDetails {
         this.imageUrl = user.getImageUrl();
         this.interest = user.getInterests();
         this.career = user.getCareer();
+        this.score = user.getScore();
         this.token = token;
         this.login = login;
     }

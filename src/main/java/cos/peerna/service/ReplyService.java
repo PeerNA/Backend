@@ -102,6 +102,7 @@ public class ReplyService {
         likeyRepository.save(likey);
 
         Reply.likeReply(reply);
+        reply.getUser().updateScore(10);
 
         /* 좋아요가 일정 수 이상 넘어가면 자동으로 PR 요청 메시지 */
         if (!reply.isRequested() && reply.getLikeCount() == 10) {

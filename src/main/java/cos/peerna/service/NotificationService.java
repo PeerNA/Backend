@@ -252,4 +252,19 @@ public class NotificationService {
 			log.debug("PR Creation Failed");
 		}
 	}
+
+	public void deleteNotification(User user, Long notificationId) {
+		Notification notification = notificationRepository.findById(notificationId)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Notification Not Found"));
+
+		if (!notification.getUser().getId().equals(user.getId())) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User Not Matched");
+		}
+		notificationRepository.deleteById(notificationId);
+	}
+
+	public void deleteAllNotification(User user) {
+
+		notificationRepository.deleteAllByUser(user);
+	}
 }

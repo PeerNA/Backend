@@ -17,4 +17,7 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 
 	@Query("SELECT n FROM Notification n JOIN FETCH n.reply r JOIN FETCH r.problem p WHERE n.id = :id")
 	Notification findNotificationById(Long id);
+
+	void deleteAllByUser(User user);
+
 }
