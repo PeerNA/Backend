@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 @Slf4j
 @RestController
@@ -35,7 +34,7 @@ public class ReplyController {
 				.body("success");
 	}
 
-	@GetMapping("/api/reply/likey")
+	@PostMapping("/api/reply/likey")
 	public ResponseEntity<String> recommendReply(@Nullable @LoginUser SessionUser user, @RequestParam Long replyId) {
 		if (user == null) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -47,7 +46,7 @@ public class ReplyController {
 				.body("success");
 	}
 
-	@GetMapping("/api/reply/dislikey")
+	@DeleteMapping("/api/reply/dislikey")
 	public ResponseEntity<String> unrecommendReply(@Nullable @LoginUser SessionUser user, @RequestParam Long replyId) {
 		if (user == null) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
