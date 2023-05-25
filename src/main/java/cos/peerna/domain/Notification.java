@@ -61,6 +61,6 @@ public class Notification {
 	}
 
 	public static boolean isFollowNotification(Notification notification) {
-		return notification.type.equals(NotificationType.PULL_REQ_ACC);
+		return notification.type.equals(NotificationType.FOLLOW);
 	}
 }

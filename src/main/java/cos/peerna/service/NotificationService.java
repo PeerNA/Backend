@@ -71,6 +71,7 @@ public class NotificationService {
 		Notification.acceptNotification(notification);
 
 		if (Notification.isPRNotification(notification)) {
+			String noticeId = notification.getId().toString();
 			String question = notification.getReply().getProblem().getQuestion();
 			String answer = notification.getReply().getAnswer();
 
@@ -78,10 +79,10 @@ public class NotificationService {
 			String repo = "backend-interview-question";
 
 			forkRepository(sessionUser.getToken(), url + "ksundong/backend-interview-question/forks");
-			createBranch(sessionUser, url, repo);
-			getContentAndPush(sessionUser, url + sessionUser.getLogin() + "/" + repo + "/", question, answer);
+			createBranch(sessionUser, url, repo, noticeId);
+			getContentAndPush(sessionUser, url + sessionUser.getLogin() + "/" + repo + "/", question, answer, noticeId);
 			createPullReq(sessionUser, url + sessionUser.getLogin() + "/" + repo + "/pulls",
-					"PeerNA 자동 Pull-Request 입니다.");
+					"PeerNA 자동 Pull-Request 입니다.", noticeId);
 		}
 		if (Notification.isFollowNotification(notification)) {
 			userService.follow(sessionUser.getId(), notification.getFollower().getId());
@@ -122,7 +123,7 @@ public class NotificationService {
 		return sha;
 	}
 
-	public void createBranch(SessionUser sessionUser, String url, String repo) {
+	public void createBranch(SessionUser sessionUser, String url, String repo, String noticeId) {
 		String token = sessionUser.getToken();
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Authorization", "Bearer " + token);
@@ -135,7 +136,7 @@ public class NotificationService {
 		String shaHash = getShaHash(token, newUrl + "/git/ref/heads/master");
 
 		JSONObject body = new JSONObject();
-		body.put("ref", "refs/heads/peerna");
+		body.put("ref", "refs/heads/peerna" + noticeId);
 		body.put("sha", shaHash);
 
 		HttpEntity<String> requestEntity = new HttpEntity<>(body.toString(), headers);
@@ -159,14 +160,14 @@ public class NotificationService {
 	// -d '{"message":"commit","committer":{"name":"shin","email":"smc9919@naver.com"},"content":"bXkgdXBkYXRlZCBmaWxlIGNvbnRlbnRz",
 	// "branch":"peerna","sha":"b23b7d39137334973c8425177041d3988ec82dee"}'
 
-	public void getContentAndPush(SessionUser sessionUser, String url, String question, String answer) {
+	public void getContentAndPush(SessionUser sessionUser, String url, String question, String answer, String noticeId) {
 		String token = sessionUser.getToken();
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Collections.singletonList(MediaType.parseMediaType("application/vnd.github.v3+json")));
 		headers.set("Authorization", "Bearer " + token);
 
 		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url + "/readme")
-				.queryParam("ref", "peerna");
+				.queryParam("ref", "peerna" + noticeId);
 		String newUrl = builder.toUriString();
 
 		HttpEntity<String> entity = new HttpEntity<String>(headers);
@@ -199,10 +200,10 @@ public class NotificationService {
 
 		String newContent = Base64.encodeBase64String(result.getBytes(StandardCharsets.UTF_8));
 
-		updateContent(sessionUser, url, newContent, sha);
+		updateContent(sessionUser, url, newContent, sha, noticeId);
 	}
 
-	public void updateContent(SessionUser sessionUser, String url, String content, String sha) {
+	public void updateContent(SessionUser sessionUser, String url, String content, String sha, String noticeId) {
 		String token = sessionUser.getToken();
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Collections.singletonList(MediaType.parseMediaType("application/vnd.github.v3+json")));
@@ -219,7 +220,7 @@ public class NotificationService {
 		committer.put("name", sessionUser.getLogin());
 		committer.put("email", sessionUser.getEmail());
 		body.put("committer", committer);
-		body.put("branch", "peerna");
+		body.put("branch", "peerna" + noticeId);
 
 		HttpEntity<String> requestEntity = new HttpEntity<>(body.toString(), headers);
 		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PUT, requestEntity, String.class);
@@ -230,10 +231,10 @@ public class NotificationService {
 		}
 	}
 
-	public void createPullReq(SessionUser sessionUser, String url, String title) {
+	public void createPullReq(SessionUser sessionUser, String url, String title, String noticeId) {
 		String token = sessionUser.getToken();
 		String baseBranch = "master";
-		String headBranch = sessionUser.getLogin() + ":peerna";
+		String headBranch = sessionUser.getLogin() + ":peerna" + noticeId;
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Collections.singletonList(MediaType.parseMediaType("application/vnd.github.v3+json")));
 		headers.set("Authorization", "Bearer " + token);
