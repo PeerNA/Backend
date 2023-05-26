@@ -49,7 +49,7 @@ public class KeywordService {
 
         Map<String, Integer> map = new HashMap<String, Integer>();
         for (KoreanTokenJava token : koreanTokens) {
-            if (token.toString().contains("Noun") && token.toString().length() != 1) {
+            if (token.toString().contains("Noun") && token.getText().length() > 1) {
                 if (map.containsKey(token.getText())) {
                     map.put(token.getText(), map.get(token.getText()) + 1);
                 } else {
