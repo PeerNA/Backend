@@ -25,6 +25,7 @@ public class User {
     @Column(name = "image_url")
     private String imageUrl;
     private String introduce;
+    private Integer score;
 
     @Enumerated(EnumType.STRING)
     private Career career;
@@ -50,6 +51,7 @@ public class User {
         user.career = Career.UNDER_1;
         user.interests = new Interest(Category.OS, Category.NETWORK, Category.DATA_STRUCTURE);
         user.role = Role.MENTEE;
+        user.score = 1000;
 
         return user;
     }
@@ -65,9 +67,10 @@ public class User {
         this.career = Career.UNDER_1;
         this.interests = new Interest(Category.OS, Category.NETWORK, Category.DATA_STRUCTURE);
         this.password = new BCryptPasswordEncoder().encode("password");
+        this.score = 1000;
     }
 
-    public User update(String name, String email, String profile, String introduce) {
+    public User updateProfile(String name, String email, String profile, String introduce) {
         this.name = name;
         this.email = email;
         this.imageUrl = profile;
@@ -79,6 +82,12 @@ public class User {
     public User updateCondition(Interest interests, Career career) {
         this.interests = interests;
         this.career = career;
+
+        return this;
+    }
+
+    public User updateScore(Integer point) {
+        this.score += point;
 
         return this;
     }

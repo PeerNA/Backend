@@ -1,6 +1,5 @@
 package cos.peerna.security;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.shaded.gson.Gson;
 import com.nimbusds.jose.shaded.gson.reflect.TypeToken;
 import cos.peerna.security.dto.OAuthAttributes;
@@ -97,7 +96,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     private User saveOrUpdate(OAuthAttributes attributes) {
         log.info("saveOrUpdate() attributes.getNameAttributeKey(): {}", attributes.getNameAttributeKey());
         User user = userRepository.findById(attributes.getId())
-                .map(entity -> entity.update(attributes.getName(), attributes.getEmail(), attributes.getImageUrl(), attributes.getBio()))
+                .map(entity -> entity.updateProfile(attributes.getName(), attributes.getEmail(), attributes.getImageUrl(), attributes.getBio()))
                 .orElse(attributes.toEntity());
         log.info("saveOrUpdate() user: {}", user);
         return userRepository.save(user);
