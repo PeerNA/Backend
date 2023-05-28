@@ -35,6 +35,10 @@ public class SessionUser implements UserDetails {
         this.login = login;
     }
 
+    public void updateInterest(Interest interest) {
+        this.interest = interest;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;

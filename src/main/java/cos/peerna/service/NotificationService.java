@@ -4,11 +4,10 @@ package cos.peerna.service;
 import com.nimbusds.jose.shaded.gson.Gson;
 import com.nimbusds.jose.shaded.gson.JsonObject;
 import cos.peerna.controller.dto.NotificationResponseDto;
-import cos.peerna.controller.dto.UserProfileDto;
+import cos.peerna.controller.dto.data.UserProfileData;
 import cos.peerna.controller.dto.data.NotificationData;
 import cos.peerna.domain.Notification;
 import cos.peerna.domain.User;
-import cos.peerna.repository.FollowRepository;
 import cos.peerna.repository.NotificationRepository;
 import cos.peerna.repository.UserRepository;
 import cos.peerna.security.dto.SessionUser;
@@ -19,7 +18,6 @@ import org.apache.commons.codec.binary.Base64;
 import org.json.JSONObject;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -48,7 +46,7 @@ public class NotificationService {
 				.notificationId(notification.getId())
 				.type(notification.getType().toString())
 				.answer(notification.getReply() == null ? null : notification.getReply().getAnswer())
-				.sender(notification.getFollower() == null ? null : new UserProfileDto(notification.getFollower()))
+				.sender(notification.getFollower() == null ? null : new UserProfileData(notification.getFollower()))
 				.msg(notification.getMsg())
 				.time(notification.getTime())
 				.build()

@@ -1,18 +1,22 @@
 package cos.peerna.controller.dto.data;
 
-import lombok.Builder;
-import lombok.Data;
+import cos.peerna.domain.User;
+import lombok.*;
 
 @Data
-@Builder
-public class ReplyData {
+@EqualsAndHashCode(callSuper = true)
+public class ReplyData extends UserProfileData{
     private Long    replyId;
-    private Long    userId;
     private Long    likes;
-    private String  name;
-    private String  imageUrl;
     private String  answer;
 
+    @Builder
+    public ReplyData(User user, Long replyId, Long likes, String answer) {
+        super(user);
+        this.replyId = replyId;
+        this.likes = likes;
+        this.answer = answer;
+    }
 }
 
 

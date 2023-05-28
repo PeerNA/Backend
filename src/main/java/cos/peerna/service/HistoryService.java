@@ -84,20 +84,16 @@ public class HistoryService {
             if (reply.getUser().getId().equals(user.getId())) {
                 mine = ReplyData.builder()
                         .replyId(reply.getId())
-                        .userId(reply.getUser().getId())
                         .likes((long) reply.getLikes().size())
-                        .name(reply.getUser().getName())
-                        .imageUrl(reply.getUser().getImageUrl())
                         .answer(reply.getAnswer())
+                        .user(reply.getUser())
                         .build();
             } else {
                 peer = ReplyData.builder()
                         .replyId(reply.getId())
-                        .userId(reply.getUser().getId())
                         .likes((long) reply.getLikes().size())
-                        .name(reply.getUser().getName())
-                        .imageUrl(reply.getUser().getImageUrl())
                         .answer(reply.getAnswer())
+                        .user(reply.getUser())
                         .build();
             }
         }

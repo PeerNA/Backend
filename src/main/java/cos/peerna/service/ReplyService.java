@@ -77,10 +77,8 @@ public class ReplyService {
                 .map(r -> ReplyData.builder()
                         .replyId(r.getId())
                         .answer(r.getAnswer())
-                        .userId(r.getUser().getId())
                         .likes(r.getLikeCount())
-                        .imageUrl(r.getUser().getImageUrl())
-                        .name(r.getUser().getName())
+                        .user(r.getUser())
                         .build()).collect(Collectors.toList());
 
         return ReplyResponseDto.builder()
