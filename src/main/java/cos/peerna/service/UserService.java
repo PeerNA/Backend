@@ -6,6 +6,7 @@ import cos.peerna.repository.FollowRepository;
 import cos.peerna.repository.NotificationRepository;
 import cos.peerna.repository.UserRepository;
 import cos.peerna.security.dto.SessionUser;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final FollowRepository followRepository;
     private final NotificationRepository notificationRepository;
+    private final HttpSession httpSession;
 
     // 회원 가입
     public void join(User user) {
@@ -65,6 +67,8 @@ public class UserService {
 
         Interest newInterest = new Interest(priority1, priority2, priority3);
         user.updateCondition(newInterest, career);
+        sessionUser.updateInterest(newInterest);
+        httpSession.setAttribute("user", sessionUser);
     }
 
     public void follow(Long followerId, Long followeeId) {

@@ -1,6 +1,6 @@
 package cos.peerna.service;
 
-import cos.peerna.controller.dto.UserProfileDto;
+import cos.peerna.controller.dto.data.UserProfileData;
 import cos.peerna.controller.dto.RoomResponseDto;
 import cos.peerna.domain.*;
 import cos.peerna.repository.*;
@@ -109,7 +109,7 @@ public class RoomService {
                                     .roomId(room.getId())
                                     .historyId(history.getId())
                                     .problem(history.getProblem())
-                                    .peer(new UserProfileDto(peer))
+                                    .peer(new UserProfileData(peer))
                                     .build()));
         }
     }
@@ -133,7 +133,7 @@ public class RoomService {
                                     .roomId(room.getId())
                                     .historyId(history.getId())
                                     .problem(history.getProblem())
-                                    .peer(new UserProfileDto(peer))
+                                    .peer(new UserProfileData(peer))
                                     .build()));
             return true;
         }
@@ -202,7 +202,7 @@ public class RoomService {
                                 .roomId(room.getId())
                                 .historyId(history.getId())
                                 .problem(history.getProblem())
-                                .peer(new UserProfileDto(userRepository.findById(peer.getId()).orElse(null)))
+                                .peer(new UserProfileData(userRepository.findById(peer.getId()).orElse(null)))
                                 .build()));
     }
     public void soloNext (SessionUser user, Integer roomId,
@@ -257,7 +257,7 @@ public class RoomService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "History Not Found"));
         Problem problem = history.getProblem();
         log.debug("loading problem: {}", problem.getQuestion());
-        UserProfileDto userProfileDto = null;
+        UserProfileData userProfileData = null;
 
         if (player == 2) {
             Long peerId = null;
@@ -269,14 +269,14 @@ public class RoomService {
             }
             User peer = userRepository.findById(peerId)
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Peer Not Found"));
-            userProfileDto = new UserProfileDto(peer);
+            userProfileData = new UserProfileData(peer);
         }
 
         deferredResult.setResult(ResponseEntity.status(HttpStatus.CONFLICT).body(RoomResponseDto.builder()
                 .roomId(room.getId())
                 .historyId(history.getId())
                 .problem(problem)
-                .peer(userProfileDto)
+                .peer(userProfileData)
                 .build()));
         return true;
     }
