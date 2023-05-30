@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Component
@@ -52,6 +53,8 @@ public class InitDB {
         private final ReplyService replyService;
         private final StringRedisTemplate redisTemplate;
 
+        List<String> name_list;
+
         @Transactional
         public void initRedis() {
             redisTemplate.getConnectionFactory().getConnection().serverCommands().flushAll();
@@ -79,10 +82,25 @@ public class InitDB {
 
         @Transactional
         public void initDB1() {
+            name_list = new ArrayList<>();
+            name_list.add("zoohi");
+            name_list.add("ebang91");
+            name_list.add("mingi1");
+            name_list.add("yen001");
+            name_list.add("ZIO-KIMM");
+            name_list.add("anso333");
+            name_list.add("jeongjiyeon");
+            name_list.add("smart0505");
+            name_list.add("koding00");
+            name_list.add("juhyo");
+            name_list.add("jungmin3899");
+            name_list.add("darkerkang");
+            name_list.add("quartz");
+            name_list.add("sohee");
             for (int i = 1; i <= 14; i++) {
                 userService.join(User.createUser(UserRegisterRequestDto.builder()
                         .id((long) i)
-                        .name("user" + i + "_name")
+                        .name(name_list.get(i - 1))
                         .email("user" + i + "_email")
                         .password(passwordEncoder.encode("password"))
                         .build()));
@@ -118,6 +136,23 @@ public class InitDB {
             for (int i = 1; i <= 13; i++) {
                 User user1 = em.find(User.class, (long) i);
                 User user2 = em.find(User.class, (long) i + 1);
+
+                List<String> answer_list = new ArrayList<>();
+                answer_list.add("멀티 스레드 프로그래밍에서 일반적으로 어떤 함수나 변수, 혹은 객체가 여러 스레드로부터 동시에 접근이 이루어져도 프로그램의 실행에 문제가 없음을 뜻한다.");
+                answer_list.add("하나의 함수가 한 스레드로부터 호출되어 실행 중일 때, 다른 스레드가 그 함수를 호출하여 동시에 함께 실행되더라도 각 스레드에서의 함수의 수행 결과가 올바로 나오는 것으로 정의한다.");
+                answer_list.add("여러 스레드에서 클래스 혹은 클래스의 객체에 동시에 접근해 수정하더라도 프로그램의 실행에 문제가 없음을 뜻한다.");
+                answer_list.add("근본적으로 멀티 스레드 환경에서 안전하게 만드는 것을 말한다. 동시 접근하거나 등등");
+                answer_list.add("보통 재진입 가능하게 만들어진 함수일 경우는 스레드 세이프이고, 전역 변수를 사용하지 않게끔 구성하게 된다.");
+                answer_list.add("atomic한 성질을 지켜서 여러 스레드가 동시에 접근해도 문제가 없는 것을 말한다.");
+                answer_list.add("스레드가 여러개 존재하는 것은 경제성 때문에 존재하는데, 여러 개 존재하면서 동시에 자원에 접근할 때 문제가 없어야 함을 의미한다.");
+                answer_list.add("경합 조건이 발생했을 때 문제가 없어야 함을 의미한다.");
+                answer_list.add("여러 쓰레드에 의해 코드가 실행되더라도 실행 결과의 correctness가 보장되는 것을 뜻합니다.");
+                answer_list.add("thread-safe의 정확한 정의는 모르지만 mutex나 semaphore를 사용하여 여러 쓰레드가 동시에 접근하였을 때 문제가 없게 만드는 것을 의미한다.");
+                answer_list.add("thread-safe를 가장 근본적으로 해결할 수 있는 방법은 싱글톤을 사용하는 것이다.");
+                answer_list.add("컴퓨터에서 재진입성을 가진다고 하면 병렬로 안전하게 실행 가능함을 의미한다.");
+                answer_list.add("Java에서는 synchronized 키워드를 사용하여 스레드 세이프를 보장한다.");
+                answer_list.add("ConcurrentHashMap을 이용하게 된다면 Thread-safe를 보장하게 된다. 이는 병렬 환경에서의 Map을 사용할 때 중요하다.");
+
                 for (int j = 1; j <= 14; j++) {
                     Problem problem = em.find(Problem.class, (long) j);
                     HashMap<Long, ConnectedUser> userMap = new HashMap<>();
@@ -132,17 +167,11 @@ public class InitDB {
                     History history = historyService.createHistory(problem.getId(), room.getId());
 
                     replyService.make(ReplyRegisterRequestDto.builder()
-                            .answer("user:" + i + ", problem:" + i)
+                            .answer(answer_list.get(i - 1))
                             .problemId(problem.getId())
-                            .historyId(history.getId())
                             .roomId(room.getId())
+                            .historyId(history.getId())
                             .build(), user1.getId());
-                    replyService.make(ReplyRegisterRequestDto.builder()
-                            .answer("user:" + i + 1 + ", problem:" + i + 1)
-                            .problemId(problem.getId())
-                            .historyId(history.getId())
-                            .roomId(room.getId())
-                            .build(), user2.getId());
                 }
             }
         }
