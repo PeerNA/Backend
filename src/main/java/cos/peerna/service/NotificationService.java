@@ -79,7 +79,7 @@ public class NotificationService {
 			forkRepository(sessionUser.getToken(), url + "ksundong/backend-interview-question/forks");
 			createBranch(sessionUser, url, repo, noticeId);
 			getContentAndPush(sessionUser, url + sessionUser.getLogin() + "/" + repo + "/", question, answer, noticeId);
-			createPullReq(sessionUser, url + sessionUser.getLogin() + "/" + repo + "/pulls",
+			createPullReq(sessionUser, url + "ksundong/backend-interview-question/pulls",
 					"PeerNA 자동 Pull-Request 입니다.", noticeId);
 		}
 		if (Notification.isFollowNotification(notification)) {
