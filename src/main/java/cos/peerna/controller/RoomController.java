@@ -1,53 +1,148 @@
 package cos.peerna.controller;
 
-import cos.peerna.repository.ChatRoomRepository;
-import jakarta.servlet.http.HttpSession;
+import cos.peerna.controller.dto.DetailHistoryResponseDto;
+import cos.peerna.controller.dto.RoomResponseDto;
+import cos.peerna.domain.*;
+import cos.peerna.repository.HistoryRepository;
+import cos.peerna.repository.RoomRepository;
+import cos.peerna.security.LoginUser;
+import cos.peerna.security.dto.SessionUser;
+import cos.peerna.service.HistoryService;
+import cos.peerna.service.ImageService;
+import cos.peerna.service.RoomService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
-import org.hibernate.Session;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.context.request.async.DeferredResult;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.util.stream.Collectors;
+import java.io.IOException;
+import java.lang.module.ResolutionException;
 
-@Controller
+
+@Slf4j
+@RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/chat")
-@Log4j2
 public class RoomController {
 
-    private final ChatRoomRepository repository;
+    private final RoomService roomService;
+    private final RoomRepository roomRepository;
+    private final HistoryService historyService;
+    private final HistoryRepository historyRepository;
+    private final ImageService imageService;
 
-    //채팅방 목록 조회
-    @GetMapping(value = "/rooms")
-    public ModelAndView rooms() {
 
-        log.info("# All Chat Rooms");
-        ModelAndView mv = new ModelAndView("chat/rooms");
+    @GetMapping("/api/match")
+    public DeferredResult<ResponseEntity<RoomResponseDto>> match(@LoginUser SessionUser user,
+                                                                 @RequestParam Integer player) {
+        DeferredResult<ResponseEntity<RoomResponseDto>> deferredResult = new DeferredResult<>();
 
-        mv.addObject("list", repository.findAllRooms());
+        if (user == null) {
+            deferredResult.setResult(ResponseEntity.status(401).build());
+            return deferredResult;
+        }
 
-        return mv;
+        if (roomService.findAlreadyExist(user, deferredResult, player)) {
+            return deferredResult;
+        }
+
+        if (player == 1) {
+            roomService.soloMatch(user, deferredResult);
+        } else {
+            roomService.duoMatch(user, deferredResult);
+        }
+        return deferredResult;
     }
 
-    //채팅방 개설
-    @PostMapping(value = "/room")
-    public String create(@RequestParam String name, RedirectAttributes rttr) {
 
-        log.info("# Create Chat Room , name: " + name);
-        rttr.addFlashAttribute("roomName", repository.createChatRoomDTO(name));
-        return "redirect:/chat/rooms";
+
+    @GetMapping("/api/match/next")
+    public DeferredResult<ResponseEntity<RoomResponseDto>> next(@LoginUser SessionUser user,
+                                                                @RequestParam Integer roomId,
+                                                                @RequestParam Long peerId) {
+
+        DeferredResult<ResponseEntity<RoomResponseDto>> deferredResult = new DeferredResult<>();
+        if (user == null) {
+            deferredResult.setResult(ResponseEntity.status(401).build());
+            return deferredResult;
+        }
+
+        try {
+            if (peerId == 0)
+                roomService.soloNext(user, roomId, deferredResult);
+            else {
+                roomService.duoNext(user, roomId, peerId, deferredResult);
+            }
+        } catch (NullPointerException e) {
+            log.error("NullPointerException: {}", e.getMessage());
+            deferredResult.setResult(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
+        }
+
+
+        return deferredResult;
     }
 
-    //채팅방 조회
-    @GetMapping("/room")
-    public void getRoom(String roomId, Model model) {
+    // match 대기열 취소
+    @DeleteMapping("/api/match")
+    public ResponseEntity<String> matchCancel(@LoginUser SessionUser user) {
+        if (user == null)
+            return ResponseEntity.status(401).build();
 
-        log.info("# get Chat Room, roomID : " + roomId);
+        return roomService.matchCancel(user);
+    }
 
-        model.addAttribute("room", repository.findRoomById(roomId));
+    // 방 나가기 (모두 나가면 방 삭제)
+    @DeleteMapping("/api/room")
+    public ResponseEntity<String> leave(@LoginUser SessionUser user, @RequestParam Integer roomId) {
+        if (user == null)
+            return ResponseEntity.status(401).build();
+
+        return roomService.leave(user, roomId);
+    }
+
+    @GetMapping("/api/match/status")
+    public DeferredResult<ResponseEntity<DetailHistoryResponseDto>> next(@LoginUser SessionUser user,
+                                                                         @RequestParam Integer roomId) {
+
+        DeferredResult<ResponseEntity<DetailHistoryResponseDto>> deferredResult = new DeferredResult<>();
+        if (user == null) {
+            deferredResult.setResult(ResponseEntity.status(401).build());
+            return deferredResult;
+        }
+        Room room = roomRepository.findById(roomId).orElse(null);
+        if (room == null) {
+            deferredResult.setResult(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
+            return deferredResult;
+        }
+
+        History history = historyRepository.findById(room.getHistoryIdList().getLast())
+                .orElseThrow(() -> new ResolutionException("History not found"));
+        if (history.isSolved()) {
+            deferredResult.setResult(ResponseEntity.ok(historyService.findDetailHistory(user, history.getId())));
+        } else {
+            deferredResult.setResult(ResponseEntity.accepted().build());
+        }
+
+        return deferredResult;
+    }
+
+    @PostMapping("/api/match/upload")
+    public ResponseEntity<String> uploadImage(@LoginUser SessionUser user,
+                                              @RequestParam MultipartFile file) throws IOException {
+        long fileSize = file.getSize();
+        if (fileSize > 1024 * 1024 * 10) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "File size is too big");
+        }
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.equals("image/jpeg") && !contentType.equals("image/png")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "File type is not supported");
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                imageService.uploadImage(user.getId(), file)
+        );
     }
 }
