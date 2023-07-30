@@ -1,23 +1,22 @@
 package cos.peerna.service;
 
-import cos.peerna.controller.dto.ProblemRegisterRequestDto;
-import cos.peerna.domain.Category;
-import cos.peerna.domain.Problem;
-import cos.peerna.repository.ProblemRepository;
+import cos.peerna.domain.problem.dto.ProblemRegisterRequestDto;
+import cos.peerna.domain.problem.service.ProblemService;
+import cos.peerna.domain.user.model.Category;
+import cos.peerna.domain.problem.model.Problem;
+import cos.peerna.domain.problem.repository.ProblemRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
 class ProblemServiceTest {
 
-	@Autowired ProblemService problemService;
+	@Autowired
+	ProblemService problemService;
 	@Autowired ProblemRepository problemRepository;
 
 	@Test

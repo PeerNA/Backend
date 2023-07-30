@@ -1,6 +1,6 @@
 package cos.peerna;
 
-import cos.peerna.domain.User;
+import cos.peerna.domain.user.model.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
