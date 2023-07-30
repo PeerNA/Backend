@@ -15,7 +15,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @EnableBatchProcessing
 @SpringBootApplication
-@EnableJpaRepositories(basePackages = {"cos.peerna.repository"})
+@EnableJpaRepositories(basePackages = {"cos.peerna"})
 @EnableRedisRepositories
 @EnableJpaAuditing
 public class PeernaApplication {
