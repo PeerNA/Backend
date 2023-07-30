@@ -27,19 +27,59 @@
 ```
 .
 ├── peerna
-│   ├── config
-│   ├── controller
-│   │   └── dto
-│   ├── domain
-│   ├── exception/resolver
-│   ├── job
-│   ├── repository
-│   │   └── dto
-│   ├── security
-│   │   └── dto
-│   ├── service
-│   ├── util
-└── ServerApplication
+│   └── domain
+│       ├── history
+│       │   ├── controller
+│       │   ├── repository
+│       │   ├── service
+│       │   ├── model
+│       │   └── dto
+│       ├── keyword
+│       │   ├── repository
+│       │   ├── service
+│       │   ├── model
+│       │   ├── job
+│       │   └── dto
+│       ├── notification
+│       │   ├── controller
+│       │   ├── repository
+│       │   ├── service
+│       │   ├── model
+│       │   └── dto
+│       ├── problem
+│       │   ├── controller
+│       │   ├── repository
+│       │   ├── service
+│       │   ├── model
+│       │   └── dto
+│       ├── reply
+│       │   ├── controller
+│       │   ├── repository
+│       │   ├── service
+│       │   ├── model
+│       │   └── dto
+│       ├── room
+│       │   ├── controller
+│       │   ├── repository
+│       │   ├── service
+│       │   ├── model
+│       │   └── dto
+│       ├── user
+│       │   ├── controller
+│       │   ├── repository
+│       │   ├── service
+│       │   ├── model
+│       └── └── dto
+│   └── global
+│       ├── common
+│       │   ├── controller
+│       │   ├── service
+│       │   ├── model
+│       │   └── util
+│       ├── config
+│       ├── exception
+│       └── security
+└──         └── dto
 
 ```
 
