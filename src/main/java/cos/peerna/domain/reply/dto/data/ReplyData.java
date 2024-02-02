@@ -7,9 +7,9 @@ import lombok.*;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class ReplyData extends UserProfileData {
-    private Long    replyId;
-    private Long    likes;
-    private String  answer;
+    private Long replyId;
+    private Long likes;
+    private String answer;
 
     @Builder
     public ReplyData(User user, Long replyId, Long likes, String answer) {
