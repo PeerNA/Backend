@@ -114,4 +114,15 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Already Followed");
         }
     }
+링
+    public void checkForbiddenUser(User user, Long userId) {
+        if (isDifferentUser(user, userId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden User");
+        }
+    }
+
+    private static boolean isDifferentUser(User user, Long userId) {
+        return !user.getId().equals(userId);
+    }
+
 }
