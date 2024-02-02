@@ -59,8 +59,6 @@ public class ProblemService {
     public Optional<Problem> getRandomByCategory(Category category) {
         List<ProblemIdMapping> problemIdList = problemRepository.findAllByCategory(category);
         int categorySize = problemIdList.size();
-        log.debug("category: {}", category);
-        log.debug("categorySize: {}", categorySize);
 
         if (categorySize == 0) {
             return Optional.empty();
