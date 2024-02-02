@@ -44,7 +44,7 @@ public class RoomService {
     private final UserRepository userRepository;
 
     public void soloMatch(SessionUser user, DeferredResult<ResponseEntity<RoomResponseDto>> deferredResult) {
-        Problem problem = problemService.getRandomByCategory(user.getInterest().getPriority1()).orElse(null);
+        Problem problem = problemService.getRandomByCategory(user.getInterest().getPriority1());
         History history = historyRepository.save(History.createHistory(problem));
 
         Room room = roomRepository.save(Room.builder()
@@ -101,7 +101,7 @@ public class RoomService {
             WaitingUser matchedUser = matchedUsers.get(0);
             log.debug("{}: Matched with {}", user.getName(), matchedUser.getId());
 
-            Problem problem = problemService.getRandomByCategory(selectedCategory).orElse(null);
+            Problem problem = problemService.getRandomByCategory(selectedCategory);
             log.debug("RoomService: problem: {}", problem.getQuestion());
             History history = historyRepository.save(History.createHistory(problem));
             User peer = userRepository.findById(matchedUser.getId()).orElse(null);

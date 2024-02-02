@@ -7,4 +7,8 @@ import lombok.Data;
 @AllArgsConstructor
 public class ProblemAnswerResponseDto {
 	private String answer;
+
+	public static ProblemAnswerResponseDto of(String answer) {
+		return new ProblemAnswerResponseDto(answer);
+	}
 }

@@ -86,10 +86,8 @@ public class User {
         return this;
     }
 
-    public User updateScore(Integer point) {
+    public void addScore(Integer point) {
         this.score += point;
-
-        return this;
     }
 
     public String getRoleKey() {

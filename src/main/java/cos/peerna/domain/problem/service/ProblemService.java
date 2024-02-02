@@ -1,5 +1,7 @@
 package cos.peerna.domain.problem.service;
 
+import cos.peerna.domain.problem.dto.ProblemAnswerResponseDto;
+import cos.peerna.domain.problem.dto.ProblemResponseDto;
 import cos.peerna.domain.problem.model.Problem;
 import cos.peerna.domain.problem.model.ProblemIdMapping;
 import cos.peerna.domain.problem.repository.ProblemRepository;
@@ -20,54 +22,55 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
 @Service
-@Transactional
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ProblemService {
 
     private final ProblemRepository problemRepository;
     private final HistoryRepository historyRepository;
     private final KeywordRepository keywordRepository;
 
-    public void make(String question, String answer, Category category) {
-        Problem problem = Problem.createProblem(question, answer, category);
-        validateProblem(problem);
-        problemRepository.save(problem);
+    @Transactional
+    public Long make(String question, String answer, Category category) {
+        validateProblem(question);
+        Problem newProblem = problemRepository.save(Problem.createProblem(question, answer, category));
+        return newProblem.getId();
     }
 
-    private void validateProblem(Problem problem) {
-        problemRepository.findProblemByQuestion(problem.getQuestion()).ifPresent(p -> {
+    private void validateProblem(String question) {
+        problemRepository.findProblemByQuestion(question).ifPresent(p -> {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Already Exist Problem");
         });
     }
 
-    /**
-     * List<ProblemResponseDto>  를 반환 하도록 바꾸기
-     * public List<Problem> getAll() {
-     * return problemRepository.findAll();
-     * }
-     */
-    public String getOneAnswer(Long id) {
-        Problem problem = problemRepository.findById(id)
+    public ProblemAnswerResponseDto getProblemById(Long problemId) {
+        Problem problem = problemRepository.findById(problemId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem Not Found"));
-        return problem.getAnswer();
+        return ProblemAnswerResponseDto.of(problem.getAnswer());
     }
 
-    public List<Problem> getAll() {
-        return problemRepository.findAll();
+    public ProblemResponseDto getProblemByCategory(Category category) {
+        Problem problem = getRandomByCategory(category);
+        List<String> keywords = keywordRepository.findKeywordsByProblem(problem).stream().map(keyword -> keyword.getName()).toList();
+        return ProblemResponseDto.builder()
+                .problemId(problem.getId())
+                .question(problem.getQuestion())
+                .answer(problem.getAnswer())
+                .category(problem.getCategory())
+                .keywordList(keywords)
+                .build();
     }
 
-    public Optional<Problem> getRandomByCategory(Category category) {
+    public Problem getRandomByCategory(Category category) {
         List<ProblemIdMapping> problemIdList = problemRepository.findAllByCategory(category);
         int categorySize = problemIdList.size();
-        log.debug("category: {}", category);
-        log.debug("categorySize: {}", categorySize);
 
         if (categorySize == 0) {
-            return Optional.empty();
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem Not Found");
         } else {
             int randomNumber = ThreadLocalRandom.current().nextInt(1, categorySize + 1) % (categorySize + 1);
             long randomElementIndex = problemIdList.get(randomNumber-1).getId();
-            return problemRepository.findById(randomElementIndex);
+            return problemRepository.findById(randomElementIndex).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem Not Found"));
         }
     }
 

@@ -7,10 +7,10 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class ReplyRegisterRequestDto {
-	private String answer;
-	private Long problemId;
-	private Long historyId;
-	private Integer roomId;
+	public String answer;
+	public Long problemId;
+	public Long historyId;
+	public Integer roomId;
 
 	@Builder
 	public ReplyRegisterRequestDto(String answer, Long problemId, Long historyId, Integer roomId) {

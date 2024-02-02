@@ -34,8 +34,7 @@ public class History {
 		return history;
 	}
 
-	public History solve() {
+	public void solve() {
 		this.isSolved = true;
-		return this;
 	}
 }
