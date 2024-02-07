@@ -2,6 +2,7 @@ package cos.peerna.global.security;
 
 import com.nimbusds.jose.shaded.gson.Gson;
 import com.nimbusds.jose.shaded.gson.reflect.TypeToken;
+import cos.peerna.domain.user.model.Role;
 import cos.peerna.global.security.dto.OAuthAttributes;
 import cos.peerna.global.security.dto.SessionUser;
 import cos.peerna.domain.user.model.User;
@@ -37,7 +38,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-//        log.info("loadUser() userRequest: {}", userRequest);
         log.info("loadUser() userRequest.getAccessToken(): {}", userRequest.getAccessToken().getTokenValue());
         OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
         OAuth2User oAuth2User = delegate.loadUser(userRequest);
@@ -93,11 +93,17 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     }
 
     @Transactional
-    private User saveOrUpdate(OAuthAttributes attributes) {
+    protected User saveOrUpdate(OAuthAttributes attributes) {
         log.info("saveOrUpdate() attributes.getNameAttributeKey(): {}", attributes.getNameAttributeKey());
         User user = userRepository.findById(attributes.getId())
                 .map(entity -> entity.updateProfile(attributes.getName(), attributes.getEmail(), attributes.getImageUrl(), attributes.getBio()))
-                .orElse(attributes.toEntity());
+                .orElse(User.builder().id(attributes.getId())
+                        .name(attributes.getName())
+                        .email(attributes.getEmail())
+                        .imageUrl(attributes.getImageUrl())
+                        .introduce(attributes.getBio())
+                        .role(Role.USER)
+                        .build());
         log.info("saveOrUpdate() user: {}", user);
         return userRepository.save(user);
     }

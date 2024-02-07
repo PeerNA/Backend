@@ -43,17 +43,6 @@ public class HistoryService {
     private final RoomRepository roomRepository;
     private final ChatRepository chatRepository;
 
-//    public void make(Problem problem) {
-//        validateProblem(problem);
-//        problemRepository.save(problem);
-//    }
-
-//    private void validateProblem(Problem problem) {
-//        if (problemRepository.findProblemByQuestion(problem.getQuestion()).isPresent()) {
-//            throw new IllegalArgumentException("This Question already exists.");
-//        }
-//    }
-
     public List<HistoryResponseDto> findUserHistory(SessionUser sessionUser, int page) {
         final int PAGE_SIZE = 8;
 
@@ -72,14 +61,6 @@ public class HistoryService {
                     .time(history.getTime())
                     .build();
         }).collect(Collectors.toList());
-
-//        return new ArrayList<>(replyList.stream().map(r -> HistoryResponseDto.builder()
-//                .historyId(r.getHistory().getId())
-//                .problemId(r.getProblem().getId())
-//                .question(r.getProblem().getQuestion())
-//                .category(r.getProblem().getCategory())
-//                .time(r.getHistory().getTime())
-//                .build()).toList());
     }
 
     public DetailHistoryResponseDto findDetailHistory(SessionUser user, Long historyId) {

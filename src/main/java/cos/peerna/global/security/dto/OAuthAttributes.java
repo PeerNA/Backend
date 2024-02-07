@@ -1,7 +1,5 @@
 package cos.peerna.global.security.dto;
 
-import cos.peerna.domain.user.model.Role;
-import cos.peerna.domain.user.model.User;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -9,15 +7,15 @@ import java.util.Map;
 
 @Getter
 public class OAuthAttributes {
-    private Map<String, Object> attributes;
-    private Long id;
-    private String nameAttributeKey;
-    private String name;
-    private String email;
-    private String imageUrl;
-    private String bio;
-    private String login;
-    private String token;
+    private final Map<String, Object> attributes;
+    private final Long id;
+    private final String nameAttributeKey;
+    private final String name;
+    private final String email;
+    private final String imageUrl;
+    private final String bio;
+    private final String login;
+    private final String token;
 
     @Builder
     public OAuthAttributes(Map<String, Object> attributes, Long id,
@@ -72,17 +70,6 @@ public class OAuthAttributes {
                 .attributes(attributes)
                 .nameAttributeKey(userNameAttributeName)
                 .bio(bio)
-                .build();
-    }
-
-    public User toEntity() {
-        return User.builder()
-                .id(id)
-                .name(name)
-                .email(email)
-                .imageUrl(imageUrl)
-                .bio(bio)
-                .role(Role.MENTEE)
                 .build();
     }
 }
