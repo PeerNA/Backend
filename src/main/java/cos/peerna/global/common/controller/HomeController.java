@@ -62,7 +62,7 @@ public class HomeController {
                 .email(dto.getEmail())
                 .imageUrl("https://avatars.githubusercontent.com/u/0?v=4")
                 .introduce("")
-                .role(Role.USER)
+                .role(Role.MENTEE)
                 .build();
 
         try {

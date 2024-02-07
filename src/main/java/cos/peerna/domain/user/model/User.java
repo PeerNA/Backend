@@ -58,7 +58,7 @@ public class User {
         return this;
     }
 
-    public void updateScore(Integer point) {
+    public void addScore(Integer point) {
         this.score += point;
     }
 

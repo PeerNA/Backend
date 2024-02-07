@@ -6,6 +6,7 @@ import cos.peerna.domain.reply.model.Reply;
 import cos.peerna.domain.user.model.User;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -16,14 +17,8 @@ public interface ReplyRepository extends JpaRepository<Reply, Long> {
 
     List<Reply> findRepliesByHistory(History history);
     List<Reply> findRepliesByUserOrderByIdDesc(User user, Pageable pageable);
-    List<Reply> findRepliesByProblem(Problem problem);
-
     List<Reply> findRepliesByProblemOrderByLikeCountDesc(Problem problem, Pageable pageable);
-
     Long countByProblem(Problem problem);
-
     Optional<Object> findReplyByUserAndHistory(User user, History history);
 
-//    @Query("SELECT r FROM Reply r LEFT JOIN FETCH r.likes WHERE r.problem = :problem ORDER BY SIZE(r.likes) DESC")
-//    List<Reply> findRepliesByProblemOrderByLikeCountDesc(@Param("problem") Problem problem);
 }

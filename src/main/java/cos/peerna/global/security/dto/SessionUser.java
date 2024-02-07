@@ -18,8 +18,6 @@ public class SessionUser implements UserDetails {
     private String imageUrl;
     private String token;
     private String login;
-    private Interest interest;
-    private Career career;
     private Integer score;
 
     public SessionUser(User user, String token, String login) {
@@ -28,15 +26,9 @@ public class SessionUser implements UserDetails {
         this.email = user.getEmail();
         this.password = user.getPassword();
         this.imageUrl = user.getImageUrl();
-        this.interest = user.getInterests();
-        this.career = user.getCareer();
         this.score = user.getScore();
         this.token = token;
         this.login = login;
-    }
-
-    public void updateInterest(Interest interest) {
-        this.interest = interest;
     }
 
     @Override
