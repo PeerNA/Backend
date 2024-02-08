@@ -6,7 +6,6 @@ import cos.peerna.domain.history.dto.HistoryResponseDto;
 import cos.peerna.global.security.LoginUser;
 import cos.peerna.global.security.dto.SessionUser;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,7 +15,7 @@ import java.util.List;
 @RequestMapping("/api/history")
 public class HistoryController {
     private final HistoryService historyService;
-    @GetMapping()
+    @GetMapping
     public List<HistoryResponseDto> findUserHistory(@LoginUser SessionUser user, @RequestParam int page) {
         return historyService.findUserHistory(user, page);
     }

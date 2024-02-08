@@ -1,6 +1,7 @@
 package cos.peerna.domain.user.controller;
 
 import cos.peerna.domain.user.dto.UserPatchRequestDto;
+import cos.peerna.domain.user.dto.UserRegisterRequestDto;
 import cos.peerna.domain.user.service.UserService;
 import cos.peerna.global.security.LoginUser;
 import cos.peerna.global.security.dto.SessionUser;
@@ -16,7 +17,12 @@ public class UserController {
 
     private final UserService userService;
 
-    @DeleteMapping ()
+    @PostMapping
+    public ResponseEntity<Long> signUp(@RequestBody UserRegisterRequestDto dto) {
+        return ResponseEntity.ok(userService.signUp(dto));
+    }
+
+    @DeleteMapping
     public ResponseEntity<String> signOut(@LoginUser SessionUser user) {
         userService.delete(user);
 
@@ -32,7 +38,7 @@ public class UserController {
 
     @PatchMapping("/info")
     public ResponseEntity<String> updateInfo(@LoginUser SessionUser user, @RequestBody UserPatchRequestDto dto) {
-        userService.patchUpdate(user, dto);
+        userService.update(user, dto);
         return ResponseEntity.ok()
                 .body("success");
     }

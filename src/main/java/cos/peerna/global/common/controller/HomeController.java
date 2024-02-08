@@ -25,10 +25,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Controller
 @RequiredArgsConstructor
 public class HomeController {
-    private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
 
-    @GetMapping("/")
+    @GetMapping
     public String index(@Nullable @LoginUser SessionUser user, Model model) {
         if (user == null) {
             return "login";
@@ -51,28 +50,5 @@ public class HomeController {
     @PostMapping("/callback")
     public String callback() {
         return "redirect:/";
-    }
-
-    @PostMapping("/signup")
-    public ResponseEntity<String> registerUser(@RequestBody UserRegisterRequestDto dto) {
-        dto.setPassword(passwordEncoder.encode(dto.getPassword()));
-        User user = User.builder()
-                .id(dto.getId())
-                .name(dto.getName())
-                .email(dto.getEmail())
-                .imageUrl("https://avatars.githubusercontent.com/u/0?v=4")
-                .introduce("")
-                .role(Role.MENTEE)
-                .build();
-
-        try {
-            userRepository.save(user);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body("User Already Exists");
-        }
-
-        return ResponseEntity.ok()
-                .body("success");
     }
 }

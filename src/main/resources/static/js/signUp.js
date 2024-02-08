@@ -5,7 +5,7 @@ function signUp() {
     const password = document.getElementById('password').value;
     const name = document.getElementById('name').value;
 
-    axios.post('/signup', {
+    axios.post('/api/users', {
         id: id,
         email: email,
         password: password,

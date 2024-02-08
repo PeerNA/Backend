@@ -4,22 +4,21 @@ import cos.peerna.domain.notification.model.Notification;
 import cos.peerna.domain.notification.model.NotificationType;
 import cos.peerna.domain.notification.repository.NotificationRepository;
 import cos.peerna.domain.user.dto.UserPatchRequestDto;
+import cos.peerna.domain.user.dto.UserRegisterRequestDto;
 import cos.peerna.domain.user.model.*;
 import cos.peerna.domain.user.repository.FollowRepository;
 import cos.peerna.domain.user.repository.UserRepository;
 import cos.peerna.global.security.dto.SessionUser;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
-
-@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -29,9 +28,19 @@ public class UserService {
     private final FollowRepository followRepository;
     private final NotificationRepository notificationRepository;
     private final HttpSession httpSession;
+    private final PasswordEncoder passwordEncoder;
 
-    public void join(User user) {
-        userRepository.save(user);
+    public Long signUp(UserRegisterRequestDto dto) {
+        dto.setPassword(passwordEncoder.encode(dto.getPassword()));
+        User user = userRepository.save(User.builder()
+                .id(dto.getId())
+                .name(dto.getName())
+                .email(dto.getEmail())
+                .imageUrl("https://avatars.githubusercontent.com/u/0?v=4")
+                .introduce("")
+                .role(Role.MENTEE)
+                .build());
+        return user.getId();
     }
 
     public void delete(SessionUser sessionUser) {
@@ -40,11 +49,7 @@ public class UserService {
         userRepository.delete(user);
     }
 
-    public List<User> findUsers() {
-        return userRepository.findAll();
-    }
-
-    public void patchUpdate(SessionUser sessionUser, UserPatchRequestDto dto) {
+    public void update(SessionUser sessionUser, UserPatchRequestDto dto) {
         User user = userRepository.findById(sessionUser.getId())
                 .orElseThrow(() -> new UsernameNotFoundException("User Not Found"));
 
@@ -102,5 +107,4 @@ public class UserService {
     private static boolean isDifferentUser(User user, Long userId) {
         return !user.getId().equals(userId);
     }
-
 }

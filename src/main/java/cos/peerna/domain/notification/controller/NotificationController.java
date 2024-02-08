@@ -21,12 +21,12 @@ public class NotificationController {
     private final NotificationService notificationService;
 	private final UserRepository userRepository;
 
-    @GetMapping()
-    public NotificationResponseDto getNotifications(@LoginUser SessionUser user) {
-        return notificationService.getNotifications(user);
+    @GetMapping
+    public ResponseEntity<NotificationResponseDto> getNotifications(@LoginUser SessionUser user) {
+        return ResponseEntity.ok(notificationService.getNotifications(user));
     }
 
-    @DeleteMapping()
+    @DeleteMapping
     public ResponseEntity<String> deleteNotification(@LoginUser SessionUser sessionUser, @RequestParam Long notificationId) {
 		User user = userRepository.findById(sessionUser.getId())
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 유저가 없습니다."));
@@ -35,7 +35,6 @@ public class NotificationController {
         else
             notificationService.deleteNotification(user, notificationId);
 
-        return ResponseEntity.ok()
-                .body("success");
+        return ResponseEntity.noContent().build();
     }
 }
