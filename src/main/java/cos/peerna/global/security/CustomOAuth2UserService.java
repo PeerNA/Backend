@@ -38,7 +38,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        log.info("loadUser() userRequest.getAccessToken(): {}", userRequest.getAccessToken().getTokenValue());
         OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
         OAuth2User oAuth2User = delegate.loadUser(userRequest);
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
@@ -57,7 +56,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         User user = saveOrUpdate(attributes);
 
         httpSession.setAttribute("user", new SessionUser(user, token, attributes.getLogin()));
-        log.info("setAttribute() user: {}", user);
 
         return new DefaultOAuth2User(
                 Collections.singleton(new SimpleGrantedAuthority(user.getRoleKey())),
@@ -94,7 +92,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
     @Transactional
     protected User saveOrUpdate(OAuthAttributes attributes) {
-        log.info("saveOrUpdate() attributes.getNameAttributeKey(): {}", attributes.getNameAttributeKey());
         User user = userRepository.findById(attributes.getId())
                 .map(entity -> entity.updateProfile(attributes.getName(), attributes.getEmail(), attributes.getImageUrl(), attributes.getBio()))
                 .orElse(User.builder().id(attributes.getId())
@@ -104,7 +101,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                         .introduce(attributes.getBio())
                         .role(Role.MENTEE)
                         .build());
-        log.info("saveOrUpdate() user: {}", user);
         return userRepository.save(user);
     }
 }

@@ -30,8 +30,6 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
      */
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        log.info("CustomAuthenticationProvider authenticate(): {}", authentication.getCredentials().toString());
-
         SessionUser sessionUser = (SessionUser) userDetailService.loadUserByUsername(authentication.getName().toString());
 
         String reqPassword = authentication.getCredentials().toString();
@@ -40,7 +38,6 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
         httpSession.setAttribute("user", sessionUser);
 
-        log.info("CustomAuthenticationProvider authenticate(): {}", sessionUser.getName());
         return new UsernamePasswordAuthenticationToken(sessionUser, null, sessionUser.getAuthorities());
     }
 
