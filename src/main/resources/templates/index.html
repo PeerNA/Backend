@@ -1,0 +1,111 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>피어나</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <!-- this is where we refer the css file from src/main/resources/static/main.css -->
+    <link th:href="@{/main.css}" rel="stylesheet"/>
+<!--    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>-->
+<!--    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.js" integrity="sha512-tL4PIUsPy+Rks1go4kQG8M8/ItpRMvKnbBjQm4d2DQnFwgcBYRRN00QdyQnWSCwNMsoY/MfJY8nHp2CzlNdtZA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.js" integrity="sha512-aHuAnb+FZ/yM5zYvdiA8q0sxLdsBQ3PRwO8D/08qsenCLQ2gWsosB43Cn1X8esAz0IpaC7Ns5cAPyKIdJQ0hNw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="js/match.js"></script>
+</head>
+<body>
+<div id="hide" style="display: none">
+    <input id="userId" th:value="${userId}">
+    <input id="userName" th:value="${userName}">
+    <input id="userImage" th:value="${userImage}">
+</div>
+<div class="flex flex-col">
+    <header class="px-4 lg:px-6 h-14 flex items-center"><a class="flex items-center justify-center" href="#" rel="ugc">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6">
+            <line x1="6" x2="10" y1="12" y2="12"></line>
+            <line x1="8" x2="8" y1="10" y2="14"></line>
+            <line x1="15" x2="15.01" y1="13" y2="13"></line>
+            <line x1="18" x2="18.01" y1="11" y2="11"></line>
+            <rect width="20" height="12" x="2" y="6" rx="2"></rect>
+        </svg>
+        <span class="text-xl">&nbsp;&nbsp;피어나</span></a>
+        <nav class="ml-auto flex gap-4 sm:gap-6">
+            <div class="w-10 h-10 rounded-full">
+                <img alt="https://avatars.githubusercontent.com/u/0?v=4" th:attr="src=${userImage}"/>
+            </div>
+            <a class="text-xl font-medium hover:underline underline-offset-4" href="#" rel="ugc">
+                <td th:text="${userName}"/>
+            </a>
+        </nav>
+    </header>
+    <main class="bg-[#f0f0f0] p-8 flex">
+        <div class="w-1/5 pr-4">
+            <h2 class="text-[#333333] text-2xl font-bold mb-4">학습 카테고리 선택</h2>
+            <div class="mb-8">
+                <label for="priority1"
+                       class="my-2 block mb-2 text-xl font-medium text-gray-900 dark:text-white">1순위</label>
+                <select id="priority1" name="priority1"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                    <option selected>카테고리 선택</option>
+                    <option value="OPERATING_SYSTEM">운영체제</option>
+                    <option value="NETWORK">네트워크</option>
+                    <option value="DATA_STRUCTURE_ALGORITHM">자료구조</option>
+                </select>
+                <label for="priority2"
+                       class="my-2 block mb-2 text-xl font-medium text-gray-900 dark:text-white">2순위</label>
+                <select id="priority2" name="priority2"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                    <option selected>카테고리 선택</option>
+                    <option value="OPERATING_SYSTEM">운영체제</option>
+                    <option value="NETWORK">네트워크</option>
+                    <option value="DATA_STRUCTURE_ALGORITHM">자료구조</option>
+                </select>
+                <label for="priority3"
+                       class="my-2 block mb-2 text-xl font-medium text-gray-900 dark:text-white">3순위</label>
+                <select id="priority3" name="priority3"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                    <option selected>카테고리 선택</option>
+                    <option value="OPERATING_SYSTEM">운영체제</option>
+                    <option value="NETWORK">네트워크</option>
+                    <option value="DATA_STRUCTURE_ALGORITHM">자료구조</option>
+                </select>
+            </div>
+            <div class="flex justify-between items-center mb-8">
+                <button onclick="joinQueue()" class="inline-flex items-center justify-center font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-primary/90 h-10 bg-[#333333] text-white rounded-lg px-8 py-4 text-xl shadow-lg">
+                    동료 매칭 시작
+                </button>
+
+            </div>
+        </div>
+        <div class="w-4/5 pl-4">
+            <h2 class="text-[#333333] text-2xl font-bold mb-4">학습 기록</h2>
+            <div class="grid grid-cols-1 gap-4">
+                <div class="rounded-lg border text-card-foreground shadow-sm bg-white" data-v0-t="card">
+                    <div class="p-6">
+                        <h3 class="text-lg font-semibold mb-2">TCP와 UDP의 차이점에 대해 설명해보세요.</h3>
+                        <p class="text-right text-sm">2023.03.10</p>
+                    </div>
+                </div>
+                <div class="rounded-lg border text-card-foreground shadow-sm bg-white" data-v0-t="card">
+                    <div class="p-6">
+                        <h3 class="text-lg font-semibold mb-2">TCP와 UDP의 차이점에 대해 설명해보세요.</h3>
+                        <p class="text-right text-sm">2023.03.10</p>
+                    </div>
+                </div>
+                <div class="rounded-lg border text-card-foreground shadow-sm bg-white" data-v0-t="card">
+                    <div class="p-6">
+                        <h3 class="text-lg font-semibold mb-2">TCP와 UDP의 차이점에 대해 설명해보세요.</h3>
+                        <p class="text-right text-sm">2023.03.10</p>
+                    </div>
+                </div>
+                <div class="rounded-lg border text-card-foreground shadow-sm bg-white" data-v0-t="card">
+                    <div class="p-6">
+                        <h3 class="text-lg font-semibold mb-2">TCP와 UDP의 차이점에 대해 설명해보세요.</h3>
+                        <p class="text-right text-sm">2023.03.10</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

@@ -116,10 +116,7 @@ public class NotificationService {
 		String body = response.getBody();
 		JsonObject jsonObject = gson.fromJson(body, JsonObject.class);
 
-		// sha 추출
-		String sha = jsonObject.get("object").getAsJsonObject().get("sha").getAsString();
-		log.info("getSha : {}", sha);
-		return sha;
+		return jsonObject.get("object").getAsJsonObject().get("sha").getAsString();
 	}
 
 	public void createBranch(SessionUser sessionUser, String url, String repo, String noticeId) {

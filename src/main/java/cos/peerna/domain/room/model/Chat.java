@@ -24,7 +24,6 @@ public class Chat {
 
 	private String content;
 
-	//	찾아보니까 Date 단점 많아서 LocalTime으로 사용
 	private LocalTime time;
 
 	@NotNull @ManyToOne(fetch = FetchType.LAZY)

@@ -2,6 +2,7 @@ package cos.peerna.global.security;
 
 import com.nimbusds.jose.shaded.gson.Gson;
 import com.nimbusds.jose.shaded.gson.reflect.TypeToken;
+import cos.peerna.domain.user.model.Role;
 import cos.peerna.global.security.dto.OAuthAttributes;
 import cos.peerna.global.security.dto.SessionUser;
 import cos.peerna.domain.user.model.User;
@@ -37,8 +38,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-//        log.info("loadUser() userRequest: {}", userRequest);
-        log.info("loadUser() userRequest.getAccessToken(): {}", userRequest.getAccessToken().getTokenValue());
         OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
         OAuth2User oAuth2User = delegate.loadUser(userRequest);
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
@@ -57,7 +56,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         User user = saveOrUpdate(attributes);
 
         httpSession.setAttribute("user", new SessionUser(user, token, attributes.getLogin()));
-        log.info("setAttribute() user: {}", user);
 
         return new DefaultOAuth2User(
                 Collections.singleton(new SimpleGrantedAuthority(user.getRoleKey())),
@@ -93,12 +91,16 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     }
 
     @Transactional
-    private User saveOrUpdate(OAuthAttributes attributes) {
-        log.info("saveOrUpdate() attributes.getNameAttributeKey(): {}", attributes.getNameAttributeKey());
+    protected User saveOrUpdate(OAuthAttributes attributes) {
         User user = userRepository.findById(attributes.getId())
                 .map(entity -> entity.updateProfile(attributes.getName(), attributes.getEmail(), attributes.getImageUrl(), attributes.getBio()))
-                .orElse(attributes.toEntity());
-        log.info("saveOrUpdate() user: {}", user);
+                .orElse(User.builder().id(attributes.getId())
+                        .name(attributes.getName())
+                        .email(attributes.getEmail())
+                        .imageUrl(attributes.getImageUrl())
+                        .introduce(attributes.getBio())
+                        .role(Role.MENTEE)
+                        .build());
         return userRepository.save(user);
     }
 }
