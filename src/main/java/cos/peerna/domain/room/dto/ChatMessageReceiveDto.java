@@ -8,7 +8,6 @@ import lombok.Setter;
 public class ChatMessageReceiveDto {
 
     private Integer roomId;
-    private Long writerId;
     private Long historyId;
     private String message;
 }
