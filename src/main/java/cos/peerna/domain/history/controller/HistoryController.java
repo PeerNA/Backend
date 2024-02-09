@@ -6,6 +6,7 @@ import cos.peerna.domain.history.dto.HistoryResponseDto;
 import cos.peerna.global.security.LoginUser;
 import cos.peerna.global.security.dto.SessionUser;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,12 +17,12 @@ import java.util.List;
 public class HistoryController {
     private final HistoryService historyService;
     @GetMapping
-    public List<HistoryResponseDto> findUserHistory(@LoginUser SessionUser user, @RequestParam int page) {
-        return historyService.findUserHistory(user, page);
+    public ResponseEntity<List<HistoryResponseDto>> findUserHistory(@LoginUser SessionUser user, @RequestParam int page) {
+        return ResponseEntity.ok(historyService.findUserHistory(user, page));
     }
 
     @GetMapping("/detail")
-    public DetailHistoryResponseDto findDetailHistory(@LoginUser SessionUser user, @RequestParam Long historyId) {
-        return historyService.findDetailHistory(user, historyId);
+    public ResponseEntity<DetailHistoryResponseDto> findDetailHistory(@LoginUser SessionUser user, @RequestParam Long historyId) {
+        return ResponseEntity.ok(historyService.findDetailHistory(user, historyId));
     }
 }
