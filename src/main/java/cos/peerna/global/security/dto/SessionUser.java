@@ -1,15 +1,16 @@
 package cos.peerna.global.security.dto;
 
-import cos.peerna.domain.user.model.Career;
-import cos.peerna.domain.user.model.Interest;
+import cos.peerna.domain.user.model.Category;
 import cos.peerna.domain.user.model.User;
 import lombok.Getter;
+import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
 @Getter
+@ToString
 public class SessionUser implements UserDetails {
     private Long id;
     private String name;
@@ -43,7 +44,7 @@ public class SessionUser implements UserDetails {
 
     @Override
     public String getUsername() {
-        return null;
+        return id.toString();
     }
 
     @Override
