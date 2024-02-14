@@ -18,7 +18,8 @@
 <img src="https://img.shields.io/badge/Docker-FFFFFF?style=flat&logo=Docker&logoColor=2496ED"/>
 
 ## 📌 Server architecture
-![KakaoTalk_Photo_2023-03-27-17-23-32](https://github.com/PeerNA/Backend/assets/48898994/baf269f5-84ee-4e8e-acb5-f30ad1da58c0)
+<img width="1611" alt="image" src="https://github.com/PeerNA/Backend/assets/45088611/733dd701-d334-4eb3-afc0-f15d90636bb6">
+
 
 
 
