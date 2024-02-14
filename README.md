@@ -21,7 +21,7 @@
 
 
 
-## ☘️Project Foldering
+## ☘️ Project Foldering
 
 ```
 .
@@ -82,7 +82,7 @@
 
 ```
 
-## 💡 핵심 기능
+## 💡 Core Features
 ### 1️⃣ 관심사 기반 동료 매칭
 ![image](https://github.com/PeerNA/Backend/assets/45088611/5b8f6b3f-3696-4224-9b6c-4e584cd0c38c)
 ### 2️⃣ 실시간 문제 풀이 기능
