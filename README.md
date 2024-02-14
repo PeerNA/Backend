@@ -85,7 +85,7 @@
 ## 💡 Core Features
 ### 1️⃣ 관심사 기반 동료 매칭
 ![image](https://github.com/PeerNA/Backend/assets/45088611/5b8f6b3f-3696-4224-9b6c-4e584cd0c38c)
-### 2️⃣ 실시간 문제 풀이 기능
+### 2️⃣ 컴퓨터 사이언스 학습 (1인/2인)
 ![image](https://github.com/PeerNA/Backend/assets/45088611/c89dded3-9cf2-4870-a744-507f9d475cca)
 ### 3️⃣ 실시간 피드백을 통한 학습 보완
 ![image](https://github.com/PeerNA/Backend/assets/45088611/5cb47887-f2ce-4ae1-ad3b-235bd24ff169)
