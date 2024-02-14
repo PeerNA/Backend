@@ -1,5 +1,3 @@
-# PeerNA-Server
-
 ## 👨🏻‍💻PeerNA Server Developers👨🏻‍💻
 
 | 신민철 | 송승훈 |
@@ -83,5 +81,15 @@
 └──         └── dto
 
 ```
+
+## 💡 핵심 기능
+### 1️⃣ 관심사 기반 동료 매칭
+![image](https://github.com/PeerNA/Backend/assets/45088611/5b8f6b3f-3696-4224-9b6c-4e584cd0c38c)
+### 2️⃣ 실시간 문제 풀이 기능
+![image](https://github.com/PeerNA/Backend/assets/45088611/c89dded3-9cf2-4870-a744-507f9d475cca)
+### 3️⃣ 실시간 피드백을 통한 학습 보완
+![image](https://github.com/PeerNA/Backend/assets/45088611/5cb47887-f2ce-4ae1-ad3b-235bd24ff169)
+### 4️⃣ 학습 공유 및 오픈소스 기여
+![image](https://github.com/PeerNA/Backend/assets/45088611/271f4a21-bd07-40cc-ae46-58f811e69854)
 
 <br>
