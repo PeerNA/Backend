@@ -81,6 +81,9 @@ public class MatchService {
                     redisTemplate.opsForZSet().remove("standby:" + category.name(), objectMapper.writeValueAsString(target));
                     template.convertAndSend("/user/" + standby.getId() + "/match/join", "successJOIN");
                     template.convertAndSend("/user/" + target.getId() + "/match/join", "successJOIN");
+                    /*
+                     * TODO: Room 생성 이벤트 발생
+                     */
                     break;
                 }
             }
