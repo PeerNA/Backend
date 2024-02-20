@@ -32,7 +32,6 @@ public class HomeController {
         if (user == null) {
             return "login";
         }
-        log.debug("user: {}", user);
         model.addAttribute("userId", user.getId());
         model.addAttribute("userName", user.getName());
         model.addAttribute("userImage", user.getImageUrl());
