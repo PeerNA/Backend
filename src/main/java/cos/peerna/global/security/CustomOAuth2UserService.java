@@ -99,7 +99,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                         .email(attributes.getEmail())
                         .imageUrl(attributes.getImageUrl())
                         .introduce(attributes.getBio())
-                        .role(Role.MENTEE)
+                        .role(Role.USER)
                         .build());
         return userRepository.save(user);
     }
