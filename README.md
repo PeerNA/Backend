@@ -4,7 +4,7 @@
 | :---------:|:----------:|
 |<img width="300" alt="image" src="https://avatars.githubusercontent.com/u/48898994?s=400&u=7ced4be7b2af430c876d1453fa5f4f028a9902f9&v=4"> | <img width="300"  alt="image" src="https://avatars.githubusercontent.com/u/45088611?v=4"> | 
 | [its-sky](https://github.com/its-sky) | [sseunghoon](https://github.com/sseunghoon) |
-| DB 설계, Entity 개발, 문제 및 답변 API, 크롤링(Quartz) 및 키워드 API, 알림 API 개발 | DB 설계, spring security, 소셜 로그인, History API, 매칭 API, Web Socket 채팅 API 개발 |
+| DB 설계, Entity 개발, 문제 및 답변 API, 크롤링(Quartz) 및 키워드 API, 알림 API 개발 | DB 설계, [유저, 인증/인가, 매칭, 학습]모듈 및 웹소켓 파트 개발 |
 
 
 ## ⭐ Stack
