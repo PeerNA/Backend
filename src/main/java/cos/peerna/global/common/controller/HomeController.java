@@ -27,7 +27,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class HomeController {
     private final UserRepository userRepository;
 
-    @GetMapping
+    @GetMapping("/")
     public String index(@Nullable @LoginUser SessionUser user, Model model) {
         if (user == null) {
             return "login";

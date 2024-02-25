@@ -26,16 +26,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function joinQueue() {
-    let category = document.getElementById("priority1").value;
-    // if (category === 'OPERATING_SYSTEM')
-    //     category = 1;
-    // if (category === 'NETWORK')
-    //     category = 2;
-    // if (category === 'DATABASE')
-    //     category = 3;
-    // stompClient.send("/app/match/join", {}, JSON.stringify(category), function (error) {
-    //     console.log('error', error);
-    // });
+    let category = document.getElementById("category").value;
     stompClient.send("/app/match/join", {}, category, function (error) {
         console.log('error', error);
     });
