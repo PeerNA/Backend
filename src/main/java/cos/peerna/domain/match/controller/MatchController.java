@@ -16,17 +16,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 public class MatchController {
+
     private final MatchService matchService;
+
     @MessageMapping("/match/join")
     @SendToUser("/match/join")
     public ResponseEntity<String> joinQueue(SimpMessageHeaderAccessor messageHeaderAccessor, String category) {
         SessionUser user = (SessionUser) messageHeaderAccessor.getSessionAttributes().get("user");
 
-        Standby standby =  matchService.addStandby(Standby.builder()
-                .id(user.getId())
-                .score(user.getScore())
-                .createdAt(LocalDateTime.now())
-                .build(), Category.valueOf(category));
+        Standby standby =  matchService.addStandby(user, Category.valueOf(category));
         if (standby == null) {
             return new ResponseEntity<>("already exist", HttpStatus.CONFLICT);
         }

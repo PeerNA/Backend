@@ -7,7 +7,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import cos.peerna.domain.match.job.MatchJob;
 import cos.peerna.domain.match.model.Standby;
 import cos.peerna.domain.user.model.Category;
+import cos.peerna.global.security.dto.SessionUser;
 import jakarta.annotation.PostConstruct;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -50,7 +52,13 @@ public class MatchService {
         }
     }
 
-    public Standby addStandby(Standby standby, Category category) {
+    public Standby addStandby(SessionUser user, Category category) {
+        Standby standby = Standby.builder()
+                .id(user.getId())
+                .score(user.getScore())
+                .createdAt(LocalDateTime.now())
+                .build();
+
         try {
             String json = objectMapper.writeValueAsString(standby);
             double score = standby.getScore().doubleValue();
