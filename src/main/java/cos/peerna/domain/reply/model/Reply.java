@@ -6,6 +6,7 @@ import cos.peerna.domain.problem.model.Problem;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -45,17 +46,27 @@ public class Reply {
 
     private Long likeCount;
 
-    private boolean isRequested;
+    @Builder
+    private Reply(String answer, History history, Problem problem, User user) {
+        this.answer = answer;
+        this.history = history;
+        this.problem = problem;
+        this.user = user;
+        this.likeCount = 0L;
+    }
 
-    public static Reply createReply(User user, History history, Problem problem, String answer) {
-        Reply reply = new Reply();
-        reply.answer = answer;
-        reply.history = history;
-        reply.problem = problem;
-        reply.likeCount = 0L;
-        reply.user = user;
-        reply.isRequested = false;
-        return reply;
+    @Builder(builderMethodName = "builderForRegister")
+    public static Reply of(String answer, History history, Problem problem, User user) {
+        return builder()
+                .answer(answer)
+                .history(history)
+                .problem(problem)
+                .user(user)
+                .build();
+    }
+
+    public void modifyAnswer(String answer) {
+        this.answer = answer;
     }
 
     public void likeReply() {

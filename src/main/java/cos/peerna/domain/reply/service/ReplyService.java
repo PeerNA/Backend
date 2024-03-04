@@ -5,14 +5,13 @@ import cos.peerna.domain.history.repository.HistoryRepository;
 import cos.peerna.domain.keyword.service.KeywordService;
 import cos.peerna.domain.problem.model.Problem;
 import cos.peerna.domain.problem.repository.ProblemRepository;
-import cos.peerna.domain.reply.dto.data.ReplyData;
-import cos.peerna.domain.reply.dto.ReplyRegisterRequestDto;
-import cos.peerna.domain.reply.dto.ReplyResponseDto;
+import cos.peerna.domain.reply.dto.request.RegisterReplyRequest;
+import cos.peerna.domain.reply.dto.request.UpdateReplyRequest;
+import cos.peerna.domain.reply.dto.response.GetReplyWithProfileResponse;
 import cos.peerna.domain.reply.model.Likey;
 import cos.peerna.domain.reply.model.Reply;
 import cos.peerna.domain.reply.repository.LikeyRepository;
 import cos.peerna.domain.reply.repository.ReplyRepository;
-import cos.peerna.domain.room.repository.RoomRepository;
 import cos.peerna.domain.user.model.User;
 import cos.peerna.domain.user.repository.UserRepository;
 import cos.peerna.domain.user.service.UserService;
@@ -40,53 +39,63 @@ public class ReplyService {
     private final ProblemRepository problemRepository;
     private final LikeyRepository likeyRepository;
     private final HistoryRepository historyRepository;
-    private final RoomRepository roomRepository;
 
     private final KeywordService keywordService;
     private final UserService userService;
 
     @Transactional
-    public String make(ReplyRegisterRequestDto dto, Long userId) {
+    public String make(RegisterReplyRequest dto, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("No User Data"));
-        Problem problem = problemRepository.findById(dto.getProblemId())
+        Problem problem = problemRepository.findById(dto.problemId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem Not Found"));
-        History history = historyRepository.findById(dto.getHistoryId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "History Not Found"));
+        History history = historyRepository.save(History.createHistory(problem));
+        Reply reply = replyRepository.save(Reply.builderForRegister()
+                .answer(dto.answer())
+                .history(history)
+                .problem(problem)
+                .user(user)
+                .build());
 
-        Reply reply = replyRepository.save(Reply.createReply(user, history, problem, dto.getAnswer()));
-        int numberOfUserInRoom = roomRepository.findById(dto.getRoomId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Room Not Found"))
-                .getConnectedUserIdList().size();
-        int numberOfReplyOfHistory = replyRepository.findRepliesByHistory(history).size();
-        if (numberOfUserInRoom <= numberOfReplyOfHistory) {
-            history.solve();
-        }
-
-        /* 키워드 분석 및 KeywordRepository에 저장 */
-        keywordService.analyze(dto.getAnswer(), dto.getProblemId());
+        keywordService.analyze(dto.answer(), dto.problemId());
+        /*
+         * TODO: @TransactionalEventListener 을 통한 GitHub Repository Commit
+         */
 
         return String.valueOf(reply.getId());
     }
 
-    public ReplyResponseDto getRepliesByProblem(Long problemId, int page) {
+    @Transactional
+    public void modify(UpdateReplyRequest dto, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("No User Data"));
+        Problem problem = problemRepository.findById(dto.problemId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem Not Found"));
+        Reply reply = replyRepository.findFirstByUserAndProblemOrderByIdDesc(user, problem)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Reply Not Found"));
+
+        reply.modifyAnswer(dto.answer());
+        keywordService.analyze(dto.answer(), dto.problemId());
+
+        /*
+         * TODO: @TransactionalEventListener 을 통한 GitHub Repository Commit
+         */
+    }
+
+    public List<GetReplyWithProfileResponse> getRepliesByProblem(Long problemId, int page) {
         Problem problem = problemRepository.findById(problemId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem Not Found"));
 
-        List<Reply> replies = replyRepository.findRepliesByProblemOrderByLikeCountDesc(problem, PageRequest.of(page, PAGE_SIZE));
+        List<Reply> replies = replyRepository.findRepliesByProblemOrderByLikeCountDesc(
+                problem, PageRequest.of(page, PAGE_SIZE));
 
-        List<ReplyData> replyData = replies.stream()
-                .map(r -> ReplyData.builder()
-                        .replyId(r.getId())
-                        .answer(r.getAnswer())
-                        .likes(r.getLikeCount())
-                        .user(r.getUser())
-                        .build()).collect(Collectors.toList());
+        List<GetReplyWithProfileResponse> replyData = replies.stream()
+                .map(r -> GetReplyWithProfileResponse.from(
+                        r.getId(), r.getLikeCount(), r.getAnswer(),
+                        r.getUser().getId(), r.getUser().getName(), r.getUser().getImageUrl())
+                        ).collect(Collectors.toList());
 
-        return ReplyResponseDto.builder()
-                .replyData(replyData)
-                .totalCount(replyRepository.countByProblem(problem))
-                .build();
+        return replyData;
     }
 
     @Transactional
@@ -130,5 +139,4 @@ public class ReplyService {
 
         likeyRepository.findLikeyByUserAndReply(user, reply).ifPresent(likeyRepository::delete);
     }
-
 }
