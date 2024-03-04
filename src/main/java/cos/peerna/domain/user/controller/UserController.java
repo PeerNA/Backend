@@ -1,6 +1,5 @@
 package cos.peerna.domain.user.controller;
 
-import cos.peerna.domain.user.dto.UserPatchRequestDto;
 import cos.peerna.domain.user.dto.UserRegisterRequestDto;
 import cos.peerna.domain.user.service.UserService;
 import cos.peerna.global.security.LoginUser;
@@ -34,13 +33,6 @@ public class UserController {
     public ResponseEntity<SessionUser> userStatus(@LoginUser SessionUser user) {
         return ResponseEntity.ok()
                 .body(user);
-    }
-
-    @PatchMapping("/info")
-    public ResponseEntity<String> updateInfo(@LoginUser SessionUser user, @RequestBody UserPatchRequestDto dto) {
-        userService.update(user, dto);
-        return ResponseEntity.ok()
-                .body("success");
     }
 
     @PostMapping("/follow")

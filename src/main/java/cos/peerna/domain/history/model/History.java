@@ -1,6 +1,5 @@
 package cos.peerna.domain.history.model;
 
-import cos.peerna.global.common.model.BooleanToYNConverter;
 import cos.peerna.domain.problem.model.Problem;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -23,18 +22,10 @@ public class History {
 	@JoinColumn(name = "problem_id")
 	private Problem problem;
 
-	@Convert(converter = BooleanToYNConverter.class)
-	private boolean isSolved;
-
 	public static History createHistory(Problem problem) {
 		History history = new History();
 		history.time = LocalDate.now();
 		history.problem = problem;
-		history.isSolved = false;
 		return history;
-	}
-
-	public void solve() {
-		this.isSolved = true;
 	}
 }

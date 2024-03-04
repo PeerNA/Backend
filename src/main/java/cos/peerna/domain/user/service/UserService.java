@@ -3,7 +3,6 @@ package cos.peerna.domain.user.service;
 import cos.peerna.domain.notification.model.Notification;
 import cos.peerna.domain.notification.model.NotificationType;
 import cos.peerna.domain.notification.repository.NotificationRepository;
-import cos.peerna.domain.user.dto.UserPatchRequestDto;
 import cos.peerna.domain.user.dto.UserRegisterRequestDto;
 import cos.peerna.domain.user.model.*;
 import cos.peerna.domain.user.repository.FollowRepository;
@@ -12,7 +11,6 @@ import cos.peerna.global.security.dto.SessionUser;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -47,13 +45,6 @@ public class UserService {
         User user = userRepository.findById(sessionUser.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User Not Found"));
         userRepository.delete(user);
-    }
-
-    public void update(SessionUser sessionUser, UserPatchRequestDto dto) {
-        User user = userRepository.findById(sessionUser.getId())
-                .orElseThrow(() -> new UsernameNotFoundException("User Not Found"));
-
-        httpSession.setAttribute("user", sessionUser);
     }
 
     public void follow(Long followerId, Long followeeId) {

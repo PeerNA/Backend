@@ -5,7 +5,6 @@ import cos.peerna.domain.problem.dto.response.GetAnswerAndKeywordResponse;
 import cos.peerna.domain.problem.dto.response.GetProblemResponse;
 import cos.peerna.domain.problem.service.ProblemService;
 import cos.peerna.domain.user.model.Category;
-import cos.peerna.domain.reply.service.ReplyService;
 import java.net.URI;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +21,6 @@ public class ProblemController {
     private static final String PROBLEM_PREFIX = "/api/problem/";
 
     private final ProblemService problemService;
-    private final ReplyService replyService;
 
     @PostMapping
     public ResponseEntity<String> registerProblem(@RequestBody RegisterProblemRequest request) {

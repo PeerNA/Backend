@@ -61,7 +61,8 @@ public class NotificationService {
 	public void acceptNotification(SessionUser sessionUser, Long notificationId) {
 		User user = userRepository.findById(sessionUser.getId())
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User Not Found"));
-		Notification notification = notificationRepository.findNotificationById(notificationId);
+		Notification notification = notificationRepository.findNotificationById(notificationId)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Notification Not Found"));
 
 		if (!notification.getUser().getId().equals(user.getId())) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User Not Matched");

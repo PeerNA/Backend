@@ -1,7 +1,6 @@
 package cos.peerna.domain.history.controller;
 
 import cos.peerna.domain.history.service.HistoryService;
-import cos.peerna.domain.history.dto.DetailHistoryResponseDto;
 import cos.peerna.domain.history.dto.HistoryResponseDto;
 import cos.peerna.global.security.LoginUser;
 import cos.peerna.global.security.dto.SessionUser;
@@ -19,10 +18,5 @@ public class HistoryController {
     @GetMapping
     public ResponseEntity<List<HistoryResponseDto>> findUserHistory(@LoginUser SessionUser user, @RequestParam int page) {
         return ResponseEntity.ok(historyService.findUserHistory(user, page));
-    }
-
-    @GetMapping("/detail")
-    public ResponseEntity<DetailHistoryResponseDto> findDetailHistory(@LoginUser SessionUser user, @RequestParam Long historyId) {
-        return ResponseEntity.ok(historyService.findDetailHistory(user, historyId));
     }
 }
