@@ -2,7 +2,7 @@ package cos.peerna.domain.reply.controller;
 
 import cos.peerna.domain.reply.dto.request.RegisterReplyRequest;
 import cos.peerna.domain.reply.dto.request.UpdateReplyRequest;
-import cos.peerna.domain.reply.dto.response.GetReplyWithProfileResponse;
+import cos.peerna.domain.reply.dto.response.ReplyResponse;
 import cos.peerna.domain.reply.service.ReplyService;
 import cos.peerna.global.security.LoginUser;
 import cos.peerna.global.security.dto.SessionUser;
@@ -23,7 +23,7 @@ public class ReplyController {
 	private final ReplyService replyService;
 
 	@GetMapping
-	public ResponseEntity<List<GetReplyWithProfileResponse>> getRepliesByProblem(
+	public ResponseEntity<List<ReplyResponse>> getRepliesByProblem(
 			@RequestParam Long problemId, @RequestParam @Nullable int page) {
 		return ResponseEntity.ok(replyService.getRepliesByProblem(problemId, page));
 	}

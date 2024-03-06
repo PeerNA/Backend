@@ -89,19 +89,9 @@ public class UserService {
         }
     }
 
-    public void checkForbiddenUser(User user, Long userId) {
-        if (isDifferentUser(user, userId)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden User");
-        }
-    }
-
     public void updateGithubRepo(Long userId, String githubRepo) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User Not Found"));
         user.updateGithubRepo(githubRepo);
-    }
-
-    private static boolean isDifferentUser(User user, Long userId) {
-        return !user.getId().equals(userId);
     }
 }

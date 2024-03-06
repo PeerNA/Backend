@@ -45,13 +45,4 @@ public class Keyword {
 
 		return keyword;
 	}
-
-//    public static Keyword createKeyword(KeywordRegisterRequestDto dto) {
-//        Keyword problem = new Keyword();
-//        problem.question = dto.getQuestion();
-//        problem.answer = dto.getAnswer();
-//        problem.category = dto.getCategory();
-//
-//        return problem;
-//    }
 }
