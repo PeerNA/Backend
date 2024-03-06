@@ -1,6 +1,7 @@
 package cos.peerna.domain.user.controller;
 
 import cos.peerna.domain.user.dto.UserRegisterRequestDto;
+import cos.peerna.domain.user.dto.request.UpdateGithubRepoRequest;
 import cos.peerna.domain.user.service.UserService;
 import cos.peerna.global.security.LoginUser;
 import cos.peerna.global.security.dto.SessionUser;
@@ -45,6 +46,14 @@ public class UserController {
     @DeleteMapping("/follow")
     public ResponseEntity<String> unfollow(@LoginUser SessionUser user, @RequestParam Long followeeId) {
         userService.unfollow(user.getId(), followeeId);
+        return ResponseEntity.ok()
+                .body("success");
+    }
+
+    @PatchMapping("/github-repo")
+    public ResponseEntity<String> updateGithubRepo(@LoginUser SessionUser user,
+                                                   @RequestBody UpdateGithubRepoRequest request) {
+        userService.updateGithubRepo(user.getId(), request.githubRepo());
         return ResponseEntity.ok()
                 .body("success");
     }

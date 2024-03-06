@@ -30,13 +30,13 @@ public class ReplyController {
 
 	@PostMapping
 	public ResponseEntity<Void> registerReply(@LoginUser SessionUser user, @RequestBody RegisterReplyRequest request) {
-		String replyId = replyService.make(request, user.getId());
+		String replyId = replyService.make(request, user);
 		return ResponseEntity.created(URI.create(replyId)).build();
 	}
 
 	@PatchMapping
 	public ResponseEntity<Void> modifyReply(@LoginUser SessionUser user, @RequestBody UpdateReplyRequest request) {
-		replyService.modify(request, user.getId());
+		replyService.modify(request, user);
 		return ResponseEntity.noContent().build();
 	}
 
