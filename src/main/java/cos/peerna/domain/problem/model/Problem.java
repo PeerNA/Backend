@@ -1,7 +1,10 @@
 package cos.peerna.domain.problem.model;
 
+import cos.peerna.domain.keyword.model.Keyword;
 import cos.peerna.domain.user.model.Category;
 import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.*;
 
 @Entity
@@ -18,8 +21,12 @@ public class Problem {
 
     @Column(length = 1000)
     private String answer;
+
     @Enumerated(EnumType.STRING)
     private Category category;
+
+    @OneToMany(mappedBy = "problem", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Keyword> keywords = new ArrayList<>();
 
     public static Problem createProblem(String question, String answer, Category category) {
         Problem problem = new Problem();

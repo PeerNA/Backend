@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@stomp/stompjs": "^7.0.0",
-    "flowbite": "^2.2.1",
+    "flowbite": "^2.3.0",
     "sockjs-client": "^1.6.1"
   }
 }

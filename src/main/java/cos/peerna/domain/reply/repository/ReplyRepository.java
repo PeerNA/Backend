@@ -14,11 +14,13 @@ import java.util.Optional;
 
 @Repository
 public interface ReplyRepository extends JpaRepository<Reply, Long> {
-
-    List<Reply> findRepliesByHistory(History history);
+    @Query("select r from Reply r join fetch r.user join fetch r.likes where r.id = :id")
+    Optional<Reply> findByIdWithUserAndLike(Long id);
+    @Query("select r from Reply r join fetch r.history join fetch r.problem where r.user = :user order by r.id desc")
     List<Reply> findRepliesByUserOrderByIdDesc(User user, Pageable pageable);
+    @Query("select r from Reply r join fetch r.user where r.problem = :problem order by r.likeCount desc")
     List<Reply> findRepliesByProblemOrderByLikeCountDesc(Problem problem, Pageable pageable);
-    Long countByProblem(Problem problem);
-    Optional<Object> findReplyByUserAndHistory(User user, History history);
-
+    Optional<Reply> findFirstByUserAndProblemOrderByIdDesc(User user, Problem problem);
+    @Query("select r from Reply r join fetch r.user where r.history = :history order by r.id desc")
+    List<Reply> findRepliesWithUserByHistoryOrderByHistoryIdDesc(History history);
 }

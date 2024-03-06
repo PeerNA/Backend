@@ -6,6 +6,7 @@ import cos.peerna.domain.problem.model.Problem;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -40,30 +41,47 @@ public class Reply {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "reply", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Likey> likes = new ArrayList<>();
+    @OneToMany(mappedBy = "reply", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Likey> likes;
 
     private Long likeCount;
 
-    private boolean isRequested;
-
-    public static Reply createReply(User user, History history, Problem problem, String answer) {
-        Reply reply = new Reply();
-        reply.answer = answer;
-        reply.history = history;
-        reply.problem = problem;
-        reply.likeCount = 0L;
-        reply.user = user;
-        reply.isRequested = false;
-        return reply;
+    @Builder
+    private Reply(String answer, History history, Problem problem, User user) {
+        this.answer = answer;
+        this.history = history;
+        this.problem = problem;
+        this.user = user;
+        this.likeCount = 0L;
+        this.likes = new ArrayList<>();
     }
 
-    public void likeReply() {
+    @Builder(builderMethodName = "builderForRegister")
+    public static Reply of(String answer, History history, Problem problem, User user) {
+        return builder()
+                .answer(answer)
+                .history(history)
+                .problem(problem)
+                .user(user)
+                .build();
+    }
+
+    public void modifyAnswer(String answer) {
+        this.answer = answer;
+    }
+
+    public void addLikey(Likey likey) {
+        this.likes.add(likey);
         ++this.likeCount;
+        this.user.addScore(10);
     }
 
-    public static void dislikeReply(Reply reply) {
-        --reply.likeCount;
+    public void dislikeReply(Long userId) {
+        this.likes = this.likes.stream()
+                .filter(likey -> !likey.getUser().getId().equals(userId))
+                .toList();
+        --this.likeCount;
+        this.user.addScore(-10);
     }
 
 }
