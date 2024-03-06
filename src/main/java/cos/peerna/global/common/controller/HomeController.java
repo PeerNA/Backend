@@ -35,6 +35,20 @@ public class HomeController {
         return "pages/study/solo";
     }
 
+    @GetMapping("/mypage")
+    public String myPage(@Nullable @LoginUser SessionUser user, Model model) {
+        if (user == null) {
+            return "redirect:/";
+        }
+        model.addAttribute("userId", user.getId());
+        model.addAttribute("userName", user.getName());
+        model.addAttribute("userImage", user.getImageUrl());
+        model.addAttribute("userEmail", user.getEmail());
+        model.addAttribute("userImage", user.getImageUrl());
+        model.addAttribute("pageTitle", "My Page - 피어나");
+        return "pages/user/mypage";
+    }
+
     /*
      NOTICE: 아래 페이지들은 테스트를 위해 존재. 실제 서비스에서는 제거해야함..
      */
