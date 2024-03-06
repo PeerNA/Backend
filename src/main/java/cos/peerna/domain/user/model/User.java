@@ -1,13 +1,13 @@
 package cos.peerna.domain.user.model;
 
 import jakarta.persistence.*;
+import java.util.ArrayList;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.util.LinkedList;
 import java.util.List;
 
 @Entity
@@ -32,9 +32,9 @@ public class User {
     private Category category;
 
     @OneToMany(mappedBy="followee", cascade=CascadeType.PERSIST)
-    private final List<Follow> followers = new LinkedList<>();
+    private final List<Follow> followers = new ArrayList<>();
     @OneToMany(mappedBy="follower", cascade=CascadeType.PERSIST)
-    private final List<Follow> followings = new LinkedList<>();
+    private final List<Follow> followings = new ArrayList<>();
 
     @Builder
     public User(Long id, String name, String email, String imageUrl, String introduce, Role role) {
@@ -60,9 +60,5 @@ public class User {
 
     public void addScore(Integer point) {
         this.score += point;
-    }
-
-    public String getRoleKey() {
-        return this.role.getKey();
     }
 }

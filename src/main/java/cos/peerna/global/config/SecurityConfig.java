@@ -25,7 +25,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests()
                 .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
-                .requestMatchers("/api/**").hasAnyAuthority("USER")
+                .requestMatchers("/api/**").hasAnyAuthority("CRUD_CONTENT")
                 .anyRequest().permitAll();
         http
                 .csrf()
@@ -36,8 +36,7 @@ public class SecurityConfig {
                 .failureHandler(customAuthenticationFailureHandler)
                 .userInfoEndpoint()
                 .userService(customOAuth2UserService);
-        http
-                .httpBasic();
+
         http
                 .formLogin()
                 .loginPage("/login")

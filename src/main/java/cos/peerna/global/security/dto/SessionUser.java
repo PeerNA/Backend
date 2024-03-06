@@ -1,10 +1,13 @@
 package cos.peerna.global.security.dto;
 
 import cos.peerna.domain.user.model.Category;
+import cos.peerna.domain.user.model.Role;
 import cos.peerna.domain.user.model.User;
+import java.util.List;
 import lombok.Getter;
 import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
@@ -20,8 +23,9 @@ public class SessionUser implements UserDetails {
     private String token;
     private String login;
     private Integer score;
+    private final List<GrantedAuthority> grantedAuthorities;
 
-    public SessionUser(User user, String token, String login) {
+    public SessionUser(User user, String token, List<GrantedAuthority> authorities, String login) {
         this.id = user.getId();
         this.name = user.getName();
         this.email = user.getEmail();
@@ -30,11 +34,12 @@ public class SessionUser implements UserDetails {
         this.score = user.getScore();
         this.token = token;
         this.login = login;
+        this.grantedAuthorities = authorities;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return grantedAuthorities;
     }
 
     @Override

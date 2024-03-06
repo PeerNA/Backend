@@ -8,13 +8,13 @@ import cos.peerna.global.security.dto.SessionUser;
 import cos.peerna.domain.user.model.User;
 import cos.peerna.domain.user.repository.UserRepository;
 import jakarta.servlet.http.HttpSession;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -54,11 +54,11 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         String token = userRequest.getAccessToken().getTokenValue();
         OAuthAttributes attributes = OAuthAttributes.of(registrationId, userNameAttributeName, oAuth2User.getAttributes(), userEmail, token);
         User user = saveOrUpdate(attributes);
-
-        httpSession.setAttribute("user", new SessionUser(user, token, attributes.getLogin()));
+        List<GrantedAuthority> authorities = user.getRole().getGrantedAuthorities();
+        httpSession.setAttribute("user", new SessionUser(user, token, authorities, attributes.getLogin()));
 
         return new DefaultOAuth2User(
-                Collections.singleton(new SimpleGrantedAuthority(user.getRoleKey())),
+                authorities,
                 attributes.getAttributes(),
                 attributes.getNameAttributeKey());
     }
@@ -90,7 +90,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
     }
 
-    @Transactional
     protected User saveOrUpdate(OAuthAttributes attributes) {
         User user = userRepository.findById(attributes.getId())
                 .map(entity -> entity.updateProfile(attributes.getName(), attributes.getEmail(), attributes.getImageUrl(), attributes.getBio()))
@@ -99,7 +98,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                         .email(attributes.getEmail())
                         .imageUrl(attributes.getImageUrl())
                         .introduce(attributes.getBio())
-                        .role(Role.USER)
+                        .role(Role.UNCERTIFICATED)
                         .build());
         return userRepository.save(user);
     }
