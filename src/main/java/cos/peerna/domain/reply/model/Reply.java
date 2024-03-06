@@ -41,8 +41,8 @@ public class Reply {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "reply", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Likey> likes = new ArrayList<>();
+    @OneToMany(mappedBy = "reply", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Likey> likes;
 
     private Long likeCount;
 
@@ -53,6 +53,7 @@ public class Reply {
         this.problem = problem;
         this.user = user;
         this.likeCount = 0L;
+        this.likes = new ArrayList<>();
     }
 
     @Builder(builderMethodName = "builderForRegister")
@@ -69,12 +70,18 @@ public class Reply {
         this.answer = answer;
     }
 
-    public void likeReply() {
+    public void addLikey(Likey likey) {
+        this.likes.add(likey);
         ++this.likeCount;
+        this.user.addScore(10);
     }
 
-    public static void dislikeReply(Reply reply) {
-        --reply.likeCount;
+    public void dislikeReply(Long userId) {
+        this.likes = this.likes.stream()
+                .filter(likey -> !likey.getUser().getId().equals(userId))
+                .toList();
+        --this.likeCount;
+        this.user.addScore(-10);
     }
 
 }

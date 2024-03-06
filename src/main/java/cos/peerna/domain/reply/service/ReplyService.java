@@ -7,7 +7,7 @@ import cos.peerna.domain.problem.model.Problem;
 import cos.peerna.domain.problem.repository.ProblemRepository;
 import cos.peerna.domain.reply.dto.request.RegisterReplyRequest;
 import cos.peerna.domain.reply.dto.request.UpdateReplyRequest;
-import cos.peerna.domain.reply.dto.response.GetReplyWithProfileResponse;
+import cos.peerna.domain.reply.dto.response.ReplyResponse;
 import cos.peerna.domain.reply.model.Likey;
 import cos.peerna.domain.reply.model.Reply;
 import cos.peerna.domain.reply.repository.LikeyRepository;
@@ -82,61 +82,75 @@ public class ReplyService {
          */
     }
 
-    public List<GetReplyWithProfileResponse> getRepliesByProblem(Long problemId, int page) {
+    public List<ReplyResponse> getRepliesByProblem(Long problemId, int page) {
         Problem problem = problemRepository.findById(problemId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem Not Found"));
 
         List<Reply> replies = replyRepository.findRepliesByProblemOrderByLikeCountDesc(
                 problem, PageRequest.of(page, PAGE_SIZE));
 
-        List<GetReplyWithProfileResponse> replyData = replies.stream()
-                .map(r -> GetReplyWithProfileResponse.from(
-                        r.getId(), r.getLikeCount(), r.getAnswer(),
-                        r.getUser().getId(), r.getUser().getName(), r.getUser().getImageUrl())
+        return replies.stream()
+                .map(r -> ReplyResponse.builder()
+                        .replyId(r.getId())
+                        .likes(r.getLikeCount())
+                        .answer(r.getAnswer())
+                        .userId(r.getUser().getId())
+                        .userName(r.getUser().getName())
+                        .userImage(r.getUser().getImageUrl())
+                        .build()
                         ).collect(Collectors.toList());
-
-        return replyData;
     }
 
     @Transactional
     public String recommendReply(SessionUser sessionUser, Long replyId) {
-        User user = userRepository.findById(sessionUser.getId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User Not Found"));
-        Reply reply = replyRepository.findById(replyId)
+        Reply reply = replyRepository.findByIdWithUserAndLike(replyId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Reply Not Found"));
 
-        userService.checkForbiddenUser(user, reply.getUser().getId());
-        if (isAlreadyLikedReply(user, reply)) {
+        if (isOwner(sessionUser.getId(), reply)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Can't Recommend Own Reply");
+        }
+        if (isAlreadyLikedReply(sessionUser.getId(), reply)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Already Recommended Reply");
         }
 
+        User user = userRepository.findById(sessionUser.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User Not Found"));
         Likey newLikey = likeyRepository.save(Likey.builder()
                 .user(user)
                 .reply(reply)
                 .build());
 
-        reply.likeReply();
-        user.addScore(10);
+        reply.addLikey(newLikey);
 
         return String.valueOf(newLikey.getId());
     }
 
-    private boolean isAlreadyLikedReply(User user, Reply reply) {
-        return likeyRepository.findLikeyByUserAndReply(user, reply).isPresent();
-    }
-
     @Transactional
     public void unrecommendReply(SessionUser sessionUser, Long replyId) {
-        User user = userRepository.findById(sessionUser.getId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User Not Found"));
-        Reply reply = replyRepository.findById(replyId)
+        Reply reply = replyRepository.findByIdWithUserAndLike(replyId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Reply Not Found"));
-        if (!isAlreadyLikedReply(user, reply)) {
+
+        if (!isAlreadyLikedReply(sessionUser.getId(), reply)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Not Recommended Reply");
         }
 
-        Reply.dislikeReply(reply);
+        reply.dislikeReply(sessionUser.getId());
+        User user = userRepository.findById(sessionUser.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User Not Found"));
 
         likeyRepository.findLikeyByUserAndReply(user, reply).ifPresent(likeyRepository::delete);
+    }
+
+    private boolean isOwner(Long userId, Reply reply) {
+        return reply.getUser().getId().equals(userId);
+    }
+
+    private boolean isAlreadyLikedReply(Long userId, Reply reply) {
+        for (Likey likey : reply.getLikes()) {
+            if (likey.getUser().getId().equals(userId)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
