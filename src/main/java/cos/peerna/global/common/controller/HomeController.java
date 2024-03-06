@@ -1,6 +1,5 @@
 package cos.peerna.global.common.controller;
 
-import cos.peerna.domain.user.repository.UserRepository;
 import cos.peerna.global.security.LoginUser;
 import cos.peerna.global.security.dto.SessionUser;
 import jakarta.annotation.Nullable;
@@ -24,7 +23,7 @@ public class HomeController {
         return "pages/index";
     }
 
-    @GetMapping("/study-solo")
+    @GetMapping("/study/solo")
     public String soloStudy(@Nullable @LoginUser SessionUser user, Model model) {
         if (user == null) {
             return "redirect:/";
