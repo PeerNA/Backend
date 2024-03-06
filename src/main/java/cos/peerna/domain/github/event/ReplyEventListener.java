@@ -18,7 +18,7 @@ public class ReplyEventListener {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void transactionalEventListenerAfterCommit(CommitReplyEvent event) {
         log.debug("TransactionPhase.AFTER_COMMIT ---> {}", event);
-        Github github = Github.of(event.githubToken(), event.githubLogin(), "ComputerScience");
+        Github github = Github.of(event.githubToken(), event.githubLogin(), event.githubRepo());
         githubService.commitReply(github, event.problem(), event.answer());
     }
 }

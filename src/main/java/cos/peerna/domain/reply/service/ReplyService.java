@@ -63,7 +63,7 @@ public class ReplyService {
 
         if (user.getGithubRepo() != null) {
             eventPublisher.publishEvent(CommitReplyEvent.of(
-                    sessionUser.getLogin(), sessionUser.getToken(), problem, dto.answer()));
+                    sessionUser.getLogin(), sessionUser.getToken(), user.getGithubRepo(), problem, dto.answer()));
         }
         /*
         TODO: user.getGithubRepo() == null 일 때, 유저에게 GithubRepo를 등록하라는 메시지 전달

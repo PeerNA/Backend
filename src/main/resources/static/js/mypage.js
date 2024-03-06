@@ -6,9 +6,9 @@ function linkGithubRepo() {
         githubRepo: repoName
     }).then(function (response) {
         console.log(response);
-        alert('Github repository 연동이 완료되었습니다.');
+        alert('GitHub Repository Name 이 등록되었습니다.');
     }).catch(function (error) {
         console.log(error);
-        alert('Github repository 연동에 실패하였습니다.');
+        alert('GitHub Repository Name 등록에 실패했습니다.');
     });
 }
