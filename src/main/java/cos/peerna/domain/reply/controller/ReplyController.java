@@ -1,5 +1,6 @@
 package cos.peerna.domain.reply.controller;
 
+import cos.peerna.domain.history.dto.response.HistoryResponse;
 import cos.peerna.domain.reply.dto.request.RegisterReplyRequest;
 import cos.peerna.domain.reply.dto.request.UpdateReplyRequest;
 import cos.peerna.domain.reply.dto.response.ReplyResponse;
@@ -22,11 +23,22 @@ public class ReplyController {
 
 	private final ReplyService replyService;
 
-	@GetMapping
+	/*
+	getRepliesByProblem, findUserReplies 를 통합하는 것이 좋은지 의사판단
+	 */
+	@GetMapping("/problem")
 	public ResponseEntity<List<ReplyResponse>> getRepliesByProblem(
 			@RequestParam Long problemId, @RequestParam @Nullable int page) {
-		return ResponseEntity.ok(replyService.getRepliesByProblem(problemId, page));
+		return ResponseEntity.ok(replyService.findRepliesByProblem(problemId, page));
 	}
+
+	@GetMapping("/user")
+    public ResponseEntity<List<ReplyResponse>> findUserReplies(
+            @RequestParam Long userId,
+            @RequestParam(required = false, defaultValue = "0") Long cursorId,
+            @RequestParam(required = false, defaultValue = "10") int size) {
+        return ResponseEntity.ok(replyService.findUserReplies(userId, cursorId, size));
+    }
 
 	@PostMapping
 	public ResponseEntity<Void> registerReply(@LoginUser SessionUser user, @RequestBody RegisterReplyRequest request) {

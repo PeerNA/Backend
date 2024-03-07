@@ -16,8 +16,9 @@ import java.util.Optional;
 public interface ReplyRepository extends JpaRepository<Reply, Long> {
     @Query("select r from Reply r join fetch r.user join fetch r.likes where r.id = :id")
     Optional<Reply> findByIdWithUserAndLike(Long id);
-    @Query("select r from Reply r join fetch r.history join fetch r.problem where r.user = :user order by r.id desc")
-    List<Reply> findRepliesByUserOrderByIdDesc(User user, Pageable pageable);
+    @Query("select r from Reply r join fetch r.user join fetch r.history join fetch r.problem "
+            + "where r.id > :cursorId and r.user.id = :userId order by r.id asc")
+    List<Reply> findRepliesByUserIdOrderByIdAsc(Long userId, Long cursorId, Pageable pageable);
     @Query("select r from Reply r join fetch r.user where r.problem = :problem order by r.likeCount desc")
     List<Reply> findRepliesByProblemOrderByLikeCountDesc(Problem problem, Pageable pageable);
     Optional<Reply> findFirstByUserAndProblemOrderByIdDesc(User user, Problem problem);
