@@ -17,9 +17,12 @@ import cos.peerna.domain.user.model.User;
 import cos.peerna.domain.user.repository.UserRepository;
 import cos.peerna.domain.user.service.UserService;
 import cos.peerna.global.security.dto.SessionUser;
+import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -93,7 +96,7 @@ public class ReplyService {
          */
     }
 
-    public List<ReplyResponse> getRepliesByProblem(Long problemId, int page) {
+    public List<ReplyResponse> findRepliesByProblem(Long problemId, int page) {
         Problem problem = problemRepository.findById(problemId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem Not Found"));
 
@@ -110,6 +113,21 @@ public class ReplyService {
                         .userImage(r.getUser().getImageUrl())
                         .build()
                         ).collect(Collectors.toList());
+    }
+
+    /*
+    TODO: 오름차순으로 변경, (동적 쿼리 사용)
+    */
+    public List<ReplyResponse> findUserReplies(Long userId, Long cursorId, int size) {
+        Pageable pageable = PageRequest.of(0, size, Sort.by("id").ascending());
+        List<Reply> replies = replyRepository.findRepliesByUserIdOrderByIdAsc(userId, cursorId, pageable);
+        List<ReplyResponse> replyResponses = new ArrayList<>();
+        for (Reply reply : replies) {
+            replyResponses.add(ReplyResponse.of(
+                    reply.getId(), reply.getLikeCount(), reply.getProblem().getQuestion(), reply.getAnswer(),
+                    reply.getUser().getId(), reply.getUser().getName(), reply.getUser().getImageUrl()));
+        }
+        return replyResponses;
     }
 
     @Transactional
