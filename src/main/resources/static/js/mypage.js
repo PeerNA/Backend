@@ -59,6 +59,7 @@ function buildReplyItem(reply) {
 
     const liElement = document.createElement('li');
     liElement.className = 'rounded-lg bg-white p-6 shadow';
+    liElement.className += ' cursor-pointer';
 
     const divOne = document.createElement('div');
     divOne.className = 'h-10 w-full rounded bg-gray-200 flex items-center align-middle';
@@ -81,7 +82,7 @@ function buildReplyItem(reply) {
     liElement.appendChild(divTwo);
 
     liElement.addEventListener('click', function() {
-        window.location.href = 'https://example.com';
+        window.location.href = '/reply/' + reply.replyId;
     });
 
     return liElement;

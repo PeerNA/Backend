@@ -14,6 +14,9 @@ import java.util.Optional;
 
 @Repository
 public interface ReplyRepository extends JpaRepository<Reply, Long> {
+
+    @Query("select r from Reply r join fetch r.user join fetch r.problem where r.id = :id")
+    Optional<Reply> findWithUserAndProblemById(Long id);
     @Query("select r from Reply r join fetch r.user join fetch r.likes where r.id = :id")
     Optional<Reply> findByIdWithUserAndLike(Long id);
     @Query("select r from Reply r join fetch r.user join fetch r.history join fetch r.problem "

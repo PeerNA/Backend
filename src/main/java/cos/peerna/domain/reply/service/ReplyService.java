@@ -15,9 +15,10 @@ import cos.peerna.domain.reply.repository.LikeyRepository;
 import cos.peerna.domain.reply.repository.ReplyRepository;
 import cos.peerna.domain.user.model.User;
 import cos.peerna.domain.user.repository.UserRepository;
-import cos.peerna.domain.user.service.UserService;
 import cos.peerna.global.security.dto.SessionUser;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
@@ -28,9 +29,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -45,7 +43,6 @@ public class ReplyService {
     private final LikeyRepository likeyRepository;
     private final HistoryRepository historyRepository;
     private final KeywordService keywordService;
-    private final UserService userService;
     private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
@@ -96,6 +93,15 @@ public class ReplyService {
          */
     }
 
+    public ReplyResponse findReply(Long id) {
+        Reply reply = replyRepository.findWithUserAndProblemById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Reply Not Found"));
+        return ReplyResponse.of(
+                reply.getId(), reply.getProblem().getId(), reply.getLikeCount(), reply.getProblem().getQuestion(), reply.getAnswer(),
+                reply.getProblem().getAnswer(), reply.getUser().getId(), reply.getUser().getName(),
+                reply.getUser().getImageUrl());
+    }
+
     public List<ReplyResponse> findRepliesByProblem(Long problemId, int page) {
         Problem problem = problemRepository.findById(problemId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem Not Found"));
@@ -112,7 +118,7 @@ public class ReplyService {
                         .userName(r.getUser().getName())
                         .userImage(r.getUser().getImageUrl())
                         .build()
-                        ).collect(Collectors.toList());
+                ).collect(Collectors.toList());
     }
 
     /*
@@ -124,8 +130,9 @@ public class ReplyService {
         List<ReplyResponse> replyResponses = new ArrayList<>();
         for (Reply reply : replies) {
             replyResponses.add(ReplyResponse.of(
-                    reply.getId(), reply.getLikeCount(), reply.getProblem().getQuestion(), reply.getAnswer(),
-                    reply.getUser().getId(), reply.getUser().getName(), reply.getUser().getImageUrl()));
+                    reply.getId(), reply.getProblem().getId(), reply.getLikeCount(), reply.getProblem().getQuestion(), reply.getAnswer(),
+                    reply.getProblem().getAnswer(), reply.getUser().getId(), reply.getUser().getName(),
+                    reply.getUser().getImageUrl()));
         }
         return replyResponses;
     }
