@@ -32,7 +32,7 @@ public class HomeController {
         model.addAttribute("userName", user.getName());
         model.addAttribute("userImage", user.getImageUrl());
         model.addAttribute("pageTitle", "Study - Solo");
-        return "pages/study/solo";
+        return "pages/reply/solo";
     }
 
     @GetMapping("/mypage")
