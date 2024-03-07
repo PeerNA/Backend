@@ -39,7 +39,7 @@ function startStudy() {
         alert('학습 카테고리를 선택해주세요.');
         return;
     }
-    location.href = "/study/solo?category=" + category;
+    location.href = "/reply/solo?category=" + category;
 }
 
 function getStudyHistory() {
