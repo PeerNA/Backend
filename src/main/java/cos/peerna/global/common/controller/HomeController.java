@@ -40,6 +40,17 @@ public class HomeController {
         return "pages/reply/solo";
     }
 
+    @GetMapping("/reply/others")
+    public String othersStudy(@Nullable @LoginUser SessionUser user, Model model) {
+        model.addAttribute("userId", user == null ? null : user.getId());
+        model.addAttribute("userName", user == null ? "Guest" : user.getName());
+        model.addAttribute("userImage", user == null ?
+                "https://avatars.githubusercontent.com/u/0?v=4" : user.getImageUrl());
+        model.addAttribute("pageTitle", "다른 사람 답변 모음 - 피어나");
+
+        return "pages/reply/others";
+    }
+
     @GetMapping("/mypage")
     public String myPage(@Nullable @LoginUser SessionUser user, Model model) {
         if (user == null) {
