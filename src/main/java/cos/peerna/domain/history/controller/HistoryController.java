@@ -17,8 +17,11 @@ import java.util.List;
 public class HistoryController {
     private final HistoryService historyService;
     @GetMapping
-    public ResponseEntity<List<HistoryResponse>> findUserHistory(@LoginUser SessionUser user, @RequestParam int page) {
-        return ResponseEntity.ok(historyService.findUserHistory(user, page));
+    public ResponseEntity<List<HistoryResponse>> findUserHistory(
+            @RequestParam Long userId,
+            @RequestParam(required = false, defaultValue = "0") Long cursorId,
+            @RequestParam(required = false, defaultValue = "10") int size) {
+        return ResponseEntity.ok(historyService.findUserHistory(userId, cursorId, size));
     }
 
     @GetMapping("/detail")
