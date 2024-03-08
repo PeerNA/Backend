@@ -87,9 +87,9 @@ public class HomeController {
         model.addAttribute("createdAt", response.createdAt());
         model.addAttribute("updatedAt", response.updatedAt());
          */
-        model.addAttribute("writerId", response.userId());
-        model.addAttribute("writerName", response.userName());
-        model.addAttribute("writerImage", response.userImage());
+        model.addAttribute("writerId", replyResponse.userId());
+        model.addAttribute("writerName", replyResponse.userName());
+        model.addAttribute("writerImage", replyResponse.userImage());
 
         return "pages/reply/view";
     }

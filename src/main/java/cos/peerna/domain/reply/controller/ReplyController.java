@@ -27,8 +27,9 @@ public class ReplyController {
 	getRepliesByProblem, findUserReplies 를 통합하는 것이 좋은지 의사판단
 	 */
 	@GetMapping("/problem")
-	public ResponseEntity<List<ReplyResponse>> getRepliesByProblem(
-			@RequestParam Long problemId, @RequestParam @Nullable int page) {
+	public ResponseEntity<ReplyWithPageInfoResponse> getRepliesByProblem(
+			@RequestParam Long problemId,
+			@RequestParam @Nullable int page) {
 		return ResponseEntity.ok(replyService.findRepliesByProblem(problemId, page));
 	}
 
