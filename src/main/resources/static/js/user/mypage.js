@@ -4,7 +4,7 @@ let cursorId = 0;
 document.addEventListener("DOMContentLoaded", function () {
     userId = document.getElementById("userId").value;
 
-    loadMoreReplies();
+    loadMoreMyReplies();
 });
 
 function linkGithubRepo() {
@@ -22,7 +22,7 @@ function linkGithubRepo() {
     });
 }
 
-function loadMoreReplies() {
+function loadMoreMyReplies() {
     axios.get('/api/reply/user', {
         params: {
             userId: userId,
@@ -75,7 +75,7 @@ function buildReplyItem(reply) {
 
     const spanTwo = document.createElement('span');
     spanTwo.className = 'mx-3';
-    spanTwo.textContent = reply.answer;
+    spanTwo.textContent = answer;
     divTwo.appendChild(spanTwo);
 
     liElement.appendChild(divOne);
