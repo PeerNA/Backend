@@ -29,7 +29,14 @@ public class GptService {
     }
 
     private void sendChatMessage(ChatCompletionChunk chunk, Long userId) {
+        /*
+        TODO: stream 이 끝나면, gpt 답변 전체를 저장
+         */
         String message = chunk.getChoices().get(0).getMessage().getContent();
+        if (message == null) {
+            template.convertAndSend("/user/" + userId + "/gpt", "\n-----END MESSAGE-----\n");
+            return;
+        }
         template.convertAndSend("/user/" + userId + "/gpt", message);
     }
 }

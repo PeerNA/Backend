@@ -24,6 +24,6 @@ public class WebSocketBrokerConfig implements WebSocketMessageBrokerConfigurer {
         registry.setApplicationDestinationPrefixes("/app");
 
         // subscribe 요청의 prefix
-        registry.enableSimpleBroker("/chat", "/match", "/openai");
+        registry.enableSimpleBroker("/chat", "/match", "/gpt");
     }
 }
