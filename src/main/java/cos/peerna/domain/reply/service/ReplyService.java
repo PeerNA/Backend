@@ -1,6 +1,7 @@
 package cos.peerna.domain.reply.service;
 
 import cos.peerna.domain.github.event.CommitReplyEvent;
+import cos.peerna.domain.gpt.event.ReviewReplyEvent;
 import cos.peerna.domain.history.model.History;
 import cos.peerna.domain.history.repository.HistoryRepository;
 import cos.peerna.domain.keyword.model.Keyword;
@@ -73,6 +74,12 @@ public class ReplyService {
         }
         /*
         TODO: user.getGithubRepo() == null 일 때, 유저에게 GithubRepo를 등록하라는 메시지 전달
+         */
+
+        eventPublisher.publishEvent(ReviewReplyEvent.of(
+                user.getId(), problem.getQuestion(), dto.answer()));
+        /*
+        TODO: User의 Authority에 따라 ReviewReplyEvent 발행 여부 결정
          */
 
         return String.valueOf(reply.getId());
