@@ -1,5 +1,6 @@
 package cos.peerna.global.common.controller;
 
+import cos.peerna.domain.reply.dto.response.ReplyAndKeywordsResponse;
 import cos.peerna.domain.reply.dto.response.ReplyResponse;
 import cos.peerna.domain.reply.service.ReplyService;
 import cos.peerna.global.security.LoginUser;
@@ -40,8 +41,19 @@ public class HomeController {
         return "pages/reply/solo";
     }
 
+    @GetMapping("/reply/latest")
+    public String latestReplies(@Nullable @LoginUser SessionUser user, Model model) {
+        model.addAttribute("userId", user == null ? null : user.getId());
+        model.addAttribute("userName", user == null ? "Guest" : user.getName());
+        model.addAttribute("userImage", user == null ?
+                "https://avatars.githubusercontent.com/u/0?v=4" : user.getImageUrl());
+        model.addAttribute("pageTitle", "최신 사람 답변 모음 - 피어나");
+
+        return "pages/reply/latest";
+    }
+
     @GetMapping("/reply/others")
-    public String othersStudy(@Nullable @LoginUser SessionUser user, Model model) {
+    public String othersReplies(@Nullable @LoginUser SessionUser user, Model model) {
         model.addAttribute("userId", user == null ? null : user.getId());
         model.addAttribute("userName", user == null ? "Guest" : user.getName());
         model.addAttribute("userImage", user == null ?

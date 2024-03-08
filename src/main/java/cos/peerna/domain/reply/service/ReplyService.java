@@ -3,12 +3,16 @@ package cos.peerna.domain.reply.service;
 import cos.peerna.domain.github.event.CommitReplyEvent;
 import cos.peerna.domain.history.model.History;
 import cos.peerna.domain.history.repository.HistoryRepository;
+import cos.peerna.domain.keyword.model.Keyword;
+import cos.peerna.domain.keyword.repository.KeywordRepository;
 import cos.peerna.domain.keyword.service.KeywordService;
 import cos.peerna.domain.problem.model.Problem;
 import cos.peerna.domain.problem.repository.ProblemRepository;
 import cos.peerna.domain.reply.dto.request.RegisterReplyRequest;
 import cos.peerna.domain.reply.dto.request.UpdateReplyRequest;
+import cos.peerna.domain.reply.dto.response.ReplyAndKeywordsResponse;
 import cos.peerna.domain.reply.dto.response.ReplyResponse;
+import cos.peerna.domain.reply.dto.response.ReplyWithPageInfoResponse;
 import cos.peerna.domain.reply.model.Likey;
 import cos.peerna.domain.reply.model.Reply;
 import cos.peerna.domain.reply.repository.LikeyRepository;
@@ -21,6 +25,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -44,6 +49,7 @@ public class ReplyService {
     private final HistoryRepository historyRepository;
     private final KeywordService keywordService;
     private final ApplicationEventPublisher eventPublisher;
+    private final KeywordRepository keywordRepository;
 
     @Transactional
     public String make(RegisterReplyRequest dto, SessionUser sessionUser) {
@@ -105,25 +111,56 @@ public class ReplyService {
                 reply.getId(), reply.getProblem().getId(), reply.getLikeCount(), reply.getProblem().getQuestion(), reply.getAnswer(),
                 reply.getProblem().getAnswer(), reply.getUser().getId(), reply.getUser().getName(),
                 reply.getUser().getImageUrl());
+        return ReplyAndKeywordsResponse.of(replyResponse, keywords.stream().map(Keyword::getName).toList());
     }
 
-    public List<ReplyResponse> findRepliesByProblem(Long problemId, int page) {
-        Problem problem = problemRepository.findById(problemId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem Not Found"));
+    /*
+    TODO: 쿼리 개선(?)
+     */
+    public List<ReplyResponse> findReplies(Long cursorId, int size) {
+        Pageable pageable = PageRequest.of(0, size, Sort.by("id").descending());
 
-        List<Reply> replies = replyRepository.findRepliesByProblemOrderByLikeCountDesc(
-                problem, PageRequest.of(page, PAGE_SIZE));
-
+        List<Reply> replies;
+        if (cursorId == 0) {
+            replies = replyRepository.findRepliesByOrderByIdDesc(pageable);
+        } else {
+            replies = replyRepository.findRepliesByIdLessThanOrderByIdDesc(cursorId, pageable);
+        }
         return replies.stream()
                 .map(r -> ReplyResponse.builder()
                         .replyId(r.getId())
-                        .likes(r.getLikeCount())
+                        .likeCount(r.getLikeCount())
+                        .problemId(r.getProblem().getId())
+                        .question(r.getProblem().getQuestion())
                         .answer(r.getAnswer())
                         .userId(r.getUser().getId())
                         .userName(r.getUser().getName())
                         .userImage(r.getUser().getImageUrl())
                         .build()
                 ).collect(Collectors.toList());
+    }
+
+    public ReplyWithPageInfoResponse findRepliesByProblem(Long problemId, int page) {
+        Problem problem = problemRepository.findById(problemId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem Not Found"));
+
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("likeCount").descending());
+        Page<Reply> repliesPage = replyRepository.findRepliesByProblemOrderByLikeCountDesc(problem, pageable);
+
+        List<Reply> replies = repliesPage.getContent();
+        List<ReplyResponse> replyResponses = replies.stream()
+                .map(r -> ReplyResponse.builder()
+                        .replyId(r.getId())
+                        .likeCount(r.getLikeCount())
+                        .problemId(r.getProblem().getId())
+                        .question(r.getProblem().getQuestion())
+                        .answer(r.getAnswer())
+                        .userId(r.getUser().getId())
+                        .userName(r.getUser().getName())
+                        .userImage(r.getUser().getImageUrl())
+                        .build()
+                ).toList();
+        return ReplyWithPageInfoResponse.from(replyResponses, repliesPage.getTotalPages(), repliesPage.hasNext());
     }
 
     /*

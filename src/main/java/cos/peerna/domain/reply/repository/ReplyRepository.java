@@ -26,4 +26,7 @@ public interface ReplyRepository extends JpaRepository<Reply, Long> {
     Page<Reply> findRepliesByProblemOrderByLikeCountDesc(Problem problem, Pageable pageable);
     Optional<Reply> findFirstByUserAndProblemOrderByIdDesc(User user, Problem problem);
     List<Reply> findRepliesWithUserByHistoryOrderByHistoryIdDesc(History history);
+
+    List<Reply> findRepliesByOrderByIdDesc(Pageable pageable);
+    List<Reply> findRepliesByIdLessThanOrderByIdDesc(Long cursorId, Pageable pageable);
 }
