@@ -1,6 +1,6 @@
 package cos.peerna.domain.gpt.event;
 
-import cos.peerna.domain.gpt.service.GptService;
+import cos.peerna.domain.gpt.service.GPTService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
@@ -9,9 +9,9 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class GptEventListener {
+public class GPTEventListener {
 
-    private final GptService gptService;
+    private final GPTService gptService;
 
     @EventListener
     public void transactionalEventListenerAfterCommit(ReviewReplyEvent event) {
