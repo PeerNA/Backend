@@ -15,3 +15,7 @@ function updateReply() {
         alert('답안 수정에 실패했습니다.');
     });
 }
+
+function openOthersReply() {
+    window.open('/reply/others?problemId=' + problemId);
+}

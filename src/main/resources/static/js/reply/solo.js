@@ -4,13 +4,13 @@ let isFetching = false; // 현재 데이터를 로딩 중인지 여부
 let problemId = -1;
 
 let submitButton = document.getElementById('submit-button');
-let exampleAnswer = document.getElementById('example-answer');
-let othersAnswer = document.getElementById('others-answer');
+let exampleAnswerBtn = document.getElementById('example-answer');
+let othersAnswerBtn = document.getElementById('others-answer');
 
 document.addEventListener("DOMContentLoaded", function () {
     submitButton = document.getElementById('submit-button');
-    exampleAnswer = document.getElementById('example-answer');
-    othersAnswer = document.getElementById('others-answer');
+    exampleAnswerBtn = document.getElementById('example-answer');
+    othersAnswerBtn = document.getElementById('others-answer');
     loadNewProblems();
 });
 
@@ -56,20 +56,24 @@ function submitReply() {
             submitButton
                 .className="text-gray-900 bg-gradient-to-r from-red-200 via-red-300 to-yellow-200 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-red-100 dark:focus:ring-red-400 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2";
 
-            exampleAnswer
-                .disabled = !exampleAnswer.disabled;
-            exampleAnswer
+            exampleAnswerBtn
+                .disabled = !exampleAnswerBtn.disabled;
+            exampleAnswerBtn
                 .classList.remove('cursor-not-allowed')
 
-            othersAnswer
-                .disabled = !othersAnswer.disabled;
-            othersAnswer
+            othersAnswerBtn
+                .disabled = !othersAnswerBtn.disabled;
+            othersAnswerBtn
                 .classList.remove('cursor-not-allowed')
+
+            updateExampleAnswer();
         }
     }).catch(function (error) {
         console.log(error);
         alert('답안 제출에 실패했습니다.');
     });
+
+    loadKeywords();
 }
 
 function updateReply() {
@@ -82,6 +86,25 @@ function updateReply() {
     }).catch(function (error) {
         console.log(error);
         alert('답안 수정에 실패했습니다.');
+    });
+}
+
+function loadKeywords() {
+    axios.get('/api/problem/keyword?problemId=' + problemId)
+        .then(function (response) {
+            console.log(response);
+            const keywords = response.data.keywords;
+            const keywordList = document.getElementById('keyword-list');
+            keywordList.innerHTML = '';
+            for (let i = 0; i < keywords.length; i++) {
+                const keywordItem = document.createElement('li');
+                keywordItem.setAttribute('class', 'inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary hover:bg-primary/90 h-10 bg-gradient-to-r from-purple-400 to-purple-600 text-white rounded-2xl px-6 py-2 transition-all duration-200 ease-in-out shadow-md hover:shadow-lg');
+                keywordItem.innerText = keywords[i];
+                keywordList.appendChild(keywordItem);
+            }
+        }).catch(function (error) {
+        console.log(error);
+        alert('키워드를 불러오는데 실패했습니다.');
     });
 }
 
@@ -145,4 +168,20 @@ function selectProblem(problem) {
         .setAttribute('onclick', 'submitReply()');
     submitButton
         .setAttribute('class', 'text-white bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2');
+}
+
+function openOthersReply() {
+    window.open('/reply/others?problemId=' + problemId);
+}
+
+function updateExampleAnswer() {
+    axios.get('/api/problem/answer?problemId=' + problemId)
+        .then(function (response) {
+            console.log(response);
+            const exampleAnswerContent = document.getElementById('example-answer-content');
+            exampleAnswerContent.innerText = response.data.answer;
+        }).catch(function (error) {
+        console.log(error);
+        alert('예시 답안을 불러오는데 실패했습니다.');
+    });
 }
