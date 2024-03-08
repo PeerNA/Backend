@@ -9,6 +9,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 public class Follow extends BaseTimeEntity {
+    @Id
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    private Long id;
+
     @ManyToOne(fetch= FetchType.LAZY)
     @JoinColumn
     private User follower;
@@ -22,11 +26,5 @@ public class Follow extends BaseTimeEntity {
         this.followee = followee;
         follower.getFollowings().add(this);
         followee.getFollowers().add(this);
-    }
-
-    @Override
-    public void delete() {
-        follower.getFollowings().remove(this);
-        followee.getFollowers().remove(this);
     }
 }
