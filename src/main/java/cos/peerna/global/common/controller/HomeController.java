@@ -73,13 +73,15 @@ public class HomeController {
         model.addAttribute("userImage", user == null ?
                 "https://avatars.githubusercontent.com/u/0?v=4" : user.getImageUrl());
 
-        ReplyResponse response = replyService.findReply(id);
-        model.addAttribute("replyId", response.replyId());
-        model.addAttribute("problemId", response.problemId());
-        model.addAttribute("likes", response.likes());
-        model.addAttribute("question", response.question());
-        model.addAttribute("answer", response.answer());
-        model.addAttribute("exampleAnswer", response.exampleAnswer());
+        ReplyAndKeywordsResponse response = replyService.findReply(id);
+        ReplyResponse replyResponse = response.replyResponse();
+        model.addAttribute("replyId", replyResponse.replyId());
+        model.addAttribute("problemId", replyResponse.problemId());
+        model.addAttribute("likes", replyResponse.likeCount());
+        model.addAttribute("question", replyResponse.question());
+        model.addAttribute("answer", replyResponse.answer());
+        model.addAttribute("exampleAnswer", replyResponse.exampleAnswer());
+        model.addAttribute("keywords", response.keywords());
         /*
         TODO: CreatedAt, UpdatedAt 추가
         model.addAttribute("createdAt", response.createdAt());

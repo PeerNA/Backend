@@ -93,10 +93,15 @@ public class ReplyService {
          */
     }
 
-    public ReplyResponse findReply(Long id) {
+    /*
+    TODO: Problem <-> Keyword 양방향 해야 하는지 의사 판단
+     */
+    public ReplyAndKeywordsResponse findReply(Long id) {
         Reply reply = replyRepository.findWithUserAndProblemById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Reply Not Found"));
-        return ReplyResponse.of(
+
+        List<Keyword> keywords = keywordRepository.findTop3KeywordsByProblemOrderByCountDesc(reply.getProblem());
+        ReplyResponse replyResponse = ReplyResponse.of(
                 reply.getId(), reply.getProblem().getId(), reply.getLikeCount(), reply.getProblem().getQuestion(), reply.getAnswer(),
                 reply.getProblem().getAnswer(), reply.getUser().getId(), reply.getUser().getName(),
                 reply.getUser().getImageUrl());
