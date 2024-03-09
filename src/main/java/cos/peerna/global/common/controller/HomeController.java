@@ -92,19 +92,6 @@ public class HomeController {
         DetailHistoryResponse detailHistory = historyService.findDetailHistory(historyId);
         model.addAttribute("history", detailHistory);
 
-//        ReplyAndKeywordsResponse response = replyService.findReply(id);
-//        ReplyResponse replyResponse = response.replyResponse();
-//        model.addAttribute("replyId", replyResponse.replyId());
-//        model.addAttribute("problemId", replyResponse.problemId());
-//        model.addAttribute("likes", replyResponse.likeCount());
-//        model.addAttribute("question", replyResponse.question());
-//        model.addAttribute("answer", replyResponse.answer());
-//        model.addAttribute("exampleAnswer", replyResponse.exampleAnswer());
-//        model.addAttribute("keywords", response.keywords());
-//        model.addAttribute("writerId", replyResponse.userId());
-//        model.addAttribute("writerName", replyResponse.userName());
-//        model.addAttribute("writerImage", replyResponse.userImage());
-
         return "pages/reply/view";
     }
 
