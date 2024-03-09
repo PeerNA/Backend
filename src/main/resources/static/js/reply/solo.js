@@ -3,14 +3,18 @@ let category = new URL(location.href).searchParams.get('category');
 let isFetching = false; // 현재 데이터를 로딩 중인지 여부
 let problemId = -1;
 
-let submitButton = document.getElementById('submit-button');
-let exampleAnswerBtn = document.getElementById('example-answer');
-let othersAnswerBtn = document.getElementById('others-answer');
+let submitButton = null;
+let exampleAnswerBtn = null;
+let othersAnswerBtn = null;
+let chatInput_solo = null;
+let chatInputBtn = null;
 
 document.addEventListener("DOMContentLoaded", function () {
     submitButton = document.getElementById('submit-button');
     exampleAnswerBtn = document.getElementById('example-answer');
     othersAnswerBtn = document.getElementById('others-answer');
+    chatInput_solo = document.getElementById('chat-input');
+    chatInputBtn = document.getElementById('chat-input-button');
     loadNewProblems();
 });
 
@@ -67,6 +71,7 @@ function submitReply() {
                 .classList.remove('cursor-not-allowed')
 
             updateExampleAnswer();
+            enableChatInput();
         }
     }).catch(function (error) {
         console.log(error);
@@ -74,6 +79,15 @@ function submitReply() {
     });
 
     loadKeywords();
+}
+
+function enableChatInput() {
+    chatInput_solo
+        .disabled = !chatInput_solo.disabled;
+    chatInputBtn
+        .disabled = !chatInputBtn.disabled;
+    chatInputBtn
+        .classList.remove('cursor-not-allowed');
 }
 
 function updateReply() {
