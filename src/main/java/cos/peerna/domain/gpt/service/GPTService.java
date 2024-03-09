@@ -2,7 +2,6 @@ package cos.peerna.domain.gpt.service;
 
 import com.amazonaws.services.kms.model.NotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.theokanning.openai.completion.chat.ChatCompletionChoice;
 import com.theokanning.openai.completion.chat.ChatCompletionChunk;
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
 import com.theokanning.openai.completion.chat.ChatMessage;
@@ -10,6 +9,12 @@ import com.theokanning.openai.service.OpenAiService;
 import cos.peerna.domain.gpt.dto.request.SendMessageRequest;
 import cos.peerna.domain.gpt.event.ReviewReplyEvent;
 import cos.peerna.domain.gpt.model.GPT;
+import cos.peerna.domain.history.model.History;
+import cos.peerna.domain.history.repository.HistoryRepository;
+import cos.peerna.domain.reply.model.Reply;
+import cos.peerna.domain.reply.repository.ReplyRepository;
+import cos.peerna.domain.room.model.Chat;
+import cos.peerna.domain.room.repository.ChatRepository;
 import cos.peerna.global.security.dto.SessionUser;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,18 +28,26 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class GPTService {
+    private final ReplyRepository replyRepository;
 
-    private final OpenAiService openAIService;
     private final SimpMessagingTemplate template;
     private final RedisTemplate<String, Object> redisTemplate;
     private final ObjectMapper objectMapper;
+    private final OpenAiService openAIService;
+    private final ChatRepository chatRepository;
+    private final HistoryRepository historyRepository;
 
+    /*
+    TODO: Async 로 변경
+     */
     public void reviewReply(ReviewReplyEvent event) {
         /*
         TODO: 사용자의 권한에 따른 gpt 모델 선택
          */
         ChatMessage systemMessage = new ChatMessage("system", GPT.getConcept(event.question()));
         ChatMessage userMessage = new ChatMessage("user", event.answer());
+
+        StringBuilder assistantMessageBuilder = new StringBuilder();
         openAIService.streamChatCompletion(ChatCompletionRequest.builder()
                         .model(GPT.getModel())
                         .messages(List.of(
@@ -43,34 +56,59 @@ public class GPTService {
                         ))
                         .build())
                 .doOnError(throwable -> sendErrorMessage(event.userId()))
-                .blockingForEach(chunk -> sendChatMessage(chunk, event.userId()));
+                .blockingForEach(chunk -> sendChatMessage(chunk, event.userId(), assistantMessageBuilder));
+        ChatMessage assistantMessage = new ChatMessage("assistant", assistantMessageBuilder.toString());
+
         redisTemplate.opsForList().rightPush(String.valueOf(event.historyId()), systemMessage);
         redisTemplate.opsForList().rightPush(String.valueOf(event.historyId()), userMessage);
+        redisTemplate.opsForList().rightPush(String.valueOf(event.historyId()), assistantMessage);
+
+        History history = historyRepository.findById(event.historyId())
+                .orElseThrow(() -> new NotFoundException("history not found"));
+        chatRepository.save(Chat.builder()
+                .writerId(0L)
+                .content(assistantMessageBuilder.toString())
+                .history(history)
+                .build());
     }
 
+    /*
+    TODO: Async 로 변경
+     */
     public void sendMessage(SessionUser user, SendMessageRequest request) {
-        List<ChatMessage> messages = getChatMessages(user);
-        ChatMessage assistantMessage = new ChatMessage("assistant", request.lastGPTMessage());
+        Reply lastReply = replyRepository.findFirstByUserIdOrderByIdDesc(user.getId())
+                .orElseThrow(() -> new NotFoundException("reply not found"));
+
+        List<ChatMessage> messages = getChatMessages(lastReply.getHistory().getId());
         ChatMessage userMessage = new ChatMessage("user", request.message());
-        messages.add(assistantMessage);
         messages.add(userMessage);
 
-        log.debug("GPTService.sendMessage: messages: {}", messages);
-
+        StringBuilder assistantMessageBuilder = new StringBuilder();
         openAIService.streamChatCompletion(ChatCompletionRequest.builder()
                         .model(GPT.getModel())
                         .messages(messages)
                         .build())
                 .doOnError(throwable -> sendErrorMessage(user.getId()))
-                .blockingForEach(chunk -> sendChatMessage(chunk, user.getId()));
-        redisTemplate.opsForList().rightPush(String.valueOf(user.getHistoryId()), userMessage);
+                .blockingForEach(chunk -> sendChatMessage(chunk, user.getId(), assistantMessageBuilder));
+        ChatMessage assistantMessage = new ChatMessage("assistant", assistantMessageBuilder.toString());
+        redisTemplate.opsForList().rightPush(String.valueOf(lastReply.getHistory().getId()), userMessage);
+        redisTemplate.opsForList().rightPush(String.valueOf(lastReply.getHistory().getId()), assistantMessage);
+
+
+        chatRepository.save(Chat.builder()
+                .writerId(user.getId())
+                .content(request.message())
+                .history(lastReply.getHistory())
+                .build());
+        chatRepository.save(Chat.builder()
+                .writerId(0L)
+                .content(assistantMessageBuilder.toString())
+                .history(lastReply.getHistory())
+                .build());
     }
 
-    private List<ChatMessage> getChatMessages(SessionUser user) {
-        if (user.getHistoryId() == null) {
-            throw new NotFoundException("historyId is null");
-        }
-        List<Object> messageObjects = redisTemplate.opsForList().range(String.valueOf(user.getHistoryId()), 0, -1);
+    private List<ChatMessage> getChatMessages(Long historyId) {
+        List<Object> messageObjects = redisTemplate.opsForList().range(String.valueOf(historyId), 0, -1);
         List<ChatMessage> messages = new ArrayList<>();
         if (messageObjects == null) {
             throw new NotFoundException("messageObjects is null");
@@ -82,7 +120,7 @@ public class GPTService {
         return messages;
     }
 
-    private void sendChatMessage(ChatCompletionChunk chunk, Long userId) {
+    private void sendChatMessage(ChatCompletionChunk chunk, Long userId, StringBuilder assistantMessageBuilder) {
         /*
         TODO: stream 이 끝나면, gpt 답변 전체를 저장
         TODO: gpt에게서 오는 chunk의 순서가 보장되지 않음
@@ -93,9 +131,7 @@ public class GPTService {
             return;
         }
         template.convertAndSend("/user/" + userId + "/gpt", message);
-
-//        ChatCompletionChoice choice = chunk.getChoices().get(0);
-//        template.convertAndSend("/user/" + userId + "/gpt", choice);
+        assistantMessageBuilder.append(message);
     }
 
     private void sendErrorMessage(Long userId) {

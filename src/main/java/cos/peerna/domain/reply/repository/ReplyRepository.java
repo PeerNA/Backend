@@ -29,4 +29,7 @@ public interface ReplyRepository extends JpaRepository<Reply, Long> {
 
     List<Reply> findRepliesByOrderByIdDesc(Pageable pageable);
     List<Reply> findRepliesByIdLessThanOrderByIdDesc(Long cursorId, Pageable pageable);
+
+    @Query("select r from Reply r join fetch r.history where r.user.id = :userId order by r.id desc limit 1")
+    Optional<Reply> findFirstByUserIdOrderByIdDesc(Long userId);
 }

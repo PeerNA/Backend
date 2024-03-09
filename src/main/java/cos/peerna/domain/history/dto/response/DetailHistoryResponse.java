@@ -11,10 +11,9 @@ import lombok.Data;
 @Builder
 public class DetailHistoryResponse {
     private String question;
+    private String exampleAnswer;
     private LocalDate time;
-    private ReplyResponse mine;
-    private ReplyResponse peer;
-    private List<String> keyword;
-    private List<ChatMessageSendDto> chat;
-
+    private List<ReplyResponse> replies;
+    private List<String> keywords;
+    private List<ChatMessageSendDto> chattings;
 }

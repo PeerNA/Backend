@@ -4,6 +4,7 @@ import lombok.Builder;
 
 @Builder
 public record ReplyResponse(
+        Long historyId,
         Long replyId,
         Long problemId,
         Long likeCount,
@@ -14,15 +15,16 @@ public record ReplyResponse(
         String userName,
         String userImage
 ) {
-    public static ReplyResponse of(Long replyId, Long problemId, Long likeCount, String question, String answer, String exampleAnswer,
+    public static ReplyResponse of(Long historyId, Long replyId, Long problemId, Long likeCount, String question, String answer, String exampleAnswer,
                                    Long userId, String userName, String userImage) {
-        return new ReplyResponse(replyId, problemId, likeCount, question, answer, exampleAnswer, userId, userName, userImage);
+        return new ReplyResponse(historyId, replyId, problemId, likeCount, question, answer, exampleAnswer, userId, userName, userImage);
     }
 
     @Override
     public String toString() {
         return "ReplyResponse{" +
-                "replyId=" + replyId
+                "historyId=" + historyId
+                + "replyId=" + replyId
                 + ", problemId=" + problemId
                 + ", likeCount=" + likeCount
                 + ", question='" + question + '\''

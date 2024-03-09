@@ -92,7 +92,7 @@ function buildReplyItem(reply) {
     itemsEnd.appendChild(spanLike);
 
     li.addEventListener('click', function() {
-        window.location.href = '/reply/' + reply.replyId;
+        window.location.href = '/reply/' + reply.historyId;
     });
 
     return li;

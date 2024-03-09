@@ -1,5 +1,7 @@
 package cos.peerna.global.common.controller;
 
+import cos.peerna.domain.history.dto.response.DetailHistoryResponse;
+import cos.peerna.domain.history.service.HistoryService;
 import cos.peerna.domain.reply.dto.response.ReplyAndKeywordsResponse;
 import cos.peerna.domain.reply.dto.response.ReplyResponse;
 import cos.peerna.domain.reply.service.ReplyService;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 public class HomeController {
 
     private final ReplyService replyService;
+    private final HistoryService historyService;
 
     @GetMapping("/")
     public String index(Model model) {
@@ -78,30 +81,29 @@ public class HomeController {
     }
 
     @GetMapping("/reply/{id}")
-    public String reply(@Nullable @LoginUser SessionUser user, Model model, @Nullable @PathVariable("id") Long id) {
+    public String reply(@Nullable @LoginUser SessionUser user, Model model,
+                        @Nullable @PathVariable("id") Long historyId) {
         model.addAttribute("pageTitle", "Reply - 피어나");
         model.addAttribute("userId", user == null ? null : user.getId());
         model.addAttribute("userName", user == null ? "Guest" : user.getName());
         model.addAttribute("userImage", user == null ?
                 "https://avatars.githubusercontent.com/u/0?v=4" : user.getImageUrl());
 
-        ReplyAndKeywordsResponse response = replyService.findReply(id);
-        ReplyResponse replyResponse = response.replyResponse();
-        model.addAttribute("replyId", replyResponse.replyId());
-        model.addAttribute("problemId", replyResponse.problemId());
-        model.addAttribute("likes", replyResponse.likeCount());
-        model.addAttribute("question", replyResponse.question());
-        model.addAttribute("answer", replyResponse.answer());
-        model.addAttribute("exampleAnswer", replyResponse.exampleAnswer());
-        model.addAttribute("keywords", response.keywords());
-        /*
-        TODO: CreatedAt, UpdatedAt 추가
-        model.addAttribute("createdAt", response.createdAt());
-        model.addAttribute("updatedAt", response.updatedAt());
-         */
-        model.addAttribute("writerId", replyResponse.userId());
-        model.addAttribute("writerName", replyResponse.userName());
-        model.addAttribute("writerImage", replyResponse.userImage());
+        DetailHistoryResponse detailHistory = historyService.findDetailHistory(historyId);
+        model.addAttribute("history", detailHistory);
+
+//        ReplyAndKeywordsResponse response = replyService.findReply(id);
+//        ReplyResponse replyResponse = response.replyResponse();
+//        model.addAttribute("replyId", replyResponse.replyId());
+//        model.addAttribute("problemId", replyResponse.problemId());
+//        model.addAttribute("likes", replyResponse.likeCount());
+//        model.addAttribute("question", replyResponse.question());
+//        model.addAttribute("answer", replyResponse.answer());
+//        model.addAttribute("exampleAnswer", replyResponse.exampleAnswer());
+//        model.addAttribute("keywords", response.keywords());
+//        model.addAttribute("writerId", replyResponse.userId());
+//        model.addAttribute("writerName", replyResponse.userName());
+//        model.addAttribute("writerImage", replyResponse.userImage());
 
         return "pages/reply/view";
     }

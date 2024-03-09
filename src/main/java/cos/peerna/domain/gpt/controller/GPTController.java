@@ -4,7 +4,6 @@ import cos.peerna.domain.gpt.dto.request.SendMessageRequest;
 import cos.peerna.domain.gpt.service.GPTService;
 import cos.peerna.global.security.dto.SessionUser;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.annotation.SendToUser;

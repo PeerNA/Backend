@@ -21,7 +21,6 @@ import cos.peerna.domain.reply.repository.ReplyRepository;
 import cos.peerna.domain.user.model.User;
 import cos.peerna.domain.user.repository.UserRepository;
 import cos.peerna.global.security.dto.SessionUser;
-import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -52,7 +51,6 @@ public class ReplyService {
     private final KeywordService keywordService;
     private final ApplicationEventPublisher eventPublisher;
     private final KeywordRepository keywordRepository;
-    private final HttpSession httpSession;
 
     @Transactional
     public String make(RegisterReplyRequest dto, SessionUser sessionUser) {
@@ -77,9 +75,6 @@ public class ReplyService {
         /*
         TODO: user.getGithubRepo() == null 일 때, 유저에게 GithubRepo를 등록하라는 메시지 전달
          */
-
-        sessionUser.setHistoryId(history.getId());
-        httpSession.setAttribute("user", sessionUser);
 
         eventPublisher.publishEvent(ReviewReplyEvent.of(
                 history.getId(), user.getId(), problem.getQuestion(), dto.answer()));
@@ -113,6 +108,7 @@ public class ReplyService {
 
     /*
     TODO: Problem <-> Keyword 양방향 해야 하는지 의사 판단
+    TODO: ReplyResponse 빌더 사용
      */
     public ReplyAndKeywordsResponse findReply(Long id) {
         Reply reply = replyRepository.findWithUserAndProblemById(id)
@@ -120,9 +116,9 @@ public class ReplyService {
 
         List<Keyword> keywords = keywordRepository.findTop3KeywordsByProblemOrderByCountDesc(reply.getProblem());
         ReplyResponse replyResponse = ReplyResponse.of(
-                reply.getId(), reply.getProblem().getId(), reply.getLikeCount(), reply.getProblem().getQuestion(), reply.getAnswer(),
-                reply.getProblem().getAnswer(), reply.getUser().getId(), reply.getUser().getName(),
-                reply.getUser().getImageUrl());
+                reply.getHistory().getId(), reply.getId(), reply.getProblem().getId(), reply.getLikeCount(),
+                reply.getProblem().getQuestion(), reply.getAnswer(), reply.getProblem().getAnswer(),
+                reply.getUser().getId(), reply.getUser().getName(), reply.getUser().getImageUrl());
         return ReplyAndKeywordsResponse.of(replyResponse, keywords.stream().map(Keyword::getName).toList());
     }
 
@@ -140,6 +136,7 @@ public class ReplyService {
         }
         return replies.stream()
                 .map(r -> ReplyResponse.builder()
+                        .historyId(r.getHistory().getId())
                         .replyId(r.getId())
                         .likeCount(r.getLikeCount())
                         .problemId(r.getProblem().getId())
@@ -184,7 +181,8 @@ public class ReplyService {
         List<ReplyResponse> replyResponses = new ArrayList<>();
         for (Reply reply : replies) {
             replyResponses.add(ReplyResponse.of(
-                    reply.getId(), reply.getProblem().getId(), reply.getLikeCount(), reply.getProblem().getQuestion(), reply.getAnswer(),
+                    reply.getHistory().getId(), reply.getId(), reply.getProblem().getId(),
+                    reply.getLikeCount(), reply.getProblem().getQuestion(), reply.getAnswer(),
                     reply.getProblem().getAnswer(), reply.getUser().getId(), reply.getUser().getName(),
                     reply.getUser().getImageUrl()));
         }
