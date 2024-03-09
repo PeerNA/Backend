@@ -4,6 +4,10 @@ let userId = null;
 let cursorId = 0;
 document.addEventListener("DOMContentLoaded", function () {
     userId = document.getElementById("userId").value;
+    if (userId === null || userId === "") {
+        console.log('userId is null or empty');
+        return;
+    }
     sockJs = new SockJS("/stomp");
     stompClient = Stomp.over(sockJs);
 
@@ -16,8 +20,31 @@ document.addEventListener("DOMContentLoaded", function () {
         destination 은 /user/{userId}/match 이지만, /user/match 로 subscribe 해야한다.
          */
 
-        stompClient.subscribe('/user/match/join', function (message) {
-            console.log('/user/match: ', message);
+        stompClient.subscribe('/user/match', function (frame) {
+            location.href = "/reply/multi?roomId=" + frame.body;
+        });
+
+        stompClient.subscribe('/user/match/join', function (frame) {
+            console.log('/user/match/join: ', frame);
+            frame = JSON.parse(frame.body);
+            if (frame.statusCodeValue === 201) {
+                alert('매칭 큐에 참가하였습니다.');
+                const withPersonBtn = document.getElementById('with-person-btn');
+                withPersonBtn.innerText = '매칭 취소';
+                withPersonBtn.onclick = function () {
+                    stompClient.send("/app/match/cancel", {}, {}, function (error) {
+                        console.log('error', error);
+                    });
+                };
+            } else if (frame.statusCodeValue === 204) {
+                console.log('frame', frame);
+                alert('매칭을 취소하였습니다.');
+                const withPersonBtn = document.getElementById('with-person-btn');
+                withPersonBtn.innerText = '사람과 함께';
+                withPersonBtn.onclick = joinQueue;
+            } else {
+                alert('이미 매칭 큐에 참가하였습니다.')
+            }
         });
 
         stompClient.send("/app/info", {}, {}, function (error) {

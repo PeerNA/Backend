@@ -48,7 +48,7 @@ function loadNewProblems() {
 }
 
 function submitReply() {
-    axios.post('/api/reply', {
+    axios.post('/api/reply/gpt', {
         problemId: problemId,
         answer: document.getElementById('answer').value
     }).then(function (response) {
