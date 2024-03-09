@@ -29,4 +29,12 @@ public class Room {
         this.historyIdList.add(historyId);
         this.category = category;
     }
+
+    public boolean isConnectedUser(Long userId) {
+        return connectedUserIdList.contains(userId);
+    }
+
+    public Long getLastHistoryId() {
+        return historyIdList.get(historyIdList.size() - 1);
+    }
 }
