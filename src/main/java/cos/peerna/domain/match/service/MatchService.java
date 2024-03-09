@@ -55,6 +55,10 @@ public class MatchService {
     }
 
     public Standby addStandby(SessionUser user, Category category) {
+        if (redisTemplate.opsForValue().get("user:" + user.getId() + ":status") != null) {
+            return null;
+        }
+
         Standby standby = Standby.builder()
                 .id(user.getId())
                 .score(user.getScore())
@@ -65,6 +69,7 @@ public class MatchService {
             String json = objectMapper.writeValueAsString(standby);
             double score = standby.getScore().doubleValue();
             redisTemplate.opsForZSet().add("standby:" + category, json, score);
+            redisTemplate.opsForValue().set("user:" + user.getId() + ":status", "match:" + category.name());
         } catch (JsonProcessingException e) {
             log.error(e.getMessage());
             return null;
@@ -89,6 +94,8 @@ public class MatchService {
                     standbyList.remove(i);
                     redisTemplate.opsForZSet().remove("standby:" + category.name(), objectMapper.writeValueAsString(standby));
                     redisTemplate.opsForZSet().remove("standby:" + category.name(), objectMapper.writeValueAsString(target));
+                    redisTemplate.delete("user:" + standby.getId() + ":status");
+                    redisTemplate.delete("user:" + target.getId() + ":status");
                     eventPublisher.publishEvent(CreateRoomEvent.of(new HashMap<>() {{
                         put(standby.getId(), standby.getScore());
                         put(target.getId(), target.getScore());
@@ -125,5 +132,21 @@ public class MatchService {
             standbyList.add(standby);
         }
         return standbyList;
+    }
+
+    public void cancelStandby(SessionUser user) {
+        String status = redisTemplate.opsForValue().getAndDelete("user:" + user.getId() + ":status");
+        if (status == null) {
+            return;
+        }
+        String[] split = status.split(":");
+        try {
+            if (split[0].equals("match")) {
+                redisTemplate.opsForZSet().remove("standby:" + split[1],
+                        objectMapper.writeValueAsString(Standby.builder().id(user.getId()).build()));
+            }
+        } catch (JsonProcessingException e) {
+            log.error(e.getMessage());
+        }
     }
 }
