@@ -31,4 +31,8 @@ public class History {
 		history.time = time;
 		return history;
 	}
+
+	public void updateProblem(Problem problem) {
+		this.problem = problem;
+	}
 }
