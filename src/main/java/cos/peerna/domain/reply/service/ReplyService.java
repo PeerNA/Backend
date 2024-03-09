@@ -58,7 +58,7 @@ public class ReplyService {
                 .orElseThrow(() -> new UsernameNotFoundException("No User Data"));
         Problem problem = problemRepository.findById(dto.problemId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem Not Found"));
-        History history = historyRepository.save(History.createHistory(problem));
+        History history = historyRepository.save(History.of(problem));
         Reply reply = replyRepository.save(Reply.builderForRegister()
                 .answer(dto.answer())
                 .history(history)

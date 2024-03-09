@@ -15,17 +15,17 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Room {
     @Id @GeneratedValue
-    @Column(name = "room_id")
     private Integer id;
 
     @Enumerated(EnumType.STRING)
     private Category category;
-    private LinkedList<Long> historyIdList = new LinkedList<>();
-    private List<Long> connectedUserIdList = new ArrayList<>();
+    private List<Long> historyIdList;
+    private List<Long> connectedUserIdList;
 
     @Builder
     public Room(List<Long> connectedUserIds, Long historyId, Category category) {
         this.connectedUserIdList = connectedUserIds;
+        this.historyIdList = new ArrayList<>();
         this.historyIdList.add(historyId);
         this.category = category;
     }

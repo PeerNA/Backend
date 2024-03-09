@@ -6,11 +6,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cos.peerna.domain.match.job.MatchJob;
 import cos.peerna.domain.match.model.Standby;
+import cos.peerna.domain.room.event.CreateRoomEvent;
 import cos.peerna.domain.user.model.Category;
 import cos.peerna.global.security.dto.SessionUser;
 import jakarta.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +24,8 @@ import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +42,7 @@ public class MatchService {
     private final Scheduler scheduler;
     private final ObjectMapper objectMapper;
     private final RedisTemplate<String, String> redisTemplate;
-    private final SimpMessagingTemplate template;
+    private final ApplicationEventPublisher eventPublisher;
 
     @PostConstruct
     public void scheduleJob() {
@@ -87,11 +89,10 @@ public class MatchService {
                     standbyList.remove(i);
                     redisTemplate.opsForZSet().remove("standby:" + category.name(), objectMapper.writeValueAsString(standby));
                     redisTemplate.opsForZSet().remove("standby:" + category.name(), objectMapper.writeValueAsString(target));
-                    template.convertAndSend("/user/" + standby.getId() + "/match/join", "successJOIN");
-                    template.convertAndSend("/user/" + target.getId() + "/match/join", "successJOIN");
-                    /*
-                     * TODO: Room 생성 이벤트 발생
-                     */
+                    eventPublisher.publishEvent(CreateRoomEvent.of(new HashMap<>() {{
+                        put(standby.getId(), standby.getScore());
+                        put(target.getId(), target.getScore());
+                    }}, category));
                     break;
                 }
             }
