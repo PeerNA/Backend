@@ -9,7 +9,8 @@ import cos.peerna.domain.keyword.repository.KeywordRepository;
 import cos.peerna.domain.keyword.service.KeywordService;
 import cos.peerna.domain.problem.model.Problem;
 import cos.peerna.domain.problem.repository.ProblemRepository;
-import cos.peerna.domain.reply.dto.request.RegisterReplyRequest;
+import cos.peerna.domain.reply.dto.request.RegisterWithGPTRequest;
+import cos.peerna.domain.reply.dto.request.RegisterWithPersonRequest;
 import cos.peerna.domain.reply.dto.request.UpdateReplyRequest;
 import cos.peerna.domain.reply.dto.response.ReplyAndKeywordsResponse;
 import cos.peerna.domain.reply.dto.response.ReplyResponse;
@@ -18,6 +19,8 @@ import cos.peerna.domain.reply.model.Likey;
 import cos.peerna.domain.reply.model.Reply;
 import cos.peerna.domain.reply.repository.LikeyRepository;
 import cos.peerna.domain.reply.repository.ReplyRepository;
+import cos.peerna.domain.room.model.Room;
+import cos.peerna.domain.room.repository.RoomRepository;
 import cos.peerna.domain.user.model.User;
 import cos.peerna.domain.user.repository.UserRepository;
 import cos.peerna.global.security.dto.SessionUser;
@@ -30,7 +33,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpStatus;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,17 +48,20 @@ public class ReplyService {
 
     private static final int PAGE_SIZE = 10;
 
+    private final ApplicationEventPublisher eventPublisher;
+    private final StringRedisTemplate stringRedisTemplate;
+    private final SimpMessagingTemplate simpMessagingTemplate;
     private final ReplyRepository replyRepository;
     private final UserRepository userRepository;
     private final ProblemRepository problemRepository;
     private final LikeyRepository likeyRepository;
     private final HistoryRepository historyRepository;
     private final KeywordService keywordService;
-    private final ApplicationEventPublisher eventPublisher;
     private final KeywordRepository keywordRepository;
+    private final RoomRepository roomRepository;
 
     @Transactional
-    public String make(RegisterReplyRequest dto, SessionUser sessionUser) {
+    public String registerWithGPT(RegisterWithGPTRequest dto, SessionUser sessionUser) {
         User user = userRepository.findById(sessionUser.getId())
                 .orElseThrow(() -> new UsernameNotFoundException("No User Data"));
         Problem problem = problemRepository.findById(dto.problemId())
@@ -81,6 +89,48 @@ public class ReplyService {
         /*
         TODO: User의 Authority에 따라 ReviewReplyEvent 발행 여부 결정
          */
+
+        return String.valueOf(reply.getId());
+    }
+
+    @Transactional
+    public String registerWithPerson(RegisterWithPersonRequest dto, SessionUser sessionUser) {
+        User user = userRepository.findById(sessionUser.getId())
+                .orElseThrow(() -> new UsernameNotFoundException("No User Data"));
+        String roomIdStr = stringRedisTemplate.opsForValue().get("user:" + user.getId() + ":roomId");
+        if (roomIdStr == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Room Not Found");
+        }
+        Room room = roomRepository.findById(Integer.parseInt(roomIdStr))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Room Not Found"));
+        History history = historyRepository.findByIdWithProblem(room.getLastHistoryId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "History or Problem Not Found"));
+        Problem problem = history.getProblem();
+        Reply reply = replyRepository.save(Reply.builderForRegister()
+                .answer(dto.answer())
+                .history(history)
+                .problem(problem)
+                .user(user)
+                .build());
+
+        /*
+        TODO: 서비스가 한가로운 시간에 Batch로 처리 하는 시스템으로 변경
+         */
+        keywordService.analyze(dto.answer(), problem.getId());
+
+        if (user.getGithubRepo() != null) {
+            eventPublisher.publishEvent(CommitReplyEvent.of(
+                    sessionUser.getLogin(), sessionUser.getToken(), user.getGithubRepo(), problem, dto.answer()));
+        }
+        /*
+        TODO: user.getGithubRepo() == null 일 때, 유저에게 GithubRepo를 등록하라는 메시지 전달
+         */
+
+        ReplyResponse replyResponse = ReplyResponse.of(
+                reply.getHistory().getId(), reply.getId(), reply.getProblem().getId(), reply.getLikeCount(),
+                reply.getProblem().getQuestion(), reply.getAnswer(), reply.getProblem().getAnswer(),
+                reply.getUser().getId(), reply.getUser().getName(), reply.getUser().getImageUrl());
+        simpMessagingTemplate.convertAndSend("/room/" + room.getId() + "/answer", replyResponse);
 
         return String.valueOf(reply.getId());
     }
