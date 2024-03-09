@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +28,7 @@ import org.springframework.stereotype.Service;
 public class RoomService {
 
     private final SimpMessagingTemplate template;
+    private final StringRedisTemplate stringRedisTemplate;
     private final RoomRepository roomRepository;
     private final HistoryRepository historyRepository;
     private final ChatRepository chatRepository;
@@ -49,6 +51,10 @@ public class RoomService {
                         .build());
 
         for (Long userId : connectedUserIds) {
+            /*
+            TODO: 더 효율적이고 보안적으로 훌륭한 방법 찾기 (HttpSession 을 시도했으나 실패)
+             */
+            stringRedisTemplate.opsForValue().set("user:" + userId + ":roomId", room.getId().toString());
             template.convertAndSend("/user/" + userId + "/match", room.getId());
         }
     }
