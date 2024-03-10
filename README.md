@@ -19,7 +19,8 @@
 <img width="1611" alt="image" src="https://github.com/PeerNA/Backend/assets/45088611/733dd701-d334-4eb3-afc0-f15d90636bb6">
 
 ## 📚 Entity Relationship Diagram
-![Untitled (17).png](https://prod-files-secure.s3.us-west-2.amazonaws.com/b2d7c651-f36b-4309-b307-bcd970a31f10/f818d5f4-13a7-4b31-96b3-c6f8a9e0e965/Untitled_(17).png)
+![Untitled (17)](https://github.com/PeerNA/Backend/assets/45088611/d8f5c586-8a30-4278-a058-abe729bc0083)
+
 
 ## ☘️ Project Foldering
 
