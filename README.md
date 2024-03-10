@@ -4,7 +4,7 @@
 | :---------:|:----------:|
 |<img width="300" alt="image" src="https://avatars.githubusercontent.com/u/48898994?s=400&u=7ced4be7b2af430c876d1453fa5f4f028a9902f9&v=4"> | <img width="300"  alt="image" src="https://avatars.githubusercontent.com/u/45088611?v=4"> | 
 | [its-sky](https://github.com/its-sky) | [sseunghoon](https://github.com/sseunghoon) |
-| DB 설계, Entity 개발, 문제 및 답변 API, 크롤링(Quartz) 및 키워드 API, 알림 API 개발 | DB 설계, [유저, 인증/인가, 매칭, 학습]모듈 및 웹소켓 파트 개발 |
+| DB 설계, Entity 개발, 문제 및 답변 API, 크롤링(Quartz) 및 키워드 API, 알림 API 개발 | DB 설계, [유저, 인증/인가, 동료매칭, GPT와 학습, 사람과 학습, 학습이력 조회]모듈 및 클라이언트(Thymeleaf) 개발 |
 
 
 ## ⭐ Stack
@@ -18,8 +18,8 @@
 ## 📌 Server architecture
 <img width="1611" alt="image" src="https://github.com/PeerNA/Backend/assets/45088611/733dd701-d334-4eb3-afc0-f15d90636bb6">
 
-
-
+## 📚 Entity Relationship Diagram
+![Untitled (17).png](https://prod-files-secure.s3.us-west-2.amazonaws.com/b2d7c651-f36b-4309-b307-bcd970a31f10/f818d5f4-13a7-4b31-96b3-c6f8a9e0e965/Untitled_(17).png)
 
 ## ☘️ Project Foldering
 
