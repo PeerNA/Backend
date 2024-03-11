@@ -5,19 +5,19 @@ import java.util.List;
 import org.springframework.validation.annotation.Validated;
 
 @Validated
-public record GetAnswerAndKeywordResponse(
+public record AnswerAndKeywordResponse(
 		String answer,
 		List<Keyword> keywords
 ) {
 	@Override
 	public String toString() {
-		return "GetAnswerAndKeywordResponse{" +
+		return "AnswerAndKeywordResponse{" +
 				"answer='" + answer + '\'' +
 				", keywords=" + keywords +
 				'}';
 	}
 
-	public static GetAnswerAndKeywordResponse of(String answer, List<Keyword> keywords) {
-		return new GetAnswerAndKeywordResponse(answer, keywords);
+	public static AnswerAndKeywordResponse of(String answer, List<Keyword> keywords) {
+		return new AnswerAndKeywordResponse(answer, keywords);
 	}
 }

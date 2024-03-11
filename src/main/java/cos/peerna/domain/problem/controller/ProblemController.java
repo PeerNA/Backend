@@ -1,8 +1,8 @@
 package cos.peerna.domain.problem.controller;
 
 import cos.peerna.domain.problem.dto.request.RegisterProblemRequest;
-import cos.peerna.domain.problem.dto.response.GetAnswerAndKeywordResponse;
-import cos.peerna.domain.problem.dto.response.GetProblemResponse;
+import cos.peerna.domain.problem.dto.response.AnswerAndKeywordResponse;
+import cos.peerna.domain.problem.dto.response.ProblemResponse;
 import cos.peerna.domain.problem.service.ProblemService;
 import cos.peerna.domain.user.model.Category;
 import java.net.URI;
@@ -30,12 +30,12 @@ public class ProblemController {
     }
 
     @GetMapping("/answer")
-    public ResponseEntity<GetAnswerAndKeywordResponse> getAnswerAndKeyword(@RequestParam Long problemId) {
+    public ResponseEntity<AnswerAndKeywordResponse> getAnswerAndKeyword(@RequestParam Long problemId) {
         return ResponseEntity.ok(problemService.getAnswerAndKeywordByProblemId(problemId));
     }
 
     @GetMapping("/{category}")
-    public ResponseEntity<List<GetProblemResponse>> findProblemsByCategory(
+    public ResponseEntity<List<ProblemResponse>> findProblemsByCategory(
             @PathVariable Category category,
             @RequestParam(required = false, defaultValue = "0") Long cursorId,
             @RequestParam(required = false, defaultValue = "10") int size) {

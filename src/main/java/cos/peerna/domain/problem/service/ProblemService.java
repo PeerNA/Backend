@@ -1,7 +1,7 @@
 package cos.peerna.domain.problem.service;
 
-import cos.peerna.domain.problem.dto.response.GetAnswerAndKeywordResponse;
-import cos.peerna.domain.problem.dto.response.GetProblemResponse;
+import cos.peerna.domain.problem.dto.response.AnswerAndKeywordResponse;
+import cos.peerna.domain.problem.dto.response.ProblemResponse;
 import cos.peerna.domain.problem.model.Problem;
 import cos.peerna.domain.problem.model.ProblemAnswerKeywords;
 import cos.peerna.domain.problem.repository.ProblemRepository;
@@ -42,19 +42,19 @@ public class ProblemService {
         });
     }
 
-    public GetAnswerAndKeywordResponse getAnswerAndKeywordByProblemId(Long problemId) {
+    public AnswerAndKeywordResponse getAnswerAndKeywordByProblemId(Long problemId) {
         ProblemAnswerKeywords answerKeywords = problemRepository.findAnswerAndKeywordsById(problemId).
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem Not Found"));
-        return GetAnswerAndKeywordResponse.of(answerKeywords.getAnswer(), answerKeywords.getKeywords());
+        return AnswerAndKeywordResponse.of(answerKeywords.getAnswer(), answerKeywords.getKeywords());
     }
 
-    public List<GetProblemResponse> findProblemsByCategory(Category category, Long cursorId, int size) {
+    public List<ProblemResponse> findProblemsByCategory(Category category, Long cursorId, int size) {
         Pageable pageable = PageRequest.of(0, size, Sort.by("id").ascending());
 
         List<Problem> problems = problemRepository.findByCategoryAndIdGreaterThanOrderByIdAsc(category, cursorId, pageable);
-        List<GetProblemResponse> problemResponseDtos = new ArrayList<>();
+        List<ProblemResponse> problemResponseDtos = new ArrayList<>();
         for (Problem problem : problems) {
-            problemResponseDtos.add(GetProblemResponse.of(
+            problemResponseDtos.add(ProblemResponse.of(
                     problem.getId(), problem.getQuestion(), problem.getAnswer(), problem.getCategory()));
         }
         return problemResponseDtos;

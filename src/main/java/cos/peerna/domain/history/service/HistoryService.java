@@ -16,12 +16,13 @@ import cos.peerna.domain.room.model.Chat;
 import cos.peerna.domain.room.model.Room;
 import cos.peerna.domain.room.repository.ChatRepository;
 import cos.peerna.domain.room.repository.RoomRepository;
-import cos.peerna.domain.user.model.User;
 import cos.peerna.domain.user.repository.UserRepository;
 import cos.peerna.global.security.dto.SessionUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,12 +44,9 @@ public class HistoryService {
     private final ProblemRepository problemRepository;
     private final RoomRepository roomRepository;
 
-    public List<HistoryResponse> findUserHistory(SessionUser sessionUser, int page) {
-        final int PAGE_SIZE = 8;
-
-        User user = userRepository.findById(sessionUser.getId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User Not Found"));
-        List<Reply> replyList = replyRepository.findRepliesByUserOrderByIdDesc(user, PageRequest.of(page, PAGE_SIZE));
+    public List<HistoryResponse> findUserHistory(Long userId, Long cursorId, int size) {
+        Pageable pageable = PageRequest.of(0, size, Sort.by(Sort.Direction.ASC, "id"));
+        List<Reply> replyList = replyRepository.findRepliesByUserIdOrderByIdAsc(userId, cursorId, pageable);
 
         return replyList.stream().map(reply -> {
             History history = reply.getHistory();
