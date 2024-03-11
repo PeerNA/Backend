@@ -34,27 +34,6 @@ const processFrame = (frame) => {
         frame.messageId = messageId;
         pendingFrames.push(frame);
     }
-
-    // const messageId = frame.body.index;
-    // if (targetId === messageId) {
-    //     // 처리할 message-id와 동일한 경우
-    //     updateLastMessage(frame.body);
-    //     targetId++;
-    //     pendingFrames.sort((a, b) => a.messageId - b.messageId);
-    //     if (pendingFrames.length) {
-    //         console.log('debug: pendingFrames[0]', pendingFrames[0]);
-    //     }
-    //     while (pendingFrames.length && pendingFrames[0].messageId === targetId) {
-    //         // 처리할 message-id가 대기 목록에 있는 경우
-    //         const pendingFrame = pendingFrames[0];
-    //         updateLastMessage(pendingFrame.body);
-    //         pendingFrames.shift();
-    //         targetId++;
-    //     }
-    // } else {
-    //     frame.messageId = messageId;
-    //     pendingFrames.push(frame);
-    // }
 };
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -133,6 +112,7 @@ function createUserChatCard(content) {
 
     chatList.appendChild(li);
 }
+
 function updateLastMessage(message) {
     if (message === '\n-----END MESSAGE-----\n') {
         setTimeout(() => {

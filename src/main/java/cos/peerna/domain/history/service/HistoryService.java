@@ -17,7 +17,6 @@ import cos.peerna.domain.room.model.Room;
 import cos.peerna.domain.room.repository.ChatRepository;
 import cos.peerna.domain.room.repository.RoomRepository;
 import cos.peerna.domain.user.repository.UserRepository;
-import cos.peerna.global.security.dto.SessionUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -96,7 +95,7 @@ public class HistoryService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem Not Found"));
         Room room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Room Not Found"));
-        History history = historyRepository.save(History.createHistory(problem));
+        History history = historyRepository.save(History.of(problem));
         room.getHistoryIdList().add(history.getId());
         roomRepository.save(room);
         return history;

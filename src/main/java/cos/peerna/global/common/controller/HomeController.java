@@ -2,9 +2,9 @@ package cos.peerna.global.common.controller;
 
 import cos.peerna.domain.history.dto.response.DetailHistoryResponse;
 import cos.peerna.domain.history.service.HistoryService;
-import cos.peerna.domain.reply.dto.response.ReplyAndKeywordsResponse;
-import cos.peerna.domain.reply.dto.response.ReplyResponse;
 import cos.peerna.domain.reply.service.ReplyService;
+import cos.peerna.domain.room.service.RoomService;
+import cos.peerna.domain.user.model.Category;
 import cos.peerna.global.security.LoginUser;
 import cos.peerna.global.security.dto.SessionUser;
 import jakarta.annotation.Nullable;
@@ -14,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 // http://localhost:8080/login 연동 로그인 모음
 // http://localhost:8080/oauth2/authorization/google 구글 연동 로그인
@@ -25,9 +26,14 @@ public class HomeController {
 
     private final ReplyService replyService;
     private final HistoryService historyService;
+    private final RoomService roomService;
 
     @GetMapping("/")
-    public String index(Model model) {
+    public String index(@Nullable @LoginUser SessionUser user, Model model) {
+        model.addAttribute("userId", user == null ? null : user.getId());
+        model.addAttribute("userName", user == null ? "Guest" : user.getName());
+        model.addAttribute("userImage", user == null ?
+                "https://avatars.githubusercontent.com/u/0?v=4" : user.getImageUrl());
         model.addAttribute("pageTitle", "피어나");
         return "pages/index";
     }
@@ -42,6 +48,21 @@ public class HomeController {
         model.addAttribute("userImage", user.getImageUrl());
         model.addAttribute("pageTitle", "Study - Solo");
         return "pages/reply/solo";
+    }
+
+    @GetMapping("/reply/multi")
+    public String multiStudy(@Nullable @LoginUser SessionUser user, Model model,
+                             @RequestParam("roomId") Integer roomId) {
+        if (user == null || !roomService.isConnectedUser(roomId, user.getId())) {
+            return "redirect:/";
+        }
+        Category category = roomService.findById(roomId).getCategory();
+        model.addAttribute("userId", user.getId());
+        model.addAttribute("userName", user.getName());
+        model.addAttribute("userImage", user.getImageUrl());
+        model.addAttribute("pageTitle", "Study - Multi");
+        model.addAttribute("category", category);
+        return "pages/reply/multi";
     }
 
     @GetMapping("/reply/latest")
@@ -91,19 +112,6 @@ public class HomeController {
 
         DetailHistoryResponse detailHistory = historyService.findDetailHistory(historyId);
         model.addAttribute("history", detailHistory);
-
-//        ReplyAndKeywordsResponse response = replyService.findReply(id);
-//        ReplyResponse replyResponse = response.replyResponse();
-//        model.addAttribute("replyId", replyResponse.replyId());
-//        model.addAttribute("problemId", replyResponse.problemId());
-//        model.addAttribute("likes", replyResponse.likeCount());
-//        model.addAttribute("question", replyResponse.question());
-//        model.addAttribute("answer", replyResponse.answer());
-//        model.addAttribute("exampleAnswer", replyResponse.exampleAnswer());
-//        model.addAttribute("keywords", response.keywords());
-//        model.addAttribute("writerId", replyResponse.userId());
-//        model.addAttribute("writerName", replyResponse.userName());
-//        model.addAttribute("writerImage", replyResponse.userImage());
 
         return "pages/reply/view";
     }

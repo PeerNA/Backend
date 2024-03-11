@@ -4,7 +4,7 @@ import cos.peerna.domain.match.model.Standby;
 import cos.peerna.domain.match.service.MatchService;
 import cos.peerna.domain.user.model.Category;
 import cos.peerna.global.security.dto.SessionUser;
-import java.time.LocalDateTime;
+import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,13 +21,23 @@ public class MatchController {
 
     @MessageMapping("/match/join")
     @SendToUser("/match/join")
-    public ResponseEntity<String> joinQueue(SimpMessageHeaderAccessor messageHeaderAccessor, String category) {
+    public ResponseEntity<Void> joinQueue(SimpMessageHeaderAccessor messageHeaderAccessor, String category) {
         SessionUser user = (SessionUser) messageHeaderAccessor.getSessionAttributes().get("user");
 
         Standby standby =  matchService.addStandby(user, Category.valueOf(category));
         if (standby == null) {
-            return new ResponseEntity<>("already exist", HttpStatus.CONFLICT);
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
-        return new ResponseEntity<>("success", HttpStatus.OK);
+        return ResponseEntity.created(URI.create(standby.getId().toString())).build();
+    }
+
+    @MessageMapping("/match/cancel")
+    @SendToUser("/match/join")
+    public ResponseEntity<Void> cancelJoinQueue(SimpMessageHeaderAccessor messageHeaderAccessor) {
+        SessionUser user = (SessionUser) messageHeaderAccessor.getSessionAttributes().get("user");
+
+        matchService.cancelStandby(user);
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

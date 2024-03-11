@@ -6,13 +6,13 @@ import org.hibernate.validator.constraints.Length;
 import org.springframework.validation.annotation.Validated;
 
 @Validated
-public record RegisterReplyRequest(
+public record RegisterWithGPTRequest(
         @NotBlank @Length(max=1000) String answer,
         @NotNull Long problemId
 ) {
     @Override
     public String toString() {
-        return "RegisterReplyRequest{" +
+        return "RegisterReplyWithGPTRequest{" +
                 "answer='" + answer + '\'' +
                 ", problemId=" + problemId +
                 '}';

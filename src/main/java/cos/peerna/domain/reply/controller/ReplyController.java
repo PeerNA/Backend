@@ -1,7 +1,7 @@
 package cos.peerna.domain.reply.controller;
 
-import cos.peerna.domain.history.dto.response.HistoryResponse;
-import cos.peerna.domain.reply.dto.request.RegisterReplyRequest;
+import cos.peerna.domain.reply.dto.request.RegisterWithGPTRequest;
+import cos.peerna.domain.reply.dto.request.RegisterWithPersonRequest;
 import cos.peerna.domain.reply.dto.request.UpdateReplyRequest;
 import cos.peerna.domain.reply.dto.response.ReplyResponse;
 import cos.peerna.domain.reply.dto.response.ReplyWithPageInfoResponse;
@@ -46,9 +46,17 @@ public class ReplyController {
         return ResponseEntity.ok(replyService.findUserReplies(userId, cursorId, size));
     }
 
-	@PostMapping
-	public ResponseEntity<Void> registerReply(@LoginUser SessionUser user, @RequestBody RegisterReplyRequest request) {
-		String replyId = replyService.make(request, user);
+	@PostMapping("/gpt")
+	public ResponseEntity<Void> registerReplyWithGPT(@LoginUser SessionUser user,
+											  @RequestBody RegisterWithGPTRequest request) {
+		String replyId = replyService.registerWithGPT(request, user);
+		return ResponseEntity.created(URI.create(replyId)).build();
+	}
+
+	@PostMapping("/person")
+	public ResponseEntity<Void> registerReplyWithPerson(@LoginUser SessionUser user,
+														@RequestBody RegisterWithPersonRequest request) {
+		String replyId = replyService.registerWithPerson(request, user);
 		return ResponseEntity.created(URI.create(replyId)).build();
 	}
 

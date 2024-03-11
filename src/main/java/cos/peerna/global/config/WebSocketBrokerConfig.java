@@ -20,10 +20,7 @@ public class WebSocketBrokerConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        // MessageMapping 요청의 prefix
         registry.setApplicationDestinationPrefixes("/app");
-
-        // subscribe 요청의 prefix
-        registry.enableSimpleBroker("/chat", "/match", "/gpt");
+        registry.enableSimpleBroker("/room", "/match", "/gpt");
     }
 }
