@@ -21,6 +21,7 @@ import cos.peerna.domain.reply.repository.ReplyRepository;
 import cos.peerna.domain.user.model.User;
 import cos.peerna.domain.user.repository.UserRepository;
 import cos.peerna.global.security.dto.SessionUser;
+import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -51,6 +52,7 @@ public class ReplyService {
     private final KeywordService keywordService;
     private final ApplicationEventPublisher eventPublisher;
     private final KeywordRepository keywordRepository;
+    private final HttpSession httpSession;
 
     @Transactional
     public String make(RegisterReplyRequest dto, SessionUser sessionUser) {
@@ -76,8 +78,11 @@ public class ReplyService {
         TODO: user.getGithubRepo() == null 일 때, 유저에게 GithubRepo를 등록하라는 메시지 전달
          */
 
+        sessionUser.setHistoryId(history.getId());
+        httpSession.setAttribute("user", sessionUser);
+
         eventPublisher.publishEvent(ReviewReplyEvent.of(
-                user.getId(), problem.getQuestion(), dto.answer()));
+                history.getId(), user.getId(), problem.getQuestion(), dto.answer()));
         /*
         TODO: User의 Authority에 따라 ReviewReplyEvent 발행 여부 결정
          */
