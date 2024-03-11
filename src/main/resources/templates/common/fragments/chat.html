@@ -5,6 +5,11 @@
 <head>
 </head>
 <body>
+    <li style="display: none" class="flex items-end justify-between bg-[#1E1E2D] text-white p-3 my-2 rounded-lg">
+        <p>채팅 예시 (tailwind main.css 빌드를 위한)</p>
+        <span class="ml-2 text-xs">Sent 9:17 PM</span>
+    </li>
+
     <div class="bg-[#252736] p-4 rounded-lg flex flex-col h-[80vh]">
         <div class="flex justify-between items-center mb-4">
             <h2 class="text-white text-lg">Dr.GPT</h2>
@@ -12,16 +17,9 @@
                 <span class="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full">
             </div>
         </div>
-        <div class="flex-grow overflow-auto">
-            <div class="flex items-end justify-between bg-[#1E1E2D] text-white p-3 my-2 rounded-lg">
-                <p>Credibly innovate granular internal or "organic" sources whereas high standards in web-readiness.</p>
-                <span class="ml-2 text-xs">Sent 9:17 PM</span>
-            </div>
-            <div class="flex items-end justify-between bg-[#1E1E2D] text-white p-3 my-2 rounded-lg">
-                <p>This is a single line sentence.</p>
-                <span class="ml-2 text-xs">Sent 9:17 PM</span>
-            </div>
-        </div>
+        <ul id="chat-list" class="flex-grow overflow-auto">
+
+        </ul>
         <div class="mt-4">
             <div class="flex">
                 <input

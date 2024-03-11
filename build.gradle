@@ -49,6 +49,8 @@ dependencies {
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate5-jakarta'
 	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
 
+	implementation 'com.theokanning.openai-gpt3-java:service:0.18.2'
+
 	runtimeOnly 'com.h2database:h2'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
