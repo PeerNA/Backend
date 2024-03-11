@@ -61,47 +61,33 @@ public class HistoryService {
         }).collect(Collectors.toList());
     }
 
-    public DetailHistoryResponse findDetailHistory(SessionUser user, Long historyId) {
+    public DetailHistoryResponse findDetailHistory(Long historyId) {
         History history = historyRepository.findByIdWithProblem(historyId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "History Not Found"));
         Problem problem = history.getProblem();
         List<Reply> replyList = replyRepository.findRepliesWithUserByHistoryOrderByHistoryIdDesc(history);
         List<Keyword> keywordList = keywordRepository.findTop3KeywordsByProblemOrderByCountDesc(problem);
-
-        ReplyResponse mine = null;
-        ReplyResponse peer = null;
-
+        List<ReplyResponse> replyResponseList = new ArrayList<>();
         for (Reply reply : replyList) {
-            if (reply.getUser().getId().equals(user.getId())) {
-                mine = ReplyResponse.builder()
-                        .replyId(reply.getId())
-                        .likeCount((long) reply.getLikeCount())
-                        .answer(reply.getAnswer())
-                        .userId(reply.getUser().getId())
-                        .userName(reply.getUser().getName())
-                        .userImage(reply.getUser().getImageUrl())
-                        .build();
-            } else {
-                peer = ReplyResponse.builder()
-                        .replyId(reply.getId())
-                        .likeCount((long) reply.getLikes().size())
-                        .answer(reply.getAnswer())
-                        .userId(reply.getUser().getId())
-                        .userName(reply.getUser().getName())
-                        .userImage(reply.getUser().getImageUrl())
-                        .build();
-            }
+            replyResponseList.add(ReplyResponse.builder()
+                    .replyId(reply.getId())
+                    .likeCount((long) reply.getLikes().size())
+                    .answer(reply.getAnswer())
+                    .userId(reply.getUser().getId())
+                    .userName(reply.getUser().getName())
+                    .userImage(reply.getUser().getImageUrl())
+                    .build());
         }
 
         List<Chat> chat = chatRepository.findAllByHistory(history);
 
         return DetailHistoryResponse.builder()
                 .question(problem.getQuestion())
+                .exampleAnswer(problem.getAnswer())
                 .time(history.getTime())
-                .mine(mine)
-                .peer(peer)
-                .keyword(keywordList.stream().map(Keyword::getName).collect(Collectors.toList()))
-                .chat(chat.stream().map(ChatMessageSendDto::new).collect(Collectors.toList()))
+                .replies(replyResponseList)
+                .keywords(keywordList.stream().map(Keyword::getName).collect(Collectors.toList()))
+                .chattings(chat.stream().map(ChatMessageSendDto::new).collect(Collectors.toList()))
                 .build();
     }
 

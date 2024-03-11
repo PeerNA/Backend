@@ -25,7 +25,7 @@ public class HistoryController {
     }
 
     @GetMapping("/detail")
-    public ResponseEntity<DetailHistoryResponse> findDetailHistory(@LoginUser SessionUser user, @RequestParam Long historyId) {
-        return ResponseEntity.ok(historyService.findDetailHistory(user, historyId));
+    public ResponseEntity<DetailHistoryResponse> findDetailHistory(@RequestParam Long historyId) {
+        return ResponseEntity.ok(historyService.findDetailHistory(historyId));
     }
 }

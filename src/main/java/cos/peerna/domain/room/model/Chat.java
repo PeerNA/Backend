@@ -22,6 +22,7 @@ public class Chat {
 	@NotNull
 	private Long writerId;
 
+	@Column(length = 500)
 	private String content;
 
 	private LocalTime time;

@@ -22,7 +22,6 @@ public class SessionUser implements UserDetails {
     private final List<GrantedAuthority> grantedAuthorities;
     private String token;
     private Integer score;
-    private Long historyId;
 
     public SessionUser(User user, String token, List<GrantedAuthority> authorities, String login) {
         this.id = user.getId();
@@ -33,7 +32,6 @@ public class SessionUser implements UserDetails {
         this.score = user.getScore();
         this.token = token;
         this.login = login;
-        this.historyId = null;
         this.grantedAuthorities = authorities;
     }
 
