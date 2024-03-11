@@ -24,9 +24,21 @@
                         <h1 id="question" th:text="${question}" class="text-2xl font-bold tracking-tighter md:text-4xl">
                             질문
                         </h1>
-
                     </div>
+                    <ul class="flex gap-2 mt-2">
+                        <li th:each="keyword : ${keywords}" class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary hover:bg-primary/90 h-10 bg-gradient-to-r from-purple-400 to-purple-600 text-white rounded-2xl px-6 py-2 transition-all duration-200 ease-in-out shadow-md hover:shadow-lg">
+                            [[${keyword}]]</li>
+                    </ul>
                 </div>
+
+
+                <div class="flex flex-row items-center h-16" onclick="">
+                    <span class="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full">
+                        <img src="${writeImage}" alt="작성자 이미지"></span>
+                    <span th:text="${writerName}" class="flex h-full w-full items-center justify-start rounded-full bg-muted ml-2">
+                        writerName</span>
+                </div>
+
                 <div class="p-6">
                     <div class="flex-1">
                         <div class="container flex flex-col gap-4 px-4 md:gap-10 lg:px-6">
@@ -44,7 +56,7 @@
                                 class="text-white bg-gradient-to-r from-pink-400 via-pink-500 to-pink-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-pink-300 dark:focus:ring-pink-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
                             예시 답안
                         </button>
-                        <button type="button" onclick="window.open('/reply/others')"
+                        <button type="button" onclick="openOthersReply()"
                                 class="text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
                             참고 답안
                         </button>

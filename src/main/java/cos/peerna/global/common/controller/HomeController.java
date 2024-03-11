@@ -1,5 +1,6 @@
 package cos.peerna.global.common.controller;
 
+import cos.peerna.domain.reply.dto.response.ReplyAndKeywordsResponse;
 import cos.peerna.domain.reply.dto.response.ReplyResponse;
 import cos.peerna.domain.reply.service.ReplyService;
 import cos.peerna.global.security.LoginUser;
@@ -40,6 +41,28 @@ public class HomeController {
         return "pages/reply/solo";
     }
 
+    @GetMapping("/reply/latest")
+    public String latestReplies(@Nullable @LoginUser SessionUser user, Model model) {
+        model.addAttribute("userId", user == null ? null : user.getId());
+        model.addAttribute("userName", user == null ? "Guest" : user.getName());
+        model.addAttribute("userImage", user == null ?
+                "https://avatars.githubusercontent.com/u/0?v=4" : user.getImageUrl());
+        model.addAttribute("pageTitle", "최신 사람 답변 모음 - 피어나");
+
+        return "pages/reply/latest";
+    }
+
+    @GetMapping("/reply/others")
+    public String othersReplies(@Nullable @LoginUser SessionUser user, Model model) {
+        model.addAttribute("userId", user == null ? null : user.getId());
+        model.addAttribute("userName", user == null ? "Guest" : user.getName());
+        model.addAttribute("userImage", user == null ?
+                "https://avatars.githubusercontent.com/u/0?v=4" : user.getImageUrl());
+        model.addAttribute("pageTitle", "다른 사람 답변 모음 - 피어나");
+
+        return "pages/reply/others";
+    }
+
     @GetMapping("/mypage")
     public String myPage(@Nullable @LoginUser SessionUser user, Model model) {
         if (user == null) {
@@ -62,21 +85,23 @@ public class HomeController {
         model.addAttribute("userImage", user == null ?
                 "https://avatars.githubusercontent.com/u/0?v=4" : user.getImageUrl());
 
-        ReplyResponse response = replyService.findReply(id);
-        model.addAttribute("replyId", response.replyId());
-        model.addAttribute("problemId", response.problemId());
-        model.addAttribute("likes", response.likes());
-        model.addAttribute("question", response.question());
-        model.addAttribute("answer", response.answer());
-        model.addAttribute("exampleAnswer", response.exampleAnswer());
+        ReplyAndKeywordsResponse response = replyService.findReply(id);
+        ReplyResponse replyResponse = response.replyResponse();
+        model.addAttribute("replyId", replyResponse.replyId());
+        model.addAttribute("problemId", replyResponse.problemId());
+        model.addAttribute("likes", replyResponse.likeCount());
+        model.addAttribute("question", replyResponse.question());
+        model.addAttribute("answer", replyResponse.answer());
+        model.addAttribute("exampleAnswer", replyResponse.exampleAnswer());
+        model.addAttribute("keywords", response.keywords());
         /*
         TODO: CreatedAt, UpdatedAt 추가
         model.addAttribute("createdAt", response.createdAt());
         model.addAttribute("updatedAt", response.updatedAt());
          */
-        model.addAttribute("writerId", response.userId());
-        model.addAttribute("writerName", response.userName());
-        model.addAttribute("writerImage", response.userImage());
+        model.addAttribute("writerId", replyResponse.userId());
+        model.addAttribute("writerName", replyResponse.userName());
+        model.addAttribute("writerImage", replyResponse.userImage());
 
         return "pages/reply/view";
     }

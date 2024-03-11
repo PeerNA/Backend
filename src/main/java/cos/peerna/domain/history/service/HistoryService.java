@@ -66,7 +66,7 @@ public class HistoryService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "History Not Found"));
         Problem problem = history.getProblem();
         List<Reply> replyList = replyRepository.findRepliesWithUserByHistoryOrderByHistoryIdDesc(history);
-        List<Keyword> keywordList = keywordRepository.findKeywordsByProblemOrderByCountDesc(problem).subList(0, 3);
+        List<Keyword> keywordList = keywordRepository.findTop3KeywordsByProblemOrderByCountDesc(problem);
 
         ReplyResponse mine = null;
         ReplyResponse peer = null;
@@ -75,7 +75,7 @@ public class HistoryService {
             if (reply.getUser().getId().equals(user.getId())) {
                 mine = ReplyResponse.builder()
                         .replyId(reply.getId())
-                        .likes((long) reply.getLikeCount())
+                        .likeCount((long) reply.getLikeCount())
                         .answer(reply.getAnswer())
                         .userId(reply.getUser().getId())
                         .userName(reply.getUser().getName())
@@ -84,7 +84,7 @@ public class HistoryService {
             } else {
                 peer = ReplyResponse.builder()
                         .replyId(reply.getId())
-                        .likes((long) reply.getLikes().size())
+                        .likeCount((long) reply.getLikes().size())
                         .answer(reply.getAnswer())
                         .userId(reply.getUser().getId())
                         .userName(reply.getUser().getName())

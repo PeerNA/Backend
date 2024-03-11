@@ -2,6 +2,7 @@ package cos.peerna.domain.problem.controller;
 
 import cos.peerna.domain.problem.dto.request.RegisterProblemRequest;
 import cos.peerna.domain.problem.dto.response.AnswerAndKeywordResponse;
+import cos.peerna.domain.problem.dto.response.KeywordResponse;
 import cos.peerna.domain.problem.dto.response.ProblemResponse;
 import cos.peerna.domain.problem.service.ProblemService;
 import cos.peerna.domain.user.model.Category;
@@ -32,6 +33,12 @@ public class ProblemController {
     @GetMapping("/answer")
     public ResponseEntity<AnswerAndKeywordResponse> getAnswerAndKeyword(@RequestParam Long problemId) {
         return ResponseEntity.ok(problemService.getAnswerAndKeywordByProblemId(problemId));
+    }
+
+    @GetMapping("/keyword")
+    public ResponseEntity<KeywordResponse> findKeywords(
+            @RequestParam Long problemId) {
+        return ResponseEntity.ok(problemService.findKeywordsByProblemId(problemId));
     }
 
     @GetMapping("/{category}")

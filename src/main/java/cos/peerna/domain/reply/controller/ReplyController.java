@@ -4,6 +4,7 @@ import cos.peerna.domain.history.dto.response.HistoryResponse;
 import cos.peerna.domain.reply.dto.request.RegisterReplyRequest;
 import cos.peerna.domain.reply.dto.request.UpdateReplyRequest;
 import cos.peerna.domain.reply.dto.response.ReplyResponse;
+import cos.peerna.domain.reply.dto.response.ReplyWithPageInfoResponse;
 import cos.peerna.domain.reply.service.ReplyService;
 import cos.peerna.global.security.LoginUser;
 import cos.peerna.global.security.dto.SessionUser;
@@ -23,12 +24,17 @@ public class ReplyController {
 
 	private final ReplyService replyService;
 
-	/*
-	getRepliesByProblem, findUserReplies 를 통합하는 것이 좋은지 의사판단
-	 */
+	@GetMapping
+	public ResponseEntity<List<ReplyResponse>> findReplies(
+			@RequestParam(required = false, defaultValue = "0") Long cursorId,
+			@RequestParam(required = false, defaultValue = "10") int size) {
+		return ResponseEntity.ok(replyService.findReplies(cursorId, size));
+	}
+
 	@GetMapping("/problem")
-	public ResponseEntity<List<ReplyResponse>> getRepliesByProblem(
-			@RequestParam Long problemId, @RequestParam @Nullable int page) {
+	public ResponseEntity<ReplyWithPageInfoResponse> getRepliesByProblem(
+			@RequestParam Long problemId,
+			@RequestParam @Nullable int page) {
 		return ResponseEntity.ok(replyService.findRepliesByProblem(problemId, page));
 	}
 

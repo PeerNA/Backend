@@ -1,12 +1,13 @@
 package cos.peerna.domain.problem.service;
 
+import cos.peerna.domain.keyword.model.Keyword;
+import cos.peerna.domain.keyword.repository.KeywordRepository;
 import cos.peerna.domain.problem.dto.response.AnswerAndKeywordResponse;
+import cos.peerna.domain.problem.dto.response.KeywordResponse;
 import cos.peerna.domain.problem.dto.response.ProblemResponse;
 import cos.peerna.domain.problem.model.Problem;
-import cos.peerna.domain.problem.model.ProblemAnswerKeywords;
 import cos.peerna.domain.problem.repository.ProblemRepository;
 import cos.peerna.domain.user.model.Category;
-import cos.peerna.domain.history.repository.HistoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -27,7 +28,7 @@ import java.util.List;
 public class ProblemService {
 
     private final ProblemRepository problemRepository;
-    private final HistoryRepository historyRepository;
+    private final KeywordRepository keywordRepository;
 
     @Transactional
     public Long make(String question, String answer, Category category) {
@@ -36,16 +37,23 @@ public class ProblemService {
         return newProblem.getId();
     }
 
-    private void validateProblem(String question) {
-        problemRepository.findProblemByQuestion(question).ifPresent(p -> {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Already Exist Problem");
-        });
+    public KeywordResponse findKeywordsByProblemId(Long problemId) {
+        Problem problem = problemRepository.findById(problemId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem Not Found"));
+        List<Keyword> keywords = keywordRepository.findTop3KeywordsByProblemOrderByCountDesc(problem);
+        List<String> keywordStrings = new ArrayList<>();
+        for (Keyword keyword : keywords) {
+            keywordStrings.add(keyword.getName());
+        }
+        return KeywordResponse.of(keywordStrings);
     }
 
     public AnswerAndKeywordResponse getAnswerAndKeywordByProblemId(Long problemId) {
-        ProblemAnswerKeywords answerKeywords = problemRepository.findAnswerAndKeywordsById(problemId).
-                orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem Not Found"));
-        return AnswerAndKeywordResponse.of(answerKeywords.getAnswer(), answerKeywords.getKeywords());
+        Problem problem = problemRepository.findById(problemId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem Not Found"));
+        List<Keyword> top3Keywords = keywordRepository.findTop3KeywordsByProblemOrderByCountDesc(problem);
+
+        return AnswerAndKeywordResponse.of(problem.getAnswer(), top3Keywords);
     }
 
     public List<ProblemResponse> findProblemsByCategory(Category category, Long cursorId, int size) {
@@ -58,6 +66,12 @@ public class ProblemService {
                     problem.getId(), problem.getQuestion(), problem.getAnswer(), problem.getCategory()));
         }
         return problemResponseDtos;
+    }
+
+    private void validateProblem(String question) {
+        problemRepository.findProblemByQuestion(question).ifPresent(p -> {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Already Exist Problem");
+        });
     }
 }
 
