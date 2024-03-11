@@ -1,5 +1,6 @@
 package cos.peerna.domain.reply.service;
 
+import cos.peerna.domain.github.event.CommitReplyEvent;
 import cos.peerna.domain.history.model.History;
 import cos.peerna.domain.history.repository.HistoryRepository;
 import cos.peerna.domain.keyword.service.KeywordService;
@@ -17,6 +18,7 @@ import cos.peerna.domain.user.repository.UserRepository;
 import cos.peerna.domain.user.service.UserService;
 import cos.peerna.global.security.dto.SessionUser;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -39,13 +41,13 @@ public class ReplyService {
     private final ProblemRepository problemRepository;
     private final LikeyRepository likeyRepository;
     private final HistoryRepository historyRepository;
-
     private final KeywordService keywordService;
     private final UserService userService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
-    public String make(RegisterReplyRequest dto, Long userId) {
-        User user = userRepository.findById(userId)
+    public String make(RegisterReplyRequest dto, SessionUser sessionUser) {
+        User user = userRepository.findById(sessionUser.getId())
                 .orElseThrow(() -> new UsernameNotFoundException("No User Data"));
         Problem problem = problemRepository.findById(dto.problemId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem Not Found"));
@@ -58,16 +60,21 @@ public class ReplyService {
                 .build());
 
         keywordService.analyze(dto.answer(), dto.problemId());
+
+        if (user.getGithubRepo() != null) {
+            eventPublisher.publishEvent(CommitReplyEvent.of(
+                    sessionUser.getLogin(), sessionUser.getToken(), user.getGithubRepo(), problem, dto.answer()));
+        }
         /*
-         * TODO: @TransactionalEventListener 을 통한 GitHub Repository Commit
+        TODO: user.getGithubRepo() == null 일 때, 유저에게 GithubRepo를 등록하라는 메시지 전달
          */
 
         return String.valueOf(reply.getId());
     }
 
     @Transactional
-    public void modify(UpdateReplyRequest dto, Long userId) {
-        User user = userRepository.findById(userId)
+    public void modify(UpdateReplyRequest dto, SessionUser sessionUser) {
+        User user = userRepository.findById(sessionUser.getId())
                 .orElseThrow(() -> new UsernameNotFoundException("No User Data"));
         Problem problem = problemRepository.findById(dto.problemId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem Not Found"));
@@ -77,8 +84,12 @@ public class ReplyService {
         reply.modifyAnswer(dto.answer());
         keywordService.analyze(dto.answer(), dto.problemId());
 
+        if (user.getGithubRepo() != null) {
+            eventPublisher.publishEvent(CommitReplyEvent.of(
+                    sessionUser.getLogin(), sessionUser.getToken(), user.getGithubRepo(), problem, dto.answer()));
+        }
         /*
-         * TODO: @TransactionalEventListener 을 통한 GitHub Repository Commit
+        TODO: user.getGithubRepo() == null 일 때, 유저에게 GithubRepo를 등록하라는 메시지 전달
          */
     }
 

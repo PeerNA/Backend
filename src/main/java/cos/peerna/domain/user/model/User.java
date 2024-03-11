@@ -24,6 +24,7 @@ public class User {
     @Column(name = "image_url")
     private String imageUrl;
     private String introduce;
+    private String githubRepo;
     private Integer score;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -44,6 +45,7 @@ public class User {
         this.imageUrl = imageUrl;
         this.role = role;
         this.introduce = introduce;
+        this.githubRepo = null;
         this.password = new BCryptPasswordEncoder().encode("password");
         this.score = 1000;
         this.category = Category.OPERATING_SYSTEM;
@@ -60,5 +62,9 @@ public class User {
 
     public void addScore(Integer point) {
         this.score += point;
+    }
+
+    public void updateGithubRepo(String githubRepo) {
+        this.githubRepo = githubRepo;
     }
 }

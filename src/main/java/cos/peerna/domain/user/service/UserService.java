@@ -88,4 +88,10 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Already Followed");
         }
     }
+
+    public void updateGithubRepo(Long userId, String githubRepo) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User Not Found"));
+        user.updateGithubRepo(githubRepo);
+    }
 }
