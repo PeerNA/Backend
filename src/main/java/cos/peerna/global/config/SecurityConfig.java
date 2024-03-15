@@ -56,10 +56,10 @@ public class SecurityConfig {
 
 
 
-        http
-                .sessionManagement()
-                .maximumSessions(1)
-                .maxSessionsPreventsLogin(true);
+//        http
+//                .sessionManagement()
+//                .maximumSessions(1)
+//                .maxSessionsPreventsLogin(true);
 
         return http.build();
     }
