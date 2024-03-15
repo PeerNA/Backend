@@ -5,6 +5,8 @@ spring:
     devtools:
       remote:
         debug: true
+  session:
+    store-type: redis
   datasource:
     url: jdbc:mariadb://${HOST}:3306/peerna
     username: ${USERNAME}
