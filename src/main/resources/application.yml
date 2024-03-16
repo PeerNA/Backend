@@ -41,13 +41,13 @@ spring:
     init:
       mode: ${SQL_INIT_MODE}
 logging.level:
-  cos.peerna: debug
+  cos.peerna: ${LOG_LEVEL}
   org:
     hibernate:
       SQL: info
       orm.jdbc.bind: trace
     springframework:
-      security: DEBUG
+      security: ${LOG_LEVEL}
       data:
         redis:
           core:

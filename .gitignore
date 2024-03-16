@@ -7,6 +7,10 @@ src/main/frontend/node_modules/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+docker-compose.yml
+docker-compose-db.yml
+docker-compose-debug.yml
+
 ### STS ###
 .apt_generated
 .classpath
@@ -40,3 +44,7 @@ out/
 .vscode/
 
 .DS_Store
+
+deploy.sh
+
+docker-compose.yml
