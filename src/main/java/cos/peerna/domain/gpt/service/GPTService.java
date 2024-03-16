@@ -31,7 +31,7 @@ public class GPTService {
     private final ReplyRepository replyRepository;
 
     private final SimpMessagingTemplate template;
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisTemplate<String, ChatMessage> redisTemplate;
     private final ObjectMapper objectMapper;
     private final OpenAiService openAIService;
     private final ChatRepository chatRepository;
@@ -108,7 +108,7 @@ public class GPTService {
     }
 
     private List<ChatMessage> getChatMessages(Long historyId) {
-        List<Object> messageObjects = redisTemplate.opsForList().range(String.valueOf(historyId), 0, -1);
+        List<ChatMessage> messageObjects = redisTemplate.opsForList().range(String.valueOf(historyId), 0, -1);
         List<ChatMessage> messages = new ArrayList<>();
         if (messageObjects == null) {
             throw new NotFoundException("messageObjects is null");
