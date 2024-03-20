@@ -12,6 +12,8 @@
 
 <body>
 
+<div id="category-info" style="display: none" th:value="${category}"></div>
+
 <div class="min-h-screen bg-gradient-to-b from-white via-pink-100 to-blue-200 flex flex-col items-center justify-center">
 
     <main class="flex flex-col items-center"><h1 class="text-5xl font-bold text-center leading-tight mt-10">
@@ -29,8 +31,7 @@
         <div id="category-select" sec:authorize="isAuthenticated()" class="w-full max-w-md mx-auto text-center py-4">
             <label for="category" class="block mb-2 text-xl font-medium text-gray-900 dark:text-gray-200">학습 카테고리 선택</label>
             <select id="category" name="category" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-300 focus:border-blue-300 sm:text-sm rounded-md bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200">
-                <option selected>카테고리 선택</option>
-                <option value="OPERATING_SYSTEM">운영체제</option>
+                <option selected value="OPERATING_SYSTEM">운영체제</option>
                 <option value="NETWORK">네트워크</option>
                 <option value="DATA_STRUCTURE_ALGORITHM">자료구조</option>
             </select>
