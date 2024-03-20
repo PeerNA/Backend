@@ -60,7 +60,7 @@ public class HistoryService {
         }).collect(Collectors.toList());
     }
 
-    public DetailHistoryResponse findDetailHistory(Long historyId) {
+    public DetailHistoryResponse findDetailHistory(Long historyId, Long userId) {
         History history = historyRepository.findByIdWithProblem(historyId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "History Not Found"));
         Problem problem = history.getProblem();
@@ -75,6 +75,7 @@ public class HistoryService {
                     .userId(reply.getUser().getId())
                     .userName(reply.getUser().getName())
                     .userImage(reply.getUser().getImageUrl())
+                    .alreadyLiked(reply.isLikedBy(userId))
                     .build());
         }
 

@@ -13,11 +13,12 @@ public record ReplyResponse(
         String exampleAnswer,
         Long userId,
         String userName,
-        String userImage
+        String userImage,
+        boolean alreadyLiked
 ) {
     public static ReplyResponse of(Long historyId, Long replyId, Long problemId, Long likeCount, String question, String answer, String exampleAnswer,
-                                   Long userId, String userName, String userImage) {
-        return new ReplyResponse(historyId, replyId, problemId, likeCount, question, answer, exampleAnswer, userId, userName, userImage);
+                                   Long userId, String userName, String userImage, boolean alreadyLiked) {
+        return new ReplyResponse(historyId, replyId, problemId, likeCount, question, answer, exampleAnswer, userId, userName, userImage, alreadyLiked);
     }
 
     @Override
@@ -33,6 +34,7 @@ public record ReplyResponse(
                 + ", userId=" + userId
                 + ", userName='" + userName + '\''
                 + ", userImage='" + userImage + '\''
+                + ", alreadyLiked=" + alreadyLiked
                 + '}';
     }
 }
