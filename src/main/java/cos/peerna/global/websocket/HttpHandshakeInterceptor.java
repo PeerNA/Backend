@@ -1,4 +1,4 @@
-package cos.peerna.global.security;
+package cos.peerna.global.websocket;
 
 import cos.peerna.global.security.dto.SessionUser;
 import jakarta.servlet.http.HttpSession;
