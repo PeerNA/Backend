@@ -18,7 +18,7 @@ public interface ReplyRepository extends JpaRepository<Reply, Long> {
 
     @Query("select r from Reply r join fetch r.problem where r.id = :id")
     Optional<Reply> findWithUserAndProblemById(Long id);
-    @Query("select r from Reply r join fetch r.likes where r.id = :id")
+    @Query("select r from Reply r left join fetch r.likes where r.id = :id")
     Optional<Reply> findByIdWithUserAndLike(Long id);
     @Query("select r from Reply r join fetch r.history join fetch r.problem "
             + "where r.id > :cursorId and r.user.id = :userId order by r.id asc")
