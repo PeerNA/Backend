@@ -61,7 +61,7 @@ function buildReplyItem(reply) {
     flexCol.appendChild(a);
 
     const h3 = document.createElement("h3");
-    h3.className = "text-xl font-semibold whitespace-nowrap leading-none tracking-tight";
+    h3.className = "text-xl font-semibold whitespace-normal leading-relaxed tracking-tight w-full";
     h3.textContent = reply.answer;
     a.appendChild(h3);
 
