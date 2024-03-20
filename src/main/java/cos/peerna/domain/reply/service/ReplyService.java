@@ -240,14 +240,11 @@ public class ReplyService {
     }
 
     @Transactional
-    public String recommendReply(SessionUser sessionUser, Long replyId) {
+    public String addLikey(SessionUser sessionUser, Long replyId) {
         Reply reply = replyRepository.findByIdWithUserAndLike(replyId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Reply Not Found"));
 
-        if (isOwner(sessionUser.getId(), reply)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Can't Recommend Own Reply");
-        }
-        if (isAlreadyLikedReply(sessionUser.getId(), reply)) {
+        if (reply.isLikedBy(sessionUser.getId())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Already Recommended Reply");
         }
 
@@ -264,12 +261,12 @@ public class ReplyService {
     }
 
     @Transactional
-    public void unrecommendReply(SessionUser sessionUser, Long replyId) {
+    public void deleteLikey(SessionUser sessionUser, Long replyId) {
         Reply reply = replyRepository.findByIdWithUserAndLike(replyId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Reply Not Found"));
 
-        if (!isAlreadyLikedReply(sessionUser.getId(), reply)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Not Recommended Reply");
+        if (!reply.isLikedBy(sessionUser.getId())) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Likey Not Found");
         }
 
         reply.dislikeReply(sessionUser.getId());
@@ -277,18 +274,5 @@ public class ReplyService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User Not Found"));
 
         likeyRepository.findLikeyByUserAndReply(user, reply).ifPresent(likeyRepository::delete);
-    }
-
-    private boolean isOwner(Long userId, Reply reply) {
-        return reply.getUser().getId().equals(userId);
-    }
-
-    private boolean isAlreadyLikedReply(Long userId, Reply reply) {
-        for (Likey likey : reply.getLikes()) {
-            if (likey.getUser().getId().equals(userId)) {
-                return true;
-            }
-        }
-        return false;
     }
 }

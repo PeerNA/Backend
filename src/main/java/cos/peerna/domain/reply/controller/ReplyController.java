@@ -67,14 +67,14 @@ public class ReplyController {
 	}
 
 	@PostMapping("/likey")
-	public ResponseEntity<String> recommendReply(@LoginUser SessionUser user, @RequestParam Long replyId) {
-		String likeyId = replyService.recommendReply(user, replyId);
+	public ResponseEntity<String> addLikey(@LoginUser SessionUser user, @RequestParam Long replyId) {
+		String likeyId = replyService.addLikey(user, replyId);
 		return ResponseEntity.created(URI.create(likeyId)).build();
 	}
 
 	@DeleteMapping("/likey")
-	public ResponseEntity<Void> unrecommendReply(@LoginUser SessionUser user, @RequestParam Long replyId) {
-		replyService.unrecommendReply(user, replyId);
+	public ResponseEntity<Void> deleteLikey(@LoginUser SessionUser user, @RequestParam Long replyId) {
+		replyService.deleteLikey(user, replyId);
 		return ResponseEntity.noContent().build();
 	}
 }
