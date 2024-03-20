@@ -8,8 +8,10 @@ import cos.peerna.domain.problem.repository.ProblemRepository;
 import cos.peerna.domain.room.dto.response.ChangeProblemResponse;
 import cos.peerna.domain.room.event.CreateRoomEvent;
 import cos.peerna.domain.room.model.Chat;
+import cos.peerna.domain.room.model.Connect;
 import cos.peerna.domain.room.model.Room;
 import cos.peerna.domain.room.repository.ChatRepository;
+import cos.peerna.domain.room.repository.ConnectRepository;
 import cos.peerna.domain.room.repository.RoomRepository;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -30,6 +32,7 @@ public class RoomService {
     private final SimpMessagingTemplate template;
     private final StringRedisTemplate stringRedisTemplate;
     private final RoomRepository roomRepository;
+    private final ConnectRepository connectRepository;
     private final HistoryRepository historyRepository;
     private final ChatRepository chatRepository;
     private final ProblemRepository problemRepository;
@@ -54,7 +57,8 @@ public class RoomService {
             /*
             TODO: 더 효율적이고 보안적으로 훌륭한 방법 찾기 (HttpSession 을 시도했으나 실패)
              */
-            stringRedisTemplate.opsForValue().set("user:" + userId + ":roomId", room.getId().toString());
+            log.debug("Connect Save: roomId={}, userId={}", room.getId(), userId);
+            connectRepository.save(Connect.of(userId, room.getId()));
             template.convertAndSend("/user/" + userId + "/match", room.getId());
         }
     }

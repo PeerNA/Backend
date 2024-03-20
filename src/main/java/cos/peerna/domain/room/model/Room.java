@@ -6,11 +6,10 @@ import lombok.*;
 import org.springframework.data.redis.core.RedisHash;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 @Data
-@RedisHash("Room")
+@RedisHash("Peerna:Room")
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Room {
@@ -20,18 +19,12 @@ public class Room {
     @Enumerated(EnumType.STRING)
     private Category category;
     private List<Long> historyIdList;
-    private List<Long> connectedUserIdList;
 
     @Builder
-    public Room(List<Long> connectedUserIds, Long historyId, Category category) {
-        this.connectedUserIdList = connectedUserIds;
+    public Room(Long historyId, Category category) {
         this.historyIdList = new ArrayList<>();
         this.historyIdList.add(historyId);
         this.category = category;
-    }
-
-    public boolean isConnectedUser(Long userId) {
-        return connectedUserIdList.contains(userId);
     }
 
     public Long getLastHistoryId() {
