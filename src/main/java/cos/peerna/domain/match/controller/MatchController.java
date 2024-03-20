@@ -36,7 +36,7 @@ public class MatchController {
     public ResponseEntity<Void> cancelJoinQueue(SimpMessageHeaderAccessor messageHeaderAccessor) {
         SessionUser user = (SessionUser) messageHeaderAccessor.getSessionAttributes().get("user");
 
-        matchService.cancelStandby(user);
+        matchService.cancelStandby(user.getId());
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

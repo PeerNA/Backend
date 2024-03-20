@@ -18,4 +18,10 @@ public class RoomEventListener {
         log.debug("RoomCreateEvent ---> {}", event);
         roomService.createRoom(event);
     }
+
+    @EventListener
+    public void websocketDisconnectEventHandler(RoomWebSocketDisconnectEvent event) {
+        log.debug("RoomWebSocketDisconnectEvent ---> {}", event);
+        roomService.disconnect(event.userId(), event.name());
+    }
 }
