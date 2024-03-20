@@ -157,22 +157,6 @@ public class ReplyService {
     }
 
     /*
-    TODO: Problem <-> Keyword 양방향 해야 하는지 의사 판단
-    TODO: ReplyResponse 빌더 사용
-     */
-    public ReplyAndKeywordsResponse findReply(Long id) {
-        Reply reply = replyRepository.findWithUserAndProblemById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Reply Not Found"));
-
-        List<Keyword> keywords = keywordRepository.findTop3KeywordsByProblemOrderByCountDesc(reply.getProblem());
-        ReplyResponse replyResponse = ReplyResponse.of(
-                reply.getHistory().getId(), reply.getId(), reply.getProblem().getId(), reply.getLikeCount(),
-                reply.getProblem().getQuestion(), reply.getAnswer(), reply.getProblem().getAnswer(),
-                reply.getUser().getId(), reply.getUser().getName(), reply.getUser().getImageUrl());
-        return ReplyAndKeywordsResponse.of(replyResponse, keywords.stream().map(Keyword::getName).toList());
-    }
-
-    /*
     TODO: 쿼리 개선(?)
      */
     public List<ReplyResponse> findReplies(Long cursorId, int size) {
