@@ -13,7 +13,6 @@ import org.quartz.JobExecutionContext;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.UnableToInterruptJobException;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 import org.springframework.stereotype.Component;
 
@@ -26,7 +25,6 @@ public class MatchJob extends QuartzJobBean implements InterruptableJob {
     private static final String JOB_IDENTITY = "Dev";
     private static final String JOB_WORK = "Work";
 
-    private final RedisTemplate<String, String> redisTemplate;
     private final MatchService matchService;
 
     @Override

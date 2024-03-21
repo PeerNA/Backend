@@ -12,7 +12,7 @@ import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.index.Indexed;
 
 @Getter
-@RedisHash("Peerna:Match:Standby")
+@RedisHash("peerna:standby")
 public final class Standby {
     @Id
     private final Long id;
