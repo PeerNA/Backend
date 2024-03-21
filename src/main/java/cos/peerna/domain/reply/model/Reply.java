@@ -26,6 +26,7 @@ public class Reply {
     private Long id;
 
     @NotNull
+    @Column(length = 500)
     private String answer;
 
     @NotNull
