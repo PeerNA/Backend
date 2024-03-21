@@ -1,5 +1,6 @@
 package cos.peerna.global.websocket;
 
+import cos.peerna.domain.gpt.event.GPTWebSocketDisconnectEvent;
 import cos.peerna.domain.match.event.MatchWebSocketDisconnectEvent;
 import cos.peerna.domain.room.event.RoomWebSocketDisconnectEvent;
 import cos.peerna.domain.room.repository.ConnectRepository;
@@ -39,6 +40,7 @@ public class ConnectionInterceptor implements ChannelInterceptor {
                 eventPublisher.publishEvent(MatchWebSocketDisconnectEvent.of(user.getId()));
                 eventPublisher.publishEvent(RoomWebSocketDisconnectEvent.of(user.getId(), user.getName()));
                  */
+                eventPublisher.publishEvent(GPTWebSocketDisconnectEvent.of(user.getId()));
 
                 break;
             default:
