@@ -30,6 +30,8 @@ function likeReply(replyId) {
         console.log(response);
         const likeCountElement = document.getElementById('like-count-' + replyId);
         likeCountElement.innerText = (parseInt(likeCountElement.innerText) + 1).toString();
+        const likeIcon = document.getElementById('like-icon-' + replyId);
+        likeIcon.attributes.fill.value = 'red';
     }).catch(function (error) {
         console.log(error);
         alert('이미 좋아요를 누른 답변입니다.');
