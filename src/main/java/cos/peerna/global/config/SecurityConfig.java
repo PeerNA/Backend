@@ -24,6 +24,7 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests()
+                .requestMatchers(HttpMethod.GET, "/api/reply", "/api/reply/problem").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
                 .requestMatchers("/api/**").hasAnyAuthority("CRUD_CONTENT")
                 .anyRequest().permitAll();
