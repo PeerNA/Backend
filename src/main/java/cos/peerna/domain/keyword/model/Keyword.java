@@ -5,8 +5,12 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-@Entity
 @Getter
+@Entity
+@Table(name = "keyword", indexes = {
+		@Index(name = "idx_keyword_problem", columnList = "problem_id"),
+		@Index(name = "idx_keyword_name_problem", columnList = "name, problem_id")
+})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Keyword {
 
@@ -21,7 +25,7 @@ public class Keyword {
     private Long count;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "problem", nullable = false)
+    @JoinColumn(name = "problem_id", nullable = false)
     private Problem problem;
 
 	@Builder

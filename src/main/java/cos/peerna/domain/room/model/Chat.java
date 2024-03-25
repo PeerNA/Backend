@@ -10,9 +10,12 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalTime;
 
-@Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Entity
+@Table(name = "chat", indexes = {
+		@Index(name = "idx_chat_history", columnList = "history_id")
+})
 public class Chat {
 
 	@Id @GeneratedValue

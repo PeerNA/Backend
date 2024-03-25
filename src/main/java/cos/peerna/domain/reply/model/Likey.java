@@ -9,9 +9,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import net.minidev.json.annotate.JsonIgnore;
 
-@Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Entity
+@Table(name = "likey", indexes = {
+		@Index(name = "idx_likey_reply", columnList = "reply_id")
+})
 public class Likey {
 
 	@Id

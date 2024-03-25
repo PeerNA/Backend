@@ -15,9 +15,14 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
-@Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Entity
+@Table(name = "reply", indexes = {
+        @Index(name = "idx_reply_history", columnList = "history_id"),
+        @Index(name = "idx_reply_problem", columnList = "problem_id"),
+        @Index(name = "idx_reply_user", columnList = "user_id")
+})
 public class Reply {
 
     @Id

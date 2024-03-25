@@ -7,9 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.*;
 
-@Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Entity
+@Table(name = "problem", indexes = {
+    @Index(name = "idx_problem_category", columnList = "category")
+})
 public class Problem {
 
     @Id @GeneratedValue
