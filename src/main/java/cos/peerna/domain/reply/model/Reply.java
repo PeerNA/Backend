@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 @Entity
 @Getter
@@ -24,6 +26,7 @@ public class Reply {
     private Long id;
 
     @NotNull
+    @Column(length = 500)
     private String answer;
 
     @NotNull
@@ -77,11 +80,20 @@ public class Reply {
     }
 
     public void dislikeReply(Long userId) {
-        this.likes = this.likes.stream()
-                .filter(likey -> !likey.getUser().getId().equals(userId))
-                .toList();
+        Likey likey = this.likes.stream()
+                .filter(like -> like.getUser().getId().equals(userId))
+                .findFirst()
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Likey Not Found"));
+        this.likes.remove(likey);
         --this.likeCount;
         this.user.addScore(-10);
     }
 
+    public boolean isLikedBy(Long userId) {
+        if (userId == null) {
+            return false;
+        }
+        return this.likes.stream()
+                .anyMatch(likey -> likey.getUser().getId().equals(userId));
+    }
 }

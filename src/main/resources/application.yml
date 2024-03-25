@@ -1,6 +1,12 @@
 spring:
   config:
     import: application-oauth.yml
+  boot:
+    devtools:
+      remote:
+        debug: true
+  session:
+    store-type: redis
   datasource:
     url: jdbc:mariadb://${HOST}:3306/peerna
     username: ${USERNAME}
@@ -12,7 +18,7 @@ spring:
       initialize-schema: always
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: ${DDL_AUTO}
     properties:
       hibernate:
         show_sql: true
@@ -25,7 +31,7 @@ spring:
     check-template-location: true
   data:
     redis:
-      host: localhost
+      host: ${REDIS_HOST}
       port: 6379
   servlet:
     multipart:
@@ -33,15 +39,15 @@ spring:
       max-request-size: 100MB
   sql:
     init:
-      mode: never
+      mode: ${SQL_INIT_MODE}
 logging.level:
-  cos.peerna: debug
+  cos.peerna: ${LOG_LEVEL}
   org:
     hibernate:
       SQL: info
       orm.jdbc.bind: trace
     springframework:
-      security: DEBUG
+      security: ${LOG_LEVEL}
       data:
         redis:
           core:

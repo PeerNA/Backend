@@ -1,14 +1,14 @@
 package cos.peerna.domain.keyword.service;
 
-import com.twitter.penguin.korean.KoreanTokenJava;
-import com.twitter.penguin.korean.TwitterKoreanProcessorJava;
-import com.twitter.penguin.korean.tokenizer.KoreanTokenizer;
 import cos.peerna.domain.keyword.model.Keyword;
 import cos.peerna.domain.keyword.repository.KeywordRepository;
 import cos.peerna.domain.problem.model.Problem;
 import cos.peerna.domain.problem.repository.ProblemRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.openkoreantext.processor.KoreanTokenJava;
+import org.openkoreantext.processor.OpenKoreanTextProcessorJava;
+import org.openkoreantext.processor.tokenizer.KoreanTokenizer;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,9 +41,9 @@ public class KeywordService {
     }
 
     public void analyze(String answer, Long problemId) {
-        CharSequence normalized = TwitterKoreanProcessorJava.normalize(answer);
-        Seq<KoreanTokenizer.KoreanToken> tokens = TwitterKoreanProcessorJava.tokenize(normalized);
-        List<KoreanTokenJava> koreanTokens = TwitterKoreanProcessorJava.tokensToJavaKoreanTokenList(tokens);
+        CharSequence normalized = OpenKoreanTextProcessorJava.normalize(answer);
+        Seq<KoreanTokenizer.KoreanToken> tokens = OpenKoreanTextProcessorJava.tokenize(normalized);
+        List<KoreanTokenJava> koreanTokens = OpenKoreanTextProcessorJava.tokensToJavaKoreanTokenList(tokens);
 
         Map<String, Integer> map = new HashMap<String, Integer>();
         for (KoreanTokenJava token : koreanTokens) {

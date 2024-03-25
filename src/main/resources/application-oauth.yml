@@ -7,12 +7,18 @@ spring:
             client-id: ${OAUTH_GOOGLE_ID}
             client-secret: ${OAUTH_GOOGLE_SECRET}
             scope: profile,email
-            redirect-uri: "https://peerna.kr/login/oauth2/code/google"
+            redirect-uri: ${OAUTH_GOOGLE_REDIRECT_URI}
           github:
             client-id: ${OAUTH_GITHUB_ID}
             client-secret: ${OAUTH_GITHUB_SECRET}
             scope: user,public_repo
-            redirect-uri: "http://localhost:8080/login/oauth2/code/github"
+            redirect-uri: ${OAUTH_GITHUB_REDIRECT_URI}
+
+
+
+
+
+#            redirect-uri: "http://localhost:8080/login/oauth2/code/github"
 #            redirect-uri: "https://peerna.kr/login/oauth2/code/github"
 
 # OAuth 로그인 URL: http://localhost:8080/oauth2/authorization/github (vendor name)

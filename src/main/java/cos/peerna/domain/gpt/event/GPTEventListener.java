@@ -18,4 +18,10 @@ public class GPTEventListener {
         log.info("Review Reply Event Published: {}", event);
         gptService.reviewReply(event);
     }
+
+    @EventListener
+    public void websocketDisconnectEventHandler(GPTWebSocketDisconnectEvent event) {
+        log.info("GPTWebSocketDisconnectEvent Event Published: {}", event);
+        gptService.deleteConversation(event.userId());
+    }
 }

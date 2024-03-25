@@ -5,6 +5,7 @@ import cos.peerna.domain.history.service.HistoryService;
 import cos.peerna.domain.history.dto.response.HistoryResponse;
 import cos.peerna.global.security.LoginUser;
 import cos.peerna.global.security.dto.SessionUser;
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +26,9 @@ public class HistoryController {
     }
 
     @GetMapping("/detail")
-    public ResponseEntity<DetailHistoryResponse> findDetailHistory(@RequestParam Long historyId) {
-        return ResponseEntity.ok(historyService.findDetailHistory(historyId));
+    public ResponseEntity<DetailHistoryResponse> findDetailHistory(
+            @Nullable @LoginUser SessionUser user,
+            @RequestParam Long historyId) {
+        return ResponseEntity.ok(historyService.findDetailHistory(historyId, user == null ? null : user.getId()));
     }
 }

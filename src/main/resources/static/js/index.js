@@ -2,7 +2,18 @@ let sockJs = null;
 let stompClient = null;
 let userId = null;
 let cursorId = 0;
+let category = null;
 document.addEventListener("DOMContentLoaded", function () {
+    category = document.getElementById("category-info").value;
+    if (category === null) {
+        const withPersonBtn = document.getElementById('with-person-btn');
+        withPersonBtn.innerText = '매칭 취소';
+        withPersonBtn.onclick = function () {
+            stompClient.send("/app/match/cancel", {}, {}, function (error) {
+                console.log('error', error);
+            });
+        };
+    }
     userId = document.getElementById("userId").value;
     if (userId === null || userId === "") {
         console.log('userId is null or empty');
@@ -21,7 +32,7 @@ document.addEventListener("DOMContentLoaded", function () {
          */
 
         stompClient.subscribe('/user/match', function (frame) {
-            location.href = "/reply/multi?roomId=" + frame.body;
+            location.href = "/reply/multi";
         });
 
         stompClient.subscribe('/user/match/join', function (frame) {

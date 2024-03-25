@@ -7,16 +7,12 @@ import cos.peerna.domain.history.repository.HistoryRepository;
 import cos.peerna.domain.keyword.model.Keyword;
 import cos.peerna.domain.keyword.repository.KeywordRepository;
 import cos.peerna.domain.problem.model.Problem;
-import cos.peerna.domain.problem.repository.ProblemRepository;
 import cos.peerna.domain.reply.dto.response.ReplyResponse;
 import cos.peerna.domain.room.dto.ChatMessageSendDto;
 import cos.peerna.domain.reply.model.Reply;
 import cos.peerna.domain.reply.repository.ReplyRepository;
 import cos.peerna.domain.room.model.Chat;
-import cos.peerna.domain.room.model.Room;
 import cos.peerna.domain.room.repository.ChatRepository;
-import cos.peerna.domain.room.repository.RoomRepository;
-import cos.peerna.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -35,13 +31,10 @@ import java.util.stream.Collectors;
 @Transactional
 @RequiredArgsConstructor
 public class HistoryService {
-    private final UserRepository userRepository;
     private final ReplyRepository replyRepository;
     private final HistoryRepository historyRepository;
     private final KeywordRepository keywordRepository;
     private final ChatRepository chatRepository;
-    private final ProblemRepository problemRepository;
-    private final RoomRepository roomRepository;
 
     public List<HistoryResponse> findUserHistory(Long userId, Long cursorId, int size) {
         Pageable pageable = PageRequest.of(0, size, Sort.by(Sort.Direction.ASC, "id"));
@@ -60,7 +53,7 @@ public class HistoryService {
         }).collect(Collectors.toList());
     }
 
-    public DetailHistoryResponse findDetailHistory(Long historyId) {
+    public DetailHistoryResponse findDetailHistory(Long historyId, Long userId) {
         History history = historyRepository.findByIdWithProblem(historyId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "History Not Found"));
         Problem problem = history.getProblem();
@@ -75,11 +68,11 @@ public class HistoryService {
                     .userId(reply.getUser().getId())
                     .userName(reply.getUser().getName())
                     .userImage(reply.getUser().getImageUrl())
+                    .alreadyLiked(reply.isLikedBy(userId))
                     .build());
         }
 
         List<Chat> chat = chatRepository.findAllByHistory(history);
-
         return DetailHistoryResponse.builder()
                 .question(problem.getQuestion())
                 .exampleAnswer(problem.getAnswer())
@@ -88,16 +81,5 @@ public class HistoryService {
                 .keywords(keywordList.stream().map(Keyword::getName).collect(Collectors.toList()))
                 .chattings(chat.stream().map(ChatMessageSendDto::new).collect(Collectors.toList()))
                 .build();
-    }
-
-    public History createHistory(Long problemId, Integer roomId) {
-        Problem problem = problemRepository.findById(problemId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem Not Found"));
-        Room room = roomRepository.findById(roomId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Room Not Found"));
-        History history = historyRepository.save(History.of(problem));
-        room.getHistoryIdList().add(history.getId());
-        roomRepository.save(room);
-        return history;
     }
 }

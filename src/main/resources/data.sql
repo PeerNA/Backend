@@ -1,4 +1,4 @@
-INSERT INTO Problem(problem_id, question, answer, category) VALUES
+INSERT INTO problem(problem_id, question, answer, category) VALUES
                                                                 (1, 'Question 1', 'Answer 1', 'OPERATING_SYSTEM'),
                                                                 (2, 'Question 2', 'Answer 2', 'OPERATING_SYSTEM'),
                                                                 (3, 'Question 3', 'Answer 3', 'OPERATING_SYSTEM'),

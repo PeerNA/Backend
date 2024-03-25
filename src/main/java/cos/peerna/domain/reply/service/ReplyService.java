@@ -4,22 +4,21 @@ import cos.peerna.domain.github.event.CommitReplyEvent;
 import cos.peerna.domain.gpt.event.ReviewReplyEvent;
 import cos.peerna.domain.history.model.History;
 import cos.peerna.domain.history.repository.HistoryRepository;
-import cos.peerna.domain.keyword.model.Keyword;
-import cos.peerna.domain.keyword.repository.KeywordRepository;
 import cos.peerna.domain.keyword.service.KeywordService;
 import cos.peerna.domain.problem.model.Problem;
 import cos.peerna.domain.problem.repository.ProblemRepository;
 import cos.peerna.domain.reply.dto.request.RegisterWithGPTRequest;
 import cos.peerna.domain.reply.dto.request.RegisterWithPersonRequest;
 import cos.peerna.domain.reply.dto.request.UpdateReplyRequest;
-import cos.peerna.domain.reply.dto.response.ReplyAndKeywordsResponse;
 import cos.peerna.domain.reply.dto.response.ReplyResponse;
 import cos.peerna.domain.reply.dto.response.ReplyWithPageInfoResponse;
 import cos.peerna.domain.reply.model.Likey;
 import cos.peerna.domain.reply.model.Reply;
 import cos.peerna.domain.reply.repository.LikeyRepository;
 import cos.peerna.domain.reply.repository.ReplyRepository;
+import cos.peerna.domain.room.model.Connect;
 import cos.peerna.domain.room.model.Room;
+import cos.peerna.domain.room.repository.ConnectRepository;
 import cos.peerna.domain.room.repository.RoomRepository;
 import cos.peerna.domain.user.model.User;
 import cos.peerna.domain.user.repository.UserRepository;
@@ -33,7 +32,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -49,7 +47,6 @@ public class ReplyService {
     private static final int PAGE_SIZE = 10;
 
     private final ApplicationEventPublisher eventPublisher;
-    private final StringRedisTemplate stringRedisTemplate;
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final ReplyRepository replyRepository;
     private final UserRepository userRepository;
@@ -57,8 +54,8 @@ public class ReplyService {
     private final LikeyRepository likeyRepository;
     private final HistoryRepository historyRepository;
     private final KeywordService keywordService;
-    private final KeywordRepository keywordRepository;
     private final RoomRepository roomRepository;
+    private final ConnectRepository connectRepository;
 
     @Transactional
     public String registerWithGPT(RegisterWithGPTRequest dto, SessionUser sessionUser) {
@@ -97,11 +94,9 @@ public class ReplyService {
     public String registerWithPerson(RegisterWithPersonRequest dto, SessionUser sessionUser) {
         User user = userRepository.findById(sessionUser.getId())
                 .orElseThrow(() -> new UsernameNotFoundException("No User Data"));
-        String roomIdStr = stringRedisTemplate.opsForValue().get("user:" + user.getId() + ":roomId");
-        if (roomIdStr == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Room Not Found");
-        }
-        Room room = roomRepository.findById(Integer.parseInt(roomIdStr))
+        Connect connect = connectRepository.findById(user.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Connect Not Found"));
+        Room room = roomRepository.findById(connect.getRoomId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Room Not Found"));
         History history = historyRepository.findByIdWithProblem(room.getLastHistoryId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "History or Problem Not Found"));
@@ -126,10 +121,18 @@ public class ReplyService {
         TODO: user.getGithubRepo() == null 일 때, 유저에게 GithubRepo를 등록하라는 메시지 전달
          */
 
-        ReplyResponse replyResponse = ReplyResponse.of(
-                reply.getHistory().getId(), reply.getId(), reply.getProblem().getId(), reply.getLikeCount(),
-                reply.getProblem().getQuestion(), reply.getAnswer(), reply.getProblem().getAnswer(),
-                reply.getUser().getId(), reply.getUser().getName(), reply.getUser().getImageUrl());
+        ReplyResponse replyResponse = ReplyResponse.builder()
+                .historyId(reply.getHistory().getId())
+                .replyId(reply.getId())
+                .likeCount(reply.getLikeCount())
+                .problemId(reply.getProblem().getId())
+                .question(reply.getProblem().getQuestion())
+                .exampleAnswer(reply.getProblem().getAnswer())
+                .answer(reply.getAnswer())
+                .userId(reply.getUser().getId())
+                .userName(reply.getUser().getName())
+                .userImage(reply.getUser().getImageUrl())
+                .build();
         simpMessagingTemplate.convertAndSend("/room/" + room.getId() + "/answer", replyResponse);
 
         return String.valueOf(reply.getId());
@@ -154,22 +157,6 @@ public class ReplyService {
         /*
         TODO: user.getGithubRepo() == null 일 때, 유저에게 GithubRepo를 등록하라는 메시지 전달
          */
-    }
-
-    /*
-    TODO: Problem <-> Keyword 양방향 해야 하는지 의사 판단
-    TODO: ReplyResponse 빌더 사용
-     */
-    public ReplyAndKeywordsResponse findReply(Long id) {
-        Reply reply = replyRepository.findWithUserAndProblemById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Reply Not Found"));
-
-        List<Keyword> keywords = keywordRepository.findTop3KeywordsByProblemOrderByCountDesc(reply.getProblem());
-        ReplyResponse replyResponse = ReplyResponse.of(
-                reply.getHistory().getId(), reply.getId(), reply.getProblem().getId(), reply.getLikeCount(),
-                reply.getProblem().getQuestion(), reply.getAnswer(), reply.getProblem().getAnswer(),
-                reply.getUser().getId(), reply.getUser().getName(), reply.getUser().getImageUrl());
-        return ReplyAndKeywordsResponse.of(replyResponse, keywords.stream().map(Keyword::getName).toList());
     }
 
     /*
@@ -230,24 +217,28 @@ public class ReplyService {
         List<Reply> replies = replyRepository.findRepliesByUserIdOrderByIdAsc(userId, cursorId, pageable);
         List<ReplyResponse> replyResponses = new ArrayList<>();
         for (Reply reply : replies) {
-            replyResponses.add(ReplyResponse.of(
-                    reply.getHistory().getId(), reply.getId(), reply.getProblem().getId(),
-                    reply.getLikeCount(), reply.getProblem().getQuestion(), reply.getAnswer(),
-                    reply.getProblem().getAnswer(), reply.getUser().getId(), reply.getUser().getName(),
-                    reply.getUser().getImageUrl()));
+            replyResponses.add(ReplyResponse.builder()
+                    .historyId(reply.getHistory().getId())
+                    .replyId(reply.getId())
+                    .likeCount(reply.getLikeCount())
+                    .problemId(reply.getProblem().getId())
+                    .question(reply.getProblem().getQuestion())
+                    .answer(reply.getAnswer())
+                    .userId(reply.getUser().getId())
+                    .userName(reply.getUser().getName())
+                    .userImage(reply.getUser().getImageUrl())
+                    .alreadyLiked(reply.isLikedBy(userId))
+                    .build());
         }
         return replyResponses;
     }
 
     @Transactional
-    public String recommendReply(SessionUser sessionUser, Long replyId) {
+    public String addLikey(SessionUser sessionUser, Long replyId) {
         Reply reply = replyRepository.findByIdWithUserAndLike(replyId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Reply Not Found"));
 
-        if (isOwner(sessionUser.getId(), reply)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Can't Recommend Own Reply");
-        }
-        if (isAlreadyLikedReply(sessionUser.getId(), reply)) {
+        if (reply.isLikedBy(sessionUser.getId())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Already Recommended Reply");
         }
 
@@ -264,12 +255,12 @@ public class ReplyService {
     }
 
     @Transactional
-    public void unrecommendReply(SessionUser sessionUser, Long replyId) {
+    public void deleteLikey(SessionUser sessionUser, Long replyId) {
         Reply reply = replyRepository.findByIdWithUserAndLike(replyId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Reply Not Found"));
 
-        if (!isAlreadyLikedReply(sessionUser.getId(), reply)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Not Recommended Reply");
+        if (!reply.isLikedBy(sessionUser.getId())) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Likey Not Found");
         }
 
         reply.dislikeReply(sessionUser.getId());
@@ -277,18 +268,5 @@ public class ReplyService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User Not Found"));
 
         likeyRepository.findLikeyByUserAndReply(user, reply).ifPresent(likeyRepository::delete);
-    }
-
-    private boolean isOwner(Long userId, Reply reply) {
-        return reply.getUser().getId().equals(userId);
-    }
-
-    private boolean isAlreadyLikedReply(Long userId, Reply reply) {
-        for (Likey likey : reply.getLikes()) {
-            if (likey.getUser().getId().equals(userId)) {
-                return true;
-            }
-        }
-        return false;
     }
 }

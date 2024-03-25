@@ -41,7 +41,7 @@ dependencies {
 	implementation 'software.amazon.awssdk:secretsmanager:2.20.23'
 
 	implementation 'org.jsoup:jsoup:1.15.4'
-	implementation 'com.twitter.penguin:korean-text:4.4.4'
+	implementation 'org.openkoreantext:open-korean-text:2.1.0'
 	implementation group: 'org.webjars', name: 'stomp-websocket', version: '2.3.3-1'
 	implementation 'org.json:json:20220320'
 	implementation group: 'org.mariadb.jdbc', name: 'mariadb-java-client', version: '3.1.0'
